@@ -1,21 +1,21 @@
-import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenAI, ApiError, type Schema, Type } from "@google/genai";
 import type { AnalysisResult } from "./types";
 
-const MODEL = "claude-sonnet-5";
+const MODEL = "gemini-2.5-flash";
 
 export class AnalysisError extends Error {}
 
-let client: Anthropic | null = null;
+let client: GoogleGenAI | null = null;
 
-function getClient(): Anthropic {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+function getClient(): GoogleGenAI {
+  const apiKey = process.env.GEMINI_API_KEY;
   if (!apiKey) {
     throw new AnalysisError(
-      "Server is missing ANTHROPIC_API_KEY. Set it in your environment to enable analysis.",
+      "Server is missing GEMINI_API_KEY. Set it in your environment to enable analysis.",
     );
   }
   if (!client) {
-    client = new Anthropic({ apiKey });
+    client = new GoogleGenAI({ apiKey });
   }
   return client;
 }
@@ -29,79 +29,74 @@ Given a candidate's existing resume and a target job description, you will:
 4. List the concrete changes you made to the resume and why (short bullet points), so the candidate understands what changed.
 5. Identify the specific skills or qualifications the candidate is missing or weak on relative to this job description, ranked by priority, each with a one-line reason and a concrete, actionable way to learn it (course, project, certification, etc.).
 
-Be honest and calibrated in scoring — do not inflate scores. A resume with major gaps relative to the JD should score low. Respond only by calling the submit_analysis tool.`;
+Be honest and calibrated in scoring — do not inflate scores. A resume with major gaps relative to the JD should score low. Respond only with the requested JSON.`;
 
-const ANALYSIS_TOOL: Anthropic.Tool = {
-  name: "submit_analysis",
-  description:
-    "Submit the completed resume tailoring, cover letter, application score, and skill-gap analysis.",
-  input_schema: {
-    type: "object",
-    properties: {
-      matchScore: {
-        type: "integer",
-        description: "Overall application strength for this role, 0-100.",
+const RESPONSE_SCHEMA: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    matchScore: {
+      type: Type.INTEGER,
+      description: "Overall application strength for this role, 0-100.",
+    },
+    scoreBreakdown: {
+      type: Type.OBJECT,
+      properties: {
+        skillsMatch: { type: Type.INTEGER },
+        experienceMatch: { type: Type.INTEGER },
+        keywordAlignment: { type: Type.INTEGER },
+        overallPresentation: { type: Type.INTEGER },
       },
-      scoreBreakdown: {
-        type: "object",
+      required: [
+        "skillsMatch",
+        "experienceMatch",
+        "keywordAlignment",
+        "overallPresentation",
+      ],
+    },
+    scoreSummary: {
+      type: Type.STRING,
+      description: "2-3 sentence plain-English explanation of the score.",
+    },
+    tailoredResume: {
+      type: Type.STRING,
+      description:
+        "The full rewritten, ATS-friendly resume as plain text, ready to copy or export.",
+    },
+    coverLetter: {
+      type: Type.STRING,
+      description: "The full tailored cover letter as plain text.",
+    },
+    keyChanges: {
+      type: Type.ARRAY,
+      items: { type: Type.STRING },
+      description: "Short bullet points describing what changed in the resume and why.",
+    },
+    skillGaps: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
         properties: {
-          skillsMatch: { type: "integer" },
-          experienceMatch: { type: "integer" },
-          keywordAlignment: { type: "integer" },
-          overallPresentation: { type: "integer" },
-        },
-        required: [
-          "skillsMatch",
-          "experienceMatch",
-          "keywordAlignment",
-          "overallPresentation",
-        ],
-      },
-      scoreSummary: {
-        type: "string",
-        description: "2-3 sentence plain-English explanation of the score.",
-      },
-      tailoredResume: {
-        type: "string",
-        description:
-          "The full rewritten, ATS-friendly resume as plain text, ready to copy or export.",
-      },
-      coverLetter: {
-        type: "string",
-        description: "The full tailored cover letter as plain text.",
-      },
-      keyChanges: {
-        type: "array",
-        items: { type: "string" },
-        description: "Short bullet points describing what changed in the resume and why.",
-      },
-      skillGaps: {
-        type: "array",
-        items: {
-          type: "object",
-          properties: {
-            skill: { type: "string" },
-            why: { type: "string", description: "Why this matters for the role." },
-            howToLearn: {
-              type: "string",
-              description: "A concrete, actionable way to close this gap.",
-            },
-            priority: { type: "string", enum: ["high", "medium", "low"] },
+          skill: { type: Type.STRING },
+          why: { type: Type.STRING, description: "Why this matters for the role." },
+          howToLearn: {
+            type: Type.STRING,
+            description: "A concrete, actionable way to close this gap.",
           },
-          required: ["skill", "why", "howToLearn", "priority"],
+          priority: { type: Type.STRING, enum: ["high", "medium", "low"] },
         },
+        required: ["skill", "why", "howToLearn", "priority"],
       },
     },
-    required: [
-      "matchScore",
-      "scoreBreakdown",
-      "scoreSummary",
-      "tailoredResume",
-      "coverLetter",
-      "keyChanges",
-      "skillGaps",
-    ],
   },
+  required: [
+    "matchScore",
+    "scoreBreakdown",
+    "scoreSummary",
+    "tailoredResume",
+    "coverLetter",
+    "keyChanges",
+    "skillGaps",
+  ],
 };
 
 function clampScore(n: unknown): number {
@@ -148,34 +143,39 @@ export async function analyzeResumeAgainstJob(
   resumeText: string,
   jobDescription: string,
 ): Promise<AnalysisResult> {
-  const anthropic = getClient();
+  const ai = getClient();
 
   const userMessage = `CANDIDATE RESUME:\n"""\n${resumeText}\n"""\n\nTARGET JOB DESCRIPTION:\n"""\n${jobDescription}\n"""`;
 
-  let response;
+  let responseText: string | undefined;
   try {
-    response = await anthropic.messages.create({
-      model: process.env.ANTHROPIC_MODEL || MODEL,
-      max_tokens: 8000,
-      system: SYSTEM_PROMPT,
-      tools: [ANALYSIS_TOOL],
-      tool_choice: { type: "tool", name: "submit_analysis" },
-      messages: [{ role: "user", content: userMessage }],
+    const response = await ai.models.generateContent({
+      model: process.env.GEMINI_MODEL || MODEL,
+      contents: userMessage,
+      config: {
+        systemInstruction: SYSTEM_PROMPT,
+        responseMimeType: "application/json",
+        responseSchema: RESPONSE_SCHEMA,
+      },
     });
+    responseText = response.text;
   } catch (err) {
-    if (err instanceof Anthropic.APIError) {
+    if (err instanceof ApiError) {
       throw new AnalysisError(`AI request failed: ${err.message}`);
     }
     throw err;
   }
 
-  const toolUse = response.content.find(
-    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use",
-  );
-
-  if (!toolUse) {
+  if (!responseText) {
     throw new AnalysisError("The AI didn't return a structured analysis. Please try again.");
   }
 
-  return normalizeResult(toolUse.input as Record<string, unknown>);
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(responseText);
+  } catch {
+    throw new AnalysisError("The AI response wasn't valid JSON. Please try again.");
+  }
+
+  return normalizeResult(parsed as Record<string, unknown>);
 }

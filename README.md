@@ -8,7 +8,8 @@ Upload your resume, paste a job description, and get:
   match, keyword alignment, and presentation
 - A **skill-gap plan**: the specific skills to learn next to stay competitive
 
-Built with Next.js (App Router) and the Anthropic Claude API.
+Built with Next.js (App Router) and the Google Gemini API (Gemini 2.5
+Flash, which has a free tier).
 
 ## Getting started
 
@@ -18,11 +19,13 @@ Built with Next.js (App Router) and the Anthropic Claude API.
    npm install
    ```
 
-2. Configure your API key:
+2. Configure your API key. Get a free key at
+   [Google AI Studio](https://aistudio.google.com/apikey) (no credit card
+   required for the free tier):
 
    ```bash
    cp .env.example .env.local
-   # then edit .env.local and set ANTHROPIC_API_KEY
+   # then edit .env.local and set GEMINI_API_KEY
    ```
 
 3. Run the dev server:
@@ -40,10 +43,10 @@ Built with Next.js (App Router) and the Anthropic Claude API.
 - `src/lib/parseResume.ts` extracts plain text from the uploaded resume
   (PDF via `unpdf`, DOCX via `mammoth`, or plain text).
 - `src/app/api/analyze/route.ts` validates the upload and job description,
-  then calls `src/lib/anthropic.ts`.
-- `src/lib/anthropic.ts` prompts Claude with a forced tool call so the model
-  always returns a structured result: the tailored resume, cover letter,
-  score breakdown, list of changes made, and skill gaps.
+  then calls `src/lib/gemini.ts`.
+- `src/lib/gemini.ts` prompts Gemini with a JSON response schema so the
+  model always returns a structured result: the tailored resume, cover
+  letter, score breakdown, list of changes made, and skill gaps.
 - `src/app/api/download/route.ts` converts the tailored resume or cover
   letter into a downloadable `.docx` using the `docx` package.
 - The UI (`src/app/page.tsx` and `src/components/*`) handles upload, shows

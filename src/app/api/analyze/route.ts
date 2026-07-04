@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { extractResumeText, ResumeParseError } from "@/lib/parseResume";
-import { analyzeResumeAgainstJob, AnalysisError } from "@/lib/anthropic";
+import { analyzeResumeAgainstJob, AnalysisError } from "@/lib/gemini";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
