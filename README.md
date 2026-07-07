@@ -2,8 +2,11 @@
 
 Upload your resume, paste a job description, and get:
 
-- A **tailored, ATS-friendly resume** rewritten to match the role
-- A **tailored cover letter** for that specific job
+- A **tailored, ATS-friendly resume** rewritten to match the role, rendered
+  with proper resume formatting (bold section headers, bulleted
+  achievements, an education table) and exportable as `.docx` or `.pdf`
+- A **tailored cover letter** for that specific job, also exportable as
+  `.docx` or `.pdf`
 - An **application score** (0-100) with a breakdown of skills match, experience
   match, keyword alignment, and presentation
 - A **skill-gap plan**: the specific skills to learn next to stay competitive
@@ -45,10 +48,20 @@ Flash, which has a free tier).
 - `src/app/api/analyze/route.ts` validates the upload and job description,
   then calls `src/lib/gemini.ts`.
 - `src/lib/gemini.ts` prompts Gemini with a JSON response schema so the
-  model always returns a structured result: the tailored resume, cover
-  letter, score breakdown, list of changes made, and skill gaps.
-- `src/app/api/download/route.ts` converts the tailored resume or cover
-  letter into a downloadable `.docx` using the `docx` package.
+  model always returns a structured result, including the tailored resume
+  as **structured data** (name, contact info, profile, core strengths,
+  per-job bullet points, education) rather than a flat text blob — that's
+  what lets it render with real resume formatting instead of a plain
+  paragraph dump.
+- `src/components/TailoredResumeView.tsx` renders that structured resume
+  with proper typography. `src/lib/buildResumeDocx.ts` and
+  `src/lib/buildResumePdf.ts` render the same structured data as a styled
+  `.docx` (via the `docx` package) and `.pdf` (via `pdfmake`, with its
+  fonts embedded directly in code rather than read from disk, since
+  serverless bundlers can silently drop on-disk assets they can't trace).
+- `src/app/api/download/route.ts` dispatches to whichever builder matches
+  the requested kind (`resume` / `cover-letter`) and format (`docx` /
+  `pdf`).
 - The UI (`src/app/page.tsx` and `src/components/*`) handles upload, shows
   a loading state, and renders the results in tabs with copy/download
   actions.

@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { downloadFromApi } from "@/lib/clientDownload";
 
 interface DocumentPanelProps {
   text: string;
-  downloadKind: "resume" | "cover-letter";
 }
 
-export function DocumentPanel({ text, downloadKind }: DocumentPanelProps) {
+export function DocumentPanel({ text }: DocumentPanelProps) {
   const [copied, setCopied] = useState(false);
-  const [downloading, setDownloading] = useState(false);
-  const [downloadError, setDownloadError] = useState<string | null>(null);
+  const [busy, setBusy] = useState<"docx" | "pdf" | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleCopy() {
     await navigator.clipboard.writeText(text);
@@ -18,40 +18,26 @@ export function DocumentPanel({ text, downloadKind }: DocumentPanelProps) {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  async function handleDownload() {
-    setDownloading(true);
-    setDownloadError(null);
+  async function handleDownload(format: "docx" | "pdf") {
+    setBusy(format);
+    setError(null);
     try {
-      const res = await fetch("/api/download", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, kind: downloadKind }),
-      });
-      if (!res.ok) throw new Error("Download failed");
-      const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download =
-        downloadKind === "resume" ? "Tailored-Resume.docx" : "Cover-Letter.docx";
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
-    } catch {
-      setDownloadError("Couldn't generate the download. Please try again.");
+      await downloadFromApi(
+        { kind: "cover-letter", format, text },
+        `Cover-Letter.${format}`,
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Download failed.");
     } finally {
-      setDownloading(false);
+      setBusy(null);
     }
   }
 
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
-        {downloadError && (
-          <span className="mr-auto text-sm text-rose-600 dark:text-rose-400">
-            {downloadError}
-          </span>
+        {error && (
+          <span className="mr-auto text-sm text-rose-600 dark:text-rose-400">{error}</span>
         )}
         <button
           type="button"
@@ -62,11 +48,19 @@ export function DocumentPanel({ text, downloadKind }: DocumentPanelProps) {
         </button>
         <button
           type="button"
-          onClick={handleDownload}
-          disabled={downloading}
+          onClick={() => handleDownload("docx")}
+          disabled={busy !== null}
+          className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-60 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+        >
+          {busy === "docx" ? "Preparing…" : "Download .docx"}
+        </button>
+        <button
+          type="button"
+          onClick={() => handleDownload("pdf")}
+          disabled={busy !== null}
           className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-60"
         >
-          {downloading ? "Preparing…" : "Download .docx"}
+          {busy === "pdf" ? "Preparing…" : "Download .pdf"}
         </button>
       </div>
       <textarea

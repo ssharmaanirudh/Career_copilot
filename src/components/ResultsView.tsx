@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { AnalysisResult } from "@/lib/types";
 import { ScoreCard } from "./ScoreCard";
 import { DocumentPanel } from "./DocumentPanel";
+import { TailoredResumeView } from "./TailoredResumeView";
 import { SkillGapList } from "./SkillGapList";
 
 const TABS = [
@@ -45,12 +46,8 @@ export function ResultsView({ result }: { result: AnalysisResult }) {
         </div>
 
         <div className="p-6">
-          {activeTab === "resume" && (
-            <DocumentPanel text={result.tailoredResume} downloadKind="resume" />
-          )}
-          {activeTab === "cover-letter" && (
-            <DocumentPanel text={result.coverLetter} downloadKind="cover-letter" />
-          )}
+          {activeTab === "resume" && <TailoredResumeView resume={result.tailoredResume} />}
+          {activeTab === "cover-letter" && <DocumentPanel text={result.coverLetter} />}
           {activeTab === "changes" && (
             <ul className="list-disc space-y-2 pl-5 text-sm text-zinc-700 dark:text-zinc-300">
               {result.keyChanges.length === 0 && (
