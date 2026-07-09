@@ -1,5 +1,5 @@
 import { GoogleGenAI, ApiError, type Schema, Type } from "@google/genai";
-import type { AnalysisResult, ResumeBullet, ResumeExperienceEntry } from "./types";
+import type { AnalysisResult, ResumeBullet, ResumeExperienceEntry, ScoreResult } from "./types";
 
 const MODEL = "gemini-2.5-flash";
 
@@ -20,10 +20,19 @@ function getClient(): GoogleGenAI {
   return client;
 }
 
+const SCORING_RUBRIC = `Scoring rubric (apply identically both times you score, so the two scores are directly comparable):
+- 90-100: meets nearly every requirement with direct, quantified evidence.
+- 75-89: strong match; only minor or peripheral gaps.
+- 55-74: partial match; at least one clearly named, significant gap.
+- 30-54: weak match; most core requirements are unmet or unverifiable.
+- 0-29: fundamentally different role, seniority, or field.
+Only concrete, verifiable alignment counts — confident phrasing, generic buzzwords, or professional tone must NOT inflate a score. If a required skill or years-of-experience threshold isn't demonstrated, cap skillsMatch/experienceMatch accordingly even if the resume reads well.`;
+
 const SYSTEM_PROMPT = `You are Career Co-Pilot, an expert resume writer, career coach, and technical recruiter with 15+ years of experience across tech, finance, and operations hiring.
 
 Given a candidate's existing resume and a target job description, you will:
-1. Rewrite the resume so it is precisely tailored to the job description, and return it as STRUCTURED DATA (not a plain text blob) following this layout:
+1. Score the CANDIDATE'S ORIGINAL RESUME EXACTLY AS SUBMITTED — before you change anything — against the job description. This is the honest "before tailoring" baseline: 0-100 overall, with a breakdown across skillsMatch, experienceMatch, keywordAlignment, and overallPresentation (each 0-100), plus a 2-3 sentence plain-English summary. ${SCORING_RUBRIC}
+2. Rewrite the resume so it is precisely tailored to the job description, and return it as STRUCTURED DATA (not a plain text blob) following this layout:
    - name, title (a short professional headline), phone, email, linkedin, location — pulled from the original resume's contact info. Never invent contact details; use an empty string for any field the original resume doesn't provide.
    - profile: a 3-5 sentence summary paragraph tailored to the JD.
    - objective: an optional one-sentence forward-looking statement connecting the candidate to this specific role/company (empty string if it wouldn't add value).
@@ -31,12 +40,12 @@ Given a candidate's existing resume and a target job description, you will:
    - experience: one entry per job (title, company, location, dates exactly as in the original resume), each with 3-5 bullets. Bullets should have a short bold "label" categorizing the achievement (e.g. "Executive Communication:") followed by "text" with the detail, quantified where possible.
    - education: one entry per degree/certification (program, institution, date).
    Mirror the JD's key terminology and required skills wherever truthfully supported by the candidate's actual background, and reorder/re-emphasize content around what the role values most. NEVER invent employers, titles, dates, degrees, or accomplishments the candidate did not provide — only rephrase, reorder, re-emphasize, and tighten existing content.
-2. Write a tailored, specific cover letter (3-4 short paragraphs) that connects the candidate's real experience to this specific role and company/industry context from the JD. Avoid generic filler language.
-3. Score how strong this application is for this specific role on a 0-100 scale, with a breakdown across skillsMatch, experienceMatch, keywordAlignment, and overallPresentation (each 0-100), plus a 2-3 sentence plain-English summary of the score.
-4. List the concrete changes you made to the resume and why (short bullet points), so the candidate understands what changed.
-5. Identify the specific skills or qualifications the candidate is missing or weak on relative to this job description, ranked by priority, each with a one-line reason and a concrete, actionable way to learn it (course, project, certification, etc.).
+3. Score the TAILORED resume you just wrote against the same job description, using the exact same rubric and definitions as step 1 so the two scores are genuinely comparable. Only raise a dimension's score where the tailoring produced real, truthful alignment (sharper keyword match, clearer presentation, better-surfaced relevant experience) — rewriting alone is not evidence of improvement. If the candidate still lacks a required skill or experience level, keep skillsMatch/experienceMatch capped accordingly even after tailoring.
+4. Write a tailored, specific cover letter (3-4 short paragraphs) that connects the candidate's real experience to this specific role and company/industry context from the JD. Avoid generic filler language.
+5. List the concrete changes you made to the resume and why (short bullet points), so the candidate understands what changed.
+6. Identify the specific skills or qualifications the candidate is missing or weak on relative to this job description, ranked by priority, each with a one-line reason and a concrete, actionable way to learn it (course, project, certification, etc.).
 
-Be honest and calibrated in scoring — do not inflate scores. A resume with major gaps relative to the JD should score low. Respond only with the requested JSON.`;
+Be honest and calibrated in both scoring passes — do not inflate scores, and do not let the tailored score improve on a dimension unless the underlying substance actually changed. Respond only with the requested JSON.`;
 
 const BULLET_SCHEMA: Schema = {
   type: Type.OBJECT,
@@ -50,32 +59,45 @@ const BULLET_SCHEMA: Schema = {
   required: ["label", "text"],
 };
 
+function scoreSchema(description: string): Schema {
+  return {
+    type: Type.OBJECT,
+    description,
+    properties: {
+      matchScore: { type: Type.INTEGER, description: "Overall score, 0-100." },
+      scoreBreakdown: {
+        type: Type.OBJECT,
+        properties: {
+          skillsMatch: { type: Type.INTEGER },
+          experienceMatch: { type: Type.INTEGER },
+          keywordAlignment: { type: Type.INTEGER },
+          overallPresentation: { type: Type.INTEGER },
+        },
+        required: [
+          "skillsMatch",
+          "experienceMatch",
+          "keywordAlignment",
+          "overallPresentation",
+        ],
+      },
+      summary: {
+        type: Type.STRING,
+        description: "2-3 sentence plain-English explanation of the score.",
+      },
+    },
+    required: ["matchScore", "scoreBreakdown", "summary"],
+  };
+}
+
 const RESPONSE_SCHEMA: Schema = {
   type: Type.OBJECT,
   properties: {
-    matchScore: {
-      type: Type.INTEGER,
-      description: "Overall application strength for this role, 0-100.",
-    },
-    scoreBreakdown: {
-      type: Type.OBJECT,
-      properties: {
-        skillsMatch: { type: Type.INTEGER },
-        experienceMatch: { type: Type.INTEGER },
-        keywordAlignment: { type: Type.INTEGER },
-        overallPresentation: { type: Type.INTEGER },
-      },
-      required: [
-        "skillsMatch",
-        "experienceMatch",
-        "keywordAlignment",
-        "overallPresentation",
-      ],
-    },
-    scoreSummary: {
-      type: Type.STRING,
-      description: "2-3 sentence plain-English explanation of the score.",
-    },
+    originalScore: scoreSchema(
+      "How the resume scores against the JD exactly as submitted, before any tailoring.",
+    ),
+    tailoredScore: scoreSchema(
+      "How the tailored resume scores against the same JD, using the identical rubric as originalScore.",
+    ),
     tailoredResume: {
       type: Type.OBJECT,
       description: "The rewritten resume as structured data, ready to render or export.",
@@ -157,9 +179,8 @@ const RESPONSE_SCHEMA: Schema = {
     },
   },
   required: [
-    "matchScore",
-    "scoreBreakdown",
-    "scoreSummary",
+    "originalScore",
+    "tailoredScore",
     "tailoredResume",
     "coverLetter",
     "keyChanges",
@@ -201,8 +222,22 @@ function normalizeExperience(e: unknown): ResumeExperienceEntry {
   };
 }
 
+function normalizeScore(raw: unknown): ScoreResult {
+  const obj = typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : {};
+  const breakdown = (obj.scoreBreakdown as Record<string, unknown>) ?? {};
+  return {
+    matchScore: clampScore(obj.matchScore),
+    scoreBreakdown: {
+      skillsMatch: clampScore(breakdown.skillsMatch),
+      experienceMatch: clampScore(breakdown.experienceMatch),
+      keywordAlignment: clampScore(breakdown.keywordAlignment),
+      overallPresentation: clampScore(breakdown.overallPresentation),
+    },
+    summary: str(obj.summary),
+  };
+}
+
 function normalizeResult(raw: Record<string, unknown>): AnalysisResult {
-  const breakdown = (raw.scoreBreakdown as Record<string, unknown>) ?? {};
   const skillGaps = Array.isArray(raw.skillGaps) ? raw.skillGaps : [];
   const keyChanges = Array.isArray(raw.keyChanges) ? raw.keyChanges : [];
   const resume =
@@ -213,14 +248,8 @@ function normalizeResult(raw: Record<string, unknown>): AnalysisResult {
   const education = Array.isArray(resume.education) ? resume.education : [];
 
   return {
-    matchScore: clampScore(raw.matchScore),
-    scoreBreakdown: {
-      skillsMatch: clampScore(breakdown.skillsMatch),
-      experienceMatch: clampScore(breakdown.experienceMatch),
-      keywordAlignment: clampScore(breakdown.keywordAlignment),
-      overallPresentation: clampScore(breakdown.overallPresentation),
-    },
-    scoreSummary: str(raw.scoreSummary),
+    originalScore: normalizeScore(raw.originalScore),
+    tailoredScore: normalizeScore(raw.tailoredScore),
     tailoredResume: {
       name: str(resume.name),
       title: str(resume.title),

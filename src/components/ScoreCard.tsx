@@ -1,9 +1,8 @@
-import type { ScoreBreakdown } from "@/lib/types";
+import type { ScoreBreakdown, ScoreResult } from "@/lib/types";
 
 interface ScoreCardProps {
-  matchScore: number;
-  scoreBreakdown: ScoreBreakdown;
-  scoreSummary: string;
+  original: ScoreResult;
+  tailored: ScoreResult;
 }
 
 const BREAKDOWN_LABELS: Record<keyof ScoreBreakdown, string> = {
@@ -19,43 +18,119 @@ function scoreColor(score: number): string {
   return "text-rose-600 dark:text-rose-400";
 }
 
-function barColor(score: number): string {
-  if (score >= 80) return "bg-emerald-500";
-  if (score >= 60) return "bg-amber-500";
-  return "bg-rose-500";
+function DeltaBadge({ before, after }: { before: number; after: number }) {
+  const delta = after - before;
+  if (delta === 0) {
+    return (
+      <span className="rounded-full bg-zinc-100 px-2 py-0.5 text-xs font-semibold text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+        ±0
+      </span>
+    );
+  }
+  const positive = delta > 0;
+  return (
+    <span
+      className={`rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums ${
+        positive
+          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+          : "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+      }`}
+    >
+      {positive ? "+" : ""}
+      {delta}
+    </span>
+  );
 }
 
-export function ScoreCard({ matchScore, scoreBreakdown, scoreSummary }: ScoreCardProps) {
+/** Before → after per metric: a dumbbell (one hue, two shades) rather than a status color. */
+function DumbbellRow({
+  label,
+  before,
+  after,
+}: {
+  label: string;
+  before: number;
+  after: number;
+}) {
+  const lo = Math.min(before, after);
+  const hi = Math.max(before, after);
+  return (
+    <div>
+      <div className="mb-1.5 flex items-baseline justify-between text-xs">
+        <span className="text-zinc-500">{label}</span>
+        <span className="tabular-nums">
+          <span className="text-zinc-400">{before}</span>
+          <span className="mx-1 text-zinc-300 dark:text-zinc-600">→</span>
+          <span className="font-semibold text-zinc-800 dark:text-zinc-200">{after}</span>
+        </span>
+      </div>
+      <div className="relative h-3">
+        <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-zinc-100 dark:bg-zinc-800" />
+        <div
+          className="absolute top-1/2 h-0.5 -translate-y-1/2 rounded-full bg-indigo-600/30 dark:bg-indigo-400/30"
+          style={{ left: `${lo}%`, width: `${hi - lo}%` }}
+        />
+        <div
+          className="absolute top-1/2 h-2.5 w-2.5 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 border-white bg-indigo-600/30 dark:border-zinc-900 dark:bg-indigo-400/30"
+          style={{ left: `${before}%` }}
+        />
+        <div
+          className="absolute top-1/2 h-3 w-3 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 border-white bg-indigo-600 dark:border-zinc-900 dark:bg-indigo-400"
+          style={{ left: `${after}%` }}
+        />
+      </div>
+    </div>
+  );
+}
+
+export function ScoreCard({ original, tailored }: ScoreCardProps) {
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="flex items-center gap-6">
-        <div className="flex flex-col items-center">
-          <span className={`text-5xl font-bold tabular-nums ${scoreColor(matchScore)}`}>
-            {matchScore}
-          </span>
-          <span className="text-xs uppercase tracking-wide text-zinc-500">/ 100</span>
+      <div className="flex flex-wrap items-center gap-6">
+        <div className="flex items-center gap-4">
+          <div className="flex flex-col items-center opacity-70">
+            <span className="text-2xl font-semibold tabular-nums text-zinc-400">
+              {original.matchScore}
+            </span>
+            <span className="text-[10px] uppercase tracking-wide text-zinc-400">Before</span>
+          </div>
+          <span className="text-xl text-zinc-300 dark:text-zinc-600">→</span>
+          <div className="flex flex-col items-center">
+            <span
+              className={`text-5xl font-bold tabular-nums ${scoreColor(tailored.matchScore)}`}
+            >
+              {tailored.matchScore}
+            </span>
+            <span className="text-xs uppercase tracking-wide text-zinc-500">After / 100</span>
+          </div>
+          <DeltaBadge before={original.matchScore} after={tailored.matchScore} />
         </div>
-        <div className="flex-1">
+        <div className="min-w-[16rem] flex-1">
           <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
             Application strength
           </h3>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{scoreSummary}</p>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{tailored.summary}</p>
         </div>
       </div>
-      <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+
+      <div className="mt-6 flex items-center gap-4 text-xs text-zinc-500">
+        <span className="flex items-center gap-1.5">
+          <span className="h-2.5 w-2.5 rounded-full bg-indigo-600/30 dark:bg-indigo-400/30" />
+          Before tailoring
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="h-3 w-3 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+          After tailoring
+        </span>
+      </div>
+      <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-2">
         {(Object.keys(BREAKDOWN_LABELS) as (keyof ScoreBreakdown)[]).map((key) => (
-          <div key={key}>
-            <div className="mb-1 flex justify-between text-xs text-zinc-500">
-              <span>{BREAKDOWN_LABELS[key]}</span>
-              <span className="tabular-nums">{scoreBreakdown[key]}</span>
-            </div>
-            <div className="h-2 w-full overflow-hidden rounded-full bg-zinc-100 dark:bg-zinc-800">
-              <div
-                className={`h-full rounded-full ${barColor(scoreBreakdown[key])}`}
-                style={{ width: `${scoreBreakdown[key]}%` }}
-              />
-            </div>
-          </div>
+          <DumbbellRow
+            key={key}
+            label={BREAKDOWN_LABELS[key]}
+            before={original.scoreBreakdown[key]}
+            after={tailored.scoreBreakdown[key]}
+          />
         ))}
       </div>
     </div>

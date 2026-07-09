@@ -48,10 +48,17 @@ export interface TailoredResume {
   education: ResumeEducationEntry[];
 }
 
-export interface AnalysisResult {
+export interface ScoreResult {
   matchScore: number;
   scoreBreakdown: ScoreBreakdown;
-  scoreSummary: string;
+  summary: string;
+}
+
+export interface AnalysisResult {
+  /** How the resume scored against the JD exactly as submitted, before any edits. */
+  originalScore: ScoreResult;
+  /** How the tailored resume scores against the same JD, using the same rubric. */
+  tailoredScore: ScoreResult;
   tailoredResume: TailoredResume;
   coverLetter: string;
   keyChanges: string[];
