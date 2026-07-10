@@ -21,6 +21,16 @@ export function ResultsView({ result }: { result: AnalysisResult }) {
 
   return (
     <div className="flex flex-col gap-6">
+      {result.flags.length > 0 && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+          <p className="font-semibold">Flagged during review</p>
+          <ul className="mt-1 list-disc space-y-1 pl-5">
+            {result.flags.map((flag, i) => (
+              <li key={i}>{flag}</li>
+            ))}
+          </ul>
+        </div>
+      )}
       <ScoreCard
         original={result.originalScore}
         tailored={result.tailoredScore}

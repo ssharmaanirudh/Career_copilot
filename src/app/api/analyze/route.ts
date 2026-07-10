@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { extractResumeText, ResumeParseError } from "@/lib/parseResume";
-import { analyzeResumeAgainstJob, AnalysisError } from "@/lib/gemini";
+import { analyzeResumeAgainstJob, AnalysisError, InvalidInputError } from "@/lib/gemini";
 
 export const runtime = "nodejs";
 export const maxDuration = 60;
@@ -51,6 +51,9 @@ export async function POST(request: Request) {
     const result = await analyzeResumeAgainstJob(resumeText, jobDescription.trim());
     return NextResponse.json(result);
   } catch (err) {
+    if (err instanceof InvalidInputError) {
+      return NextResponse.json({ error: err.message }, { status: 400 });
+    }
     if (err instanceof AnalysisError) {
       return NextResponse.json({ error: err.message }, { status: 502 });
     }

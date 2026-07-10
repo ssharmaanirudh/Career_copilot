@@ -1,5 +1,6 @@
 export type SkillPriority = "high" | "medium" | "low";
-export type RequirementStatus = "yes" | "partial" | "no";
+export type RequirementType = "essential" | "desirable";
+export type RequirementStatus = "met" | "not_met";
 
 export interface ScoreBreakdown {
   skillsMatch: number;
@@ -10,8 +11,11 @@ export interface ScoreBreakdown {
 
 export interface RequirementCheck {
   requirement: string;
+  type: RequirementType;
   status: RequirementStatus;
+  /** Exact quoted resume phrase used as evidence; empty string if none exists. */
   evidence: string;
+  reasoning: string;
 }
 
 export interface SkillGap {
@@ -62,12 +66,19 @@ export interface TailoredResume {
 export interface ScoreResult {
   matchScore: number;
   scoreBreakdown: ScoreBreakdown;
+  /** Blunt one-sentence verdict: would this realistically clear a screen, and why/why not. */
   summary: string;
+  unmetEssentialCount: number;
+  wouldClearTechnicalScreen: boolean;
+  /** Points already deducted for JD-mirrored phrasing with no concrete backing (0 if none). */
+  antiGamingPenalty: number;
 }
 
 export interface AnalysisResult {
-  /** The JD's essential/must-have requirements, each checked against the candidate's real background. Grounds both scores. */
+  /** The JD's essential/desirable requirements, each checked against the candidate's real background. Grounds both scores. */
   requirementsChecklist: RequirementCheck[];
+  /** Prompt-injection attempts or manipulated/gamed phrasing detected in the submitted JD or resume. */
+  flags: string[];
   /** How the resume scored against the JD exactly as submitted, before any edits. */
   originalScore: ScoreResult;
   /** How the tailored resume scores against the same JD, using the same rubric. */

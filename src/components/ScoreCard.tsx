@@ -6,33 +6,32 @@ interface ScoreCardProps {
   requirementsChecklist: RequirementCheck[];
 }
 
-const STATUS_ICON: Record<RequirementCheck["status"], string> = {
-  yes: "✓",
-  partial: "~",
-  no: "✗",
+const STATUS_STYLES: Record<RequirementCheck["status"], string> = {
+  met: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
+  not_met: "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300",
 };
 
-const STATUS_STYLES: Record<RequirementCheck["status"], string> = {
-  yes: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
-  partial: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
-  no: "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300",
+const STATUS_ICON: Record<RequirementCheck["status"], string> = {
+  met: "✓",
+  not_met: "✗",
+};
+
+const TYPE_STYLES: Record<RequirementCheck["type"], string> = {
+  essential: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
+  desirable: "bg-zinc-50 text-zinc-400 dark:bg-zinc-900 dark:text-zinc-500",
 };
 
 function RequirementsChecklist({ items }: { items: RequirementCheck[] }) {
   if (items.length === 0) return null;
-  const unmet = items.filter((i) => i.status !== "yes").length;
+  const unmet = items.filter((i) => i.status === "not_met").length;
 
   return (
     <details className="mt-5 border-t border-zinc-100 pt-4 dark:border-zinc-800">
       <summary className="cursor-pointer text-sm font-medium text-zinc-700 dark:text-zinc-300">
         Why this score? {items.length} requirement{items.length === 1 ? "" : "s"} checked
-        {unmet > 0 && (
-          <span className="ml-1 text-zinc-500">
-            ({unmet} not fully met)
-          </span>
-        )}
+        {unmet > 0 && <span className="ml-1 text-zinc-500">({unmet} not met)</span>}
       </summary>
-      <ul className="mt-3 flex flex-col gap-2">
+      <ul className="mt-3 flex flex-col gap-2.5">
         {items.map((item, i) => (
           <li key={i} className="flex items-start gap-2 text-sm">
             <span
@@ -41,11 +40,19 @@ function RequirementsChecklist({ items }: { items: RequirementCheck[] }) {
               {STATUS_ICON[item.status]}
             </span>
             <span>
+              <span
+                className={`mr-1.5 rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${TYPE_STYLES[item.type]}`}
+              >
+                {item.type}
+              </span>
               <span className="font-medium text-zinc-800 dark:text-zinc-200">
                 {item.requirement}
               </span>
               {item.evidence && (
-                <span className="text-zinc-500"> — {item.evidence}</span>
+                <span className="text-zinc-500"> — &ldquo;{item.evidence}&rdquo;</span>
+              )}
+              {!item.evidence && item.reasoning && (
+                <span className="text-zinc-500"> — {item.reasoning}</span>
               )}
             </span>
           </li>
@@ -88,6 +95,21 @@ function DeltaBadge({ before, after }: { before: number; after: number }) {
     >
       {positive ? "+" : ""}
       {delta}
+    </span>
+  );
+}
+
+/** Blunt pass/fail pill — the headline verdict, not softened by score or writing quality. */
+function ScreenVerdictBadge({ wouldClear }: { wouldClear: boolean }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold ${
+        wouldClear
+          ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+          : "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
+      }`}
+    >
+      {wouldClear ? "Would clear a screen" : "Would not clear a screen"}
     </span>
   );
 }
@@ -156,9 +178,12 @@ export function ScoreCard({ original, tailored, requirementsChecklist }: ScoreCa
           <DeltaBadge before={original.matchScore} after={tailored.matchScore} />
         </div>
         <div className="min-w-[16rem] flex-1">
-          <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
-            Application strength
-          </h3>
+          <div className="flex flex-wrap items-center gap-2">
+            <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
+              Application strength
+            </h3>
+            <ScreenVerdictBadge wouldClear={tailored.wouldClearTechnicalScreen} />
+          </div>
           <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{tailored.summary}</p>
         </div>
       </div>
