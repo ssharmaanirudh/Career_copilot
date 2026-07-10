@@ -1,8 +1,58 @@
-import type { ScoreBreakdown, ScoreResult } from "@/lib/types";
+import type { RequirementCheck, ScoreBreakdown, ScoreResult } from "@/lib/types";
 
 interface ScoreCardProps {
   original: ScoreResult;
   tailored: ScoreResult;
+  requirementsChecklist: RequirementCheck[];
+}
+
+const STATUS_ICON: Record<RequirementCheck["status"], string> = {
+  yes: "✓",
+  partial: "~",
+  no: "✗",
+};
+
+const STATUS_STYLES: Record<RequirementCheck["status"], string> = {
+  yes: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300",
+  partial: "bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300",
+  no: "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300",
+};
+
+function RequirementsChecklist({ items }: { items: RequirementCheck[] }) {
+  if (items.length === 0) return null;
+  const unmet = items.filter((i) => i.status !== "yes").length;
+
+  return (
+    <details className="mt-5 border-t border-zinc-100 pt-4 dark:border-zinc-800">
+      <summary className="cursor-pointer text-sm font-medium text-zinc-700 dark:text-zinc-300">
+        Why this score? {items.length} requirement{items.length === 1 ? "" : "s"} checked
+        {unmet > 0 && (
+          <span className="ml-1 text-zinc-500">
+            ({unmet} not fully met)
+          </span>
+        )}
+      </summary>
+      <ul className="mt-3 flex flex-col gap-2">
+        {items.map((item, i) => (
+          <li key={i} className="flex items-start gap-2 text-sm">
+            <span
+              className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${STATUS_STYLES[item.status]}`}
+            >
+              {STATUS_ICON[item.status]}
+            </span>
+            <span>
+              <span className="font-medium text-zinc-800 dark:text-zinc-200">
+                {item.requirement}
+              </span>
+              {item.evidence && (
+                <span className="text-zinc-500"> — {item.evidence}</span>
+              )}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </details>
+  );
 }
 
 const BREAKDOWN_LABELS: Record<keyof ScoreBreakdown, string> = {
@@ -83,7 +133,7 @@ function DumbbellRow({
   );
 }
 
-export function ScoreCard({ original, tailored }: ScoreCardProps) {
+export function ScoreCard({ original, tailored, requirementsChecklist }: ScoreCardProps) {
   return (
     <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
       <div className="flex flex-wrap items-center gap-6">
@@ -133,6 +183,8 @@ export function ScoreCard({ original, tailored }: ScoreCardProps) {
           />
         ))}
       </div>
+
+      <RequirementsChecklist items={requirementsChecklist} />
     </div>
   );
 }

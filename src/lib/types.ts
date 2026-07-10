@@ -1,4 +1,5 @@
 export type SkillPriority = "high" | "medium" | "low";
+export type RequirementStatus = "yes" | "partial" | "no";
 
 export interface ScoreBreakdown {
   skillsMatch: number;
@@ -7,11 +8,21 @@ export interface ScoreBreakdown {
   overallPresentation: number;
 }
 
+export interface RequirementCheck {
+  requirement: string;
+  status: RequirementStatus;
+  evidence: string;
+}
+
 export interface SkillGap {
   skill: string;
   why: string;
   howToLearn: string;
   priority: SkillPriority;
+  /** Name of a specific free learning resource, e.g. "freeCodeCamp: Python for Everybody". Empty if none confident. */
+  resourceLabel: string;
+  /** Stable top-level/landing-page URL for that resource. Empty if none confident. */
+  resourceUrl: string;
 }
 
 export interface ResumeBullet {
@@ -55,6 +66,8 @@ export interface ScoreResult {
 }
 
 export interface AnalysisResult {
+  /** The JD's essential/must-have requirements, each checked against the candidate's real background. Grounds both scores. */
+  requirementsChecklist: RequirementCheck[];
   /** How the resume scored against the JD exactly as submitted, before any edits. */
   originalScore: ScoreResult;
   /** How the tailored resume scores against the same JD, using the same rubric. */
