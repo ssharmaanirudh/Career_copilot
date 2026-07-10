@@ -6,11 +6,23 @@ const PRIORITY_STYLES: Record<SkillGap["priority"], string> = {
   low: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
 };
 
+const EFFORT_LABELS: Record<SkillGap["effortEstimate"], string> = {
+  quick: "Quick (days)",
+  medium: "Medium (weeks)",
+  substantial: "Substantial (months+)",
+};
+
+const EFFORT_STYLES: Record<SkillGap["effortEstimate"], string> = {
+  quick: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300",
+  medium: "bg-amber-50 text-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
+  substantial: "bg-zinc-100 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400",
+};
+
 export function SkillGapList({ skillGaps }: { skillGaps: SkillGap[] }) {
   if (skillGaps.length === 0) {
     return (
       <p className="text-sm text-zinc-500">
-        No major skill gaps found — your background lines up well with this role.
+        No genuine gaps found — your background lines up well with this role.
       </p>
     );
   }
@@ -22,21 +34,34 @@ export function SkillGapList({ skillGaps }: { skillGaps: SkillGap[] }) {
           key={i}
           className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800"
         >
-          <div className="flex items-center justify-between gap-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <h4 className="font-semibold text-zinc-900 dark:text-zinc-100">
               {gap.skill}
             </h4>
-            <span
-              className={`shrink-0 rounded-full px-2 py-0.5 text-xs font-medium capitalize ${PRIORITY_STYLES[gap.priority]}`}
-            >
-              {gap.priority} priority
-            </span>
+            <div className="flex shrink-0 items-center gap-1.5">
+              <span
+                className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${PRIORITY_STYLES[gap.priority]}`}
+              >
+                {gap.priority} priority
+              </span>
+              <span
+                className={`rounded-full px-2 py-0.5 text-xs font-medium ${EFFORT_STYLES[gap.effortEstimate]}`}
+              >
+                {EFFORT_LABELS[gap.effortEstimate]}
+              </span>
+            </div>
           </div>
-          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{gap.why}</p>
-          <p className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
-            <span className="font-medium">How to close it: </span>
-            {gap.howToLearn}
-          </p>
+          <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">{gap.whatsMissing}</p>
+          {gap.howToBuildEvidence.length > 0 && (
+            <div className="mt-2 text-sm text-zinc-700 dark:text-zinc-300">
+              <span className="font-medium">How to build real evidence:</span>
+              <ul className="mt-1 list-disc space-y-1 pl-5">
+                {gap.howToBuildEvidence.map((item, j) => (
+                  <li key={j}>{item}</li>
+                ))}
+              </ul>
+            </div>
+          )}
           {gap.resourceUrl && (
             <a
               href={gap.resourceUrl}

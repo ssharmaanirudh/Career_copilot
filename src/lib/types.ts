@@ -1,6 +1,7 @@
 export type SkillPriority = "high" | "medium" | "low";
 export type RequirementType = "essential" | "desirable";
 export type RequirementStatus = "met" | "not_met";
+export type EffortEstimate = "quick" | "medium" | "substantial";
 
 export interface ScoreBreakdown {
   skillsMatch: number;
@@ -18,10 +19,22 @@ export interface RequirementCheck {
   reasoning: string;
 }
 
+/** Category A: real evidence exists in the resume but is buried/vague — a wording fix, not a skills gap. */
+export interface WordingFix {
+  requirement: string;
+  /** The specific resume line being revised, using only facts already present. */
+  currentLine: string;
+  suggestedLine: string;
+  whyItHelps: string;
+}
+
+/** Category B: genuinely absent from the resume — no rewording fixes this, only real evidence does. */
 export interface SkillGap {
   skill: string;
-  why: string;
-  howToLearn: string;
+  whatsMissing: string;
+  /** 1-3 concrete, specific ways to build real evidence — never generic advice. */
+  howToBuildEvidence: string[];
+  effortEstimate: EffortEstimate;
   priority: SkillPriority;
   /** Name of a specific free learning resource, e.g. "freeCodeCamp: Python for Everybody". Empty if none confident. */
   resourceLabel: string;
@@ -86,7 +99,14 @@ export interface AnalysisResult {
   tailoredResume: TailoredResume;
   coverLetter: string;
   keyChanges: string[];
+  /** Category A: not_met requirements where evidence exists but was poorly surfaced — already applied in tailoredResume. */
+  wordingFixes: WordingFix[];
+  /** Category B: not_met requirements with no real evidence — genuine gaps to close. */
   skillGaps: SkillGap[];
+  /** Ceiling score achievable through wording/emphasis fixes alone, with no new real evidence. */
+  maxRealisticScoreAfterWordingFixesOnly: number;
+  /** Blunt one/two-sentence takeaway on what wording alone can and cannot fix for this specific resume/JD pair. */
+  honestSummary: string;
 }
 
 export interface AnalyzeErrorResponse {

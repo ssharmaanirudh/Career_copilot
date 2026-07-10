@@ -5,6 +5,7 @@ import type {
   ResumeBullet,
   ResumeExperienceEntry,
   ScoreResult,
+  WordingFix,
 } from "./types";
 
 const MODEL = "gemini-2.5-flash";
@@ -78,9 +79,19 @@ STEP 5 — Rewrite the resume so it is precisely tailored to the job description
    - experience: one entry per job (title, company, location, dates exactly as in the original resume), each with 3-5 bullets. Bullets should have a short bold "label" categorizing the achievement followed by "text" with the detail, quantified where possible.
    - education: one entry per degree/certification (program, institution, date).
    Mirror the JD's key terminology and required skills wherever truthfully supported by the candidate's actual background, and reorder/re-emphasize content around what the role values most. NEVER invent employers, titles, dates, degrees, skills, or accomplishments the candidate did not provide — only rephrase, reorder, re-emphasize, and tighten existing content. Rewriting cannot turn a "not_met" requirement into "met", and must not introduce empty JD-mirrored phrases that would trip your own step 3 anti-gaming check.
-6. Write a tailored, specific cover letter (3-4 short paragraphs) that connects the candidate's real experience to this specific role and company/industry context from the JD. Avoid generic filler language. Do not claim skills the checklist marked not_met.
-7. List the concrete changes you made to the resume and why (short bullet points), so the candidate understands what changed.
-8. Turn every "not_met" item from your requirementsChecklist into a skill gap entry, ranked by priority, each with a one-line reason and a concrete, actionable way to close it. For each, if you are confident of a specific well-known FREE learning resource, include its name and EXACTLY ONE STABLE TOP-LEVEL URL (never two URLs joined together, never a comma-separated list) — e.g. https://www.freecodecamp.org/learn, https://www.kaggle.com/learn, https://www.coursera.org/ (audit-free courses), https://developers.google.com/machine-learning, https://docs.aws.amazon.com/, https://ocw.mit.edu/, https://www.khanacademy.org/ — never a specific course-slug URL you are not certain is stable and correct. Leave resourceLabel/resourceUrl as empty strings if you are not confident of a specific real resource; do not guess or invent a URL.
+STEP 6 — Write a tailored, specific cover letter (3-4 short paragraphs) that connects the candidate's real experience to this specific role and company/industry context from the JD. Avoid generic filler language. Do not claim skills the checklist marked not_met.
+
+STEP 7 — List the concrete changes you made to the resume and why (short bullet points), so the candidate understands what changed.
+
+STEP 8 — Classify every gap. You are now acting as a career coach turning your own already-computed requirementsChecklist into an honest action plan. Do NOT re-score or re-derive met/not_met status — reuse exactly what you already decided in step 2. For every requirement marked "not_met", decide which category it falls into:
+- CATEGORY A ("wording fix", goes in wordingFixes): the ORIGINAL resume text contains real evidence of this skill/experience, but it's buried, vague, unquantified, or not connected explicitly to the requirement's terminology. For each: quote the specific original-resume line as "currentLine", write a "suggestedLine" that surfaces the existing evidence more clearly using ONLY facts already present in the original resume (no invented metrics or claims — this is exactly what you should have already applied when writing tailoredResume in step 5), and explain in "whyItHelps" why this maps better to the JD's language.
+- CATEGORY B ("genuine gap", goes in skillGaps): the resume contains no evidence of this at all, not buried, not implied, actually not there. Do NOT suggest rewording for these — a rewording that implies a skill the person doesn't have is a misrepresentation, not a fix, and you must never produce one even if it would make the resume read "stronger". Instead: "whatsMissing" is a one-line explanation of the gap; "howToBuildEvidence" is 1-3 concrete, specific, actionable ways to build REAL evidence (a specific project type, certification, or on-the-job assignment — never generic advice like "learn Python"); "effortEstimate" is "quick" (days), "medium" (weeks), or "substantial" (months+); "priority" reflects how much this specific gap matters for this specific role. Include resourceLabel/resourceUrl exactly as in the rules below.
+Be ruthless about the split: if you're tempted to word-fix something that's actually Category B because it would "sound" like a fix, that is exactly the failure mode to avoid.
+For each resourceLabel/resourceUrl in skillGaps, if you are confident of a specific well-known FREE learning resource, include its name and EXACTLY ONE STABLE TOP-LEVEL URL (never two URLs joined together, never a comma-separated list) — e.g. https://www.freecodecamp.org/learn, https://www.kaggle.com/learn, https://www.coursera.org/ (audit-free courses), https://developers.google.com/machine-learning, https://docs.aws.amazon.com/, https://ocw.mit.edu/, https://www.khanacademy.org/ — never a specific course-slug URL you are not certain is stable and correct. Leave resourceLabel/resourceUrl as empty strings if you are not confident of a specific real resource; do not guess or invent a URL.
+
+STEP 9 — maxRealisticScoreAfterWordingFixesOnly: using the exact same step 4 scoring algorithm, compute the ceiling score achievable if EVERY Category A wording fix were applied perfectly and EVERY Category B gap remained unaddressed. This should be very close to tailoredScore.matchScore, since tailoredResume already applies those same wording fixes without fabricating anything — treat it as an independent sanity check on that score.
+
+STEP 10 — honestSummary: one or two blunt sentences on what wording alone can and cannot achieve for this specific resume against this specific JD. If skillGaps includes anything that is the JD's core/primary technical requirement, you must state plainly that no amount of resume editing makes this application competitive until that gap is addressed, and that applying now risks an interview the candidate cannot sustain. Do not soften this for effort, polish, or writing quality.
 
 Respond only with the requested JSON, matching the schema exactly.`;
 
@@ -241,17 +252,40 @@ const RESPONSE_SCHEMA: Schema = {
       items: { type: Type.STRING },
       description: "Short bullet points describing what changed in the resume and why.",
     },
+    wordingFixes: {
+      type: Type.ARRAY,
+      description: "Category A: not_met requirements where real evidence exists but was poorly surfaced.",
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          requirement: { type: Type.STRING },
+          currentLine: {
+            type: Type.STRING,
+            description: "The specific original-resume line being revised.",
+          },
+          suggestedLine: {
+            type: Type.STRING,
+            description: "Rewritten using only facts already in the original resume — no invented metrics or claims.",
+          },
+          whyItHelps: { type: Type.STRING },
+        },
+        required: ["requirement", "currentLine", "suggestedLine", "whyItHelps"],
+      },
+    },
     skillGaps: {
       type: Type.ARRAY,
+      description: "Category B: not_met requirements with no real evidence in the resume at all.",
       items: {
         type: Type.OBJECT,
         properties: {
           skill: { type: Type.STRING },
-          why: { type: Type.STRING, description: "Why this matters for the role." },
-          howToLearn: {
-            type: Type.STRING,
-            description: "A concrete, actionable way to close this gap.",
+          whatsMissing: { type: Type.STRING, description: "One-line explanation of the gap." },
+          howToBuildEvidence: {
+            type: Type.ARRAY,
+            items: { type: Type.STRING },
+            description: "1-3 concrete, specific ways to build real evidence — never generic advice.",
           },
+          effortEstimate: { type: Type.STRING, enum: ["quick", "medium", "substantial"] },
           priority: { type: Type.STRING, enum: ["high", "medium", "low"] },
           resourceLabel: {
             type: Type.STRING,
@@ -262,8 +296,24 @@ const RESPONSE_SCHEMA: Schema = {
             description: "Stable top-level URL for that resource. Empty if unsure — never guess.",
           },
         },
-        required: ["skill", "why", "howToLearn", "priority", "resourceLabel", "resourceUrl"],
+        required: [
+          "skill",
+          "whatsMissing",
+          "howToBuildEvidence",
+          "effortEstimate",
+          "priority",
+          "resourceLabel",
+          "resourceUrl",
+        ],
       },
+    },
+    maxRealisticScoreAfterWordingFixesOnly: {
+      type: Type.INTEGER,
+      description: "Ceiling score if every Category A fix were applied and every Category B gap remained unaddressed.",
+    },
+    honestSummary: {
+      type: Type.STRING,
+      description: "One or two blunt sentences on what wording alone can and cannot fix here.",
     },
   },
   required: [
@@ -276,7 +326,10 @@ const RESPONSE_SCHEMA: Schema = {
     "tailoredResume",
     "coverLetter",
     "keyChanges",
+    "wordingFixes",
     "skillGaps",
+    "maxRealisticScoreAfterWordingFixesOnly",
+    "honestSummary",
   ],
 };
 
@@ -347,6 +400,16 @@ function normalizeRequirementCheck(raw: unknown): RequirementCheck {
   };
 }
 
+function normalizeWordingFix(raw: unknown): WordingFix {
+  const obj = typeof raw === "object" && raw !== null ? (raw as Record<string, unknown>) : {};
+  return {
+    requirement: str(obj.requirement),
+    currentLine: str(obj.currentLine),
+    suggestedLine: str(obj.suggestedLine),
+    whyItHelps: str(obj.whyItHelps),
+  };
+}
+
 /** Only trust a single, well-formed http(s) URL the model returned; drop anything else rather than risk a broken/invalid link. */
 function normalizeResourceUrl(v: unknown): string {
   const s = str(v).trim();
@@ -361,6 +424,7 @@ function normalizeResourceUrl(v: unknown): string {
 
 function normalizeResult(raw: Record<string, unknown>): AnalysisResult {
   const skillGaps = Array.isArray(raw.skillGaps) ? raw.skillGaps : [];
+  const wordingFixes = Array.isArray(raw.wordingFixes) ? raw.wordingFixes : [];
   const keyChanges = Array.isArray(raw.keyChanges) ? raw.keyChanges : [];
   const requirementsChecklist = Array.isArray(raw.requirementsChecklist)
     ? raw.requirementsChecklist
@@ -399,6 +463,7 @@ function normalizeResult(raw: Record<string, unknown>): AnalysisResult {
     },
     coverLetter: str(raw.coverLetter),
     keyChanges: keyChanges.filter((c): c is string => typeof c === "string"),
+    wordingFixes: wordingFixes.map(normalizeWordingFix),
     skillGaps: skillGaps
       .filter(
         (g): g is Record<string, unknown> =>
@@ -406,8 +471,16 @@ function normalizeResult(raw: Record<string, unknown>): AnalysisResult {
       )
       .map((g) => ({
         skill: str(g.skill),
-        why: str(g.why),
-        howToLearn: str(g.howToLearn),
+        whatsMissing: str(g.whatsMissing),
+        howToBuildEvidence: Array.isArray(g.howToBuildEvidence)
+          ? g.howToBuildEvidence.filter((s): s is string => typeof s === "string")
+          : [],
+        effortEstimate:
+          g.effortEstimate === "quick" ||
+          g.effortEstimate === "medium" ||
+          g.effortEstimate === "substantial"
+            ? g.effortEstimate
+            : "medium",
         priority:
           g.priority === "high" || g.priority === "medium" || g.priority === "low"
             ? g.priority
@@ -415,6 +488,8 @@ function normalizeResult(raw: Record<string, unknown>): AnalysisResult {
         resourceLabel: str(g.resourceLabel),
         resourceUrl: normalizeResourceUrl(g.resourceUrl),
       })),
+    maxRealisticScoreAfterWordingFixesOnly: clampScore(raw.maxRealisticScoreAfterWordingFixesOnly),
+    honestSummary: str(raw.honestSummary),
   };
 }
 

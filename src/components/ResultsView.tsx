@@ -6,6 +6,8 @@ import { ScoreCard } from "./ScoreCard";
 import { DocumentPanel } from "./DocumentPanel";
 import { TailoredResumeView } from "./TailoredResumeView";
 import { SkillGapList } from "./SkillGapList";
+import { WordingFixList } from "./WordingFixList";
+import { HonestTakeCard } from "./HonestTakeCard";
 
 const TABS = [
   { id: "resume", label: "Tailored Resume" },
@@ -37,6 +39,11 @@ export function ResultsView({ result }: { result: AnalysisResult }) {
         requirementsChecklist={result.requirementsChecklist}
       />
 
+      <HonestTakeCard
+        ceiling={result.maxRealisticScoreAfterWordingFixesOnly}
+        summary={result.honestSummary}
+      />
+
       <div className="rounded-xl border border-zinc-200 bg-white dark:border-zinc-800 dark:bg-zinc-900">
         <div className="flex overflow-x-auto border-b border-zinc-200 dark:border-zinc-800">
           {TABS.map((tab) => (
@@ -59,14 +66,17 @@ export function ResultsView({ result }: { result: AnalysisResult }) {
           {activeTab === "resume" && <TailoredResumeView resume={result.tailoredResume} />}
           {activeTab === "cover-letter" && <DocumentPanel text={result.coverLetter} />}
           {activeTab === "changes" && (
-            <ul className="list-disc space-y-2 pl-5 text-sm text-zinc-700 dark:text-zinc-300">
-              {result.keyChanges.length === 0 && (
-                <p className="text-zinc-500">No changes were recorded.</p>
-              )}
-              {result.keyChanges.map((change, i) => (
-                <li key={i}>{change}</li>
-              ))}
-            </ul>
+            <div>
+              <ul className="list-disc space-y-2 pl-5 text-sm text-zinc-700 dark:text-zinc-300">
+                {result.keyChanges.length === 0 && (
+                  <p className="text-zinc-500">No changes were recorded.</p>
+                )}
+                {result.keyChanges.map((change, i) => (
+                  <li key={i}>{change}</li>
+                ))}
+              </ul>
+              <WordingFixList fixes={result.wordingFixes} />
+            </div>
           )}
           {activeTab === "skills" && <SkillGapList skillGaps={result.skillGaps} />}
         </div>
