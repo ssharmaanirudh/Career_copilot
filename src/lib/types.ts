@@ -107,6 +107,8 @@ export interface AnalysisResult {
   maxRealisticScoreAfterWordingFixesOnly: number;
   /** Blunt one/two-sentence takeaway on what wording alone can and cannot fix for this specific resume/JD pair. */
   honestSummary: string;
+  /** Direct questions to ask the candidate when essential requirements have no evidence at all, so they can supply real background the resume didn't capture. Empty if the resume already covers the essentials reasonably well. */
+  clarifyingQuestions: string[];
 }
 
 export interface AnalyzeErrorResponse {

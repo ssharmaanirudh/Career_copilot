@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { ResumeUploader } from "@/components/ResumeUploader";
 import { ResultsView } from "@/components/ResultsView";
+import { RefineBox } from "@/components/RefineBox";
 import type { AnalysisResult } from "@/lib/types";
 
 type Status = "idle" | "loading" | "error" | "done";
@@ -13,33 +14,61 @@ export default function Home() {
   const [status, setStatus] = useState<Status>("idle");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AnalysisResult | null>(null);
+  const [notes, setNotes] = useState<string[]>([]);
+  const [refining, setRefining] = useState(false);
+  const [refineError, setRefineError] = useState<string | null>(null);
 
   const canSubmit = file !== null && jobDescription.trim().length >= 30;
 
+  async function runAnalysis(notesToSend: string[]): Promise<AnalysisResult> {
+    if (!file) throw new Error("Missing resume file.");
+    const formData = new FormData();
+    formData.append("resume", file);
+    formData.append("jobDescription", jobDescription);
+    for (const note of notesToSend) {
+      formData.append("notes", note);
+    }
+
+    const res = await fetch("/api/analyze", { method: "POST", body: formData });
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data.error || "Something went wrong. Please try again.");
+    }
+    return data as AnalysisResult;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!canSubmit || !file) return;
+    if (!canSubmit) return;
 
     setStatus("loading");
     setError(null);
+    setNotes([]);
 
     try {
-      const formData = new FormData();
-      formData.append("resume", file);
-      formData.append("jobDescription", jobDescription);
-
-      const res = await fetch("/api/analyze", { method: "POST", body: formData });
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong. Please try again.");
-      }
-
-      setResult(data as AnalysisResult);
+      const data = await runAnalysis([]);
+      setResult(data);
       setStatus("done");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
       setStatus("error");
+    }
+  }
+
+  async function handleRefine(note: string) {
+    setRefining(true);
+    setRefineError(null);
+    const nextNotes = [...notes, note];
+
+    try {
+      const data = await runAnalysis(nextNotes);
+      setResult(data);
+      setNotes(nextNotes);
+    } catch (err) {
+      setRefineError(err instanceof Error ? err.message : "Something went wrong.");
+    } finally {
+      setRefining(false);
     }
   }
 
@@ -107,8 +136,15 @@ export default function Home() {
         )}
 
         {status === "done" && result && (
-          <div className="mt-10">
+          <div className="mt-10 flex flex-col gap-6">
             <ResultsView result={result} />
+            <RefineBox
+              questions={result.clarifyingQuestions}
+              notes={notes}
+              busy={refining}
+              error={refineError}
+              onSubmit={handleRefine}
+            />
           </div>
         )}
       </main>

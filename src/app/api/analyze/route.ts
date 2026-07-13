@@ -6,6 +6,8 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const MAX_JOB_DESCRIPTION_LENGTH = 20000;
+const MAX_NOTE_LENGTH = 4000;
+const MAX_NOTES = 20;
 
 export async function POST(request: Request) {
   let formData: FormData;
@@ -37,6 +39,14 @@ export async function POST(request: Request) {
     );
   }
 
+  const candidateNotes = formData
+    .getAll("notes")
+    .filter((n): n is string => typeof n === "string")
+    .map((n) => n.trim())
+    .filter((n) => n.length > 0)
+    .slice(0, MAX_NOTES)
+    .map((n) => n.slice(0, MAX_NOTE_LENGTH));
+
   let resumeText: string;
   try {
     resumeText = await extractResumeText(resumeFile);
@@ -48,7 +58,11 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await analyzeResumeAgainstJob(resumeText, jobDescription.trim());
+    const result = await analyzeResumeAgainstJob(
+      resumeText,
+      jobDescription.trim(),
+      candidateNotes,
+    );
     return NextResponse.json(result);
   } catch (err) {
     if (err instanceof InvalidInputError) {
