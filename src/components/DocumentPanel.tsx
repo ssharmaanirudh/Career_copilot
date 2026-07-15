@@ -58,7 +58,7 @@ export function DocumentPanel({ text }: DocumentPanelProps) {
           type="button"
           onClick={() => handleDownload("pdf")}
           disabled={busy !== null}
-          className="brand-gradient-bg rounded-lg px-3 py-1.5 text-sm font-medium text-white shadow-sm shadow-indigo-500/25 transition-shadow hover:shadow-md hover:shadow-indigo-500/30 disabled:opacity-60 disabled:shadow-none"
+          className="brand-gradient-bg rounded-lg px-3 py-1.5 text-sm font-medium text-white shadow-sm shadow-emerald-500/25 transition-shadow hover:shadow-md hover:shadow-emerald-500/30 disabled:opacity-60 disabled:shadow-none"
         >
           {busy === "pdf" ? "Preparing…" : "Download .pdf"}
         </button>

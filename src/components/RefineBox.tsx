@@ -47,7 +47,7 @@ export function RefineBox({ questions, notes, busy, error, onSubmit }: RefineBox
       </div>
 
       {questions.length > 0 && (
-        <div className="mt-3 rounded-xl bg-indigo-50 p-3 text-sm text-indigo-900 dark:bg-indigo-950/50 dark:text-indigo-200">
+        <div className="mt-3 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200">
           <p className="font-medium">A few quick questions that could strengthen this:</p>
           <ul className="mt-1 list-disc space-y-1 pl-5">
             {questions.map((q, i) => (
@@ -79,12 +79,12 @@ export function RefineBox({ questions, notes, busy, error, onSubmit }: RefineBox
           onChange={(e) => setInput(e.target.value)}
           placeholder="e.g. I actually used Python for two years at my last job automating reports…"
           rows={2}
-          className="flex-1 resize-y rounded-xl border border-zinc-300 p-2.5 text-sm transition-shadow focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-500/15 dark:border-zinc-700 dark:bg-zinc-950"
+          className="flex-1 resize-y rounded-xl border border-zinc-300 p-2.5 text-sm transition-shadow focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/15 dark:border-zinc-700 dark:bg-zinc-950"
         />
         <button
           type="submit"
           disabled={busy || !input.trim()}
-          className="brand-gradient-bg shrink-0 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-indigo-500/25 transition-shadow hover:shadow-md hover:shadow-indigo-500/30 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+          className="brand-gradient-bg shrink-0 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-500/25 transition-shadow hover:shadow-md hover:shadow-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
         >
           {busy ? "Updating…" : "Update my resume"}
         </button>

@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Career Co-Pilot",
+  title: "GapLens",
   description:
-    "Tailor your resume and cover letter to any job description, score your application, and see what skills to learn next.",
+    "See exactly what's missing between your resume and the job description — an honest score, a tailored resume and cover letter, and a plan to close real gaps.",
 };
 
 export default function RootLayout({

@@ -1,15 +1,21 @@
-# Career Co-Pilot
+# GapLens
 
+See exactly what's missing between your resume and the job description.
 Upload your resume, paste a job description, and get:
 
+- An **honest, capped application score** (before and after tailoring),
+  grounded in a line-by-line requirements checklist rather than a vague
+  impression — with a blunt verdict on whether it would actually clear a
+  screen
 - A **tailored, ATS-friendly resume** rewritten to match the role, rendered
   with proper resume formatting (bold section headers, bulleted
   achievements, an education table) and exportable as `.docx` or `.pdf`
 - A **tailored cover letter** for that specific job, also exportable as
   `.docx` or `.pdf`
-- An **application score** (0-100) with a breakdown of skills match, experience
-  match, keyword alignment, and presentation
-- A **skill-gap plan**: the specific skills to learn next to stay competitive
+- A **gap plan** that separates wording fixes (real evidence that was just
+  buried) from genuine gaps (things to actually go learn, with concrete
+  free resources), plus clarifying questions when the resume and the JD
+  barely overlap at all
 
 Built with Next.js (App Router) and the Google Gemini API (Gemini 2.5
 Flash, which has a free tier).

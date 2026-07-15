@@ -67,7 +67,7 @@ export function SkillGapList({ skillGaps }: { skillGaps: SkillGap[] }) {
               href={gap.resourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+              className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-emerald-600 hover:underline dark:text-emerald-400"
             >
               {gap.resourceLabel || gap.resourceUrl}
               <svg

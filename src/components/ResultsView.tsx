@@ -93,7 +93,7 @@ export function ResultsView({ result }: { result: AnalysisResult }) {
               onClick={() => setActiveTab(tab.id)}
               className={`flex shrink-0 items-center gap-1.5 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
                 activeTab === tab.id
-                  ? "border-indigo-600 text-indigo-600 dark:text-indigo-400"
+                  ? "border-emerald-600 text-emerald-600 dark:text-emerald-400"
                   : "border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
               }`}
             >

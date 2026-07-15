@@ -3,8 +3,9 @@
 :root {
   --background: #f7f7fb;
   --foreground: #16161d;
-  --brand-from: #4f46e5;
-  --brand-to: #7c3aed;
+  --brand-from: #059669;
+  --brand-to: #22c55e;
+  --brand-solid: #16a34a;
 }
 
 @theme inline {
@@ -18,8 +19,9 @@
   :root {
     --background: #08080c;
     --foreground: #ededed;
-    --brand-from: #818cf8;
-    --brand-to: #a78bfa;
+    --brand-from: #34d399;
+    --brand-to: #4ade80;
+    --brand-solid: #4ade80;
   }
 }
 
@@ -34,6 +36,10 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+.brand-solid-text {
+  color: var(--brand-solid);
 }
 
 .brand-gradient-bg {

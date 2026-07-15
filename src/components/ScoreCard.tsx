@@ -27,7 +27,7 @@ function RequirementsChecklist({ items }: { items: RequirementCheck[] }) {
 
   return (
     <details className="mt-5 border-t border-zinc-100 pt-4 dark:border-zinc-800">
-      <summary className="cursor-pointer text-sm font-medium text-zinc-700 transition-colors hover:text-indigo-600 dark:text-zinc-300 dark:hover:text-indigo-400">
+      <summary className="cursor-pointer text-sm font-medium text-zinc-700 transition-colors hover:text-emerald-600 dark:text-zinc-300 dark:hover:text-emerald-400">
         Why this score? {items.length} requirement{items.length === 1 ? "" : "s"} checked
         {unmet > 0 && <span className="ml-1 text-zinc-500">({unmet} not met)</span>}
       </summary>
@@ -182,15 +182,15 @@ function DumbbellRow({
       <div className="relative h-3">
         <div className="absolute inset-x-0 top-1/2 h-1 -translate-y-1/2 rounded-full bg-zinc-100 dark:bg-zinc-800" />
         <div
-          className="absolute top-1/2 h-0.5 -translate-y-1/2 rounded-full bg-indigo-600/30 dark:bg-indigo-400/30"
+          className="absolute top-1/2 h-0.5 -translate-y-1/2 rounded-full bg-blue-600/30 dark:bg-blue-400/30"
           style={{ left: `${lo}%`, width: `${hi - lo}%` }}
         />
         <div
-          className="absolute top-1/2 h-2.5 w-2.5 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 border-white bg-indigo-600/30 dark:border-zinc-900 dark:bg-indigo-400/30"
+          className="absolute top-1/2 h-2.5 w-2.5 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 border-white bg-blue-600/30 dark:border-zinc-900 dark:bg-blue-400/30"
           style={{ left: `${before}%` }}
         />
         <div
-          className="absolute top-1/2 h-3 w-3 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 border-white bg-indigo-600 dark:border-zinc-900 dark:bg-indigo-400"
+          className="absolute top-1/2 h-3 w-3 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 border-white bg-blue-600 dark:border-zinc-900 dark:bg-blue-400"
           style={{ left: `${after}%` }}
         />
       </div>
@@ -236,11 +236,11 @@ export function ScoreCard({ original, tailored, requirementsChecklist }: ScoreCa
 
       <div className="mt-6 flex items-center gap-4 text-xs text-zinc-500">
         <span className="flex items-center gap-1.5">
-          <span className="h-2.5 w-2.5 rounded-full bg-indigo-600/30 dark:bg-indigo-400/30" />
+          <span className="h-2.5 w-2.5 rounded-full bg-blue-600/30 dark:bg-blue-400/30" />
           Before tailoring
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="h-3 w-3 rounded-full bg-indigo-600 dark:bg-indigo-400" />
+          <span className="h-3 w-3 rounded-full bg-blue-600 dark:bg-blue-400" />
           After tailoring
         </span>
       </div>

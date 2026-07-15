@@ -84,34 +84,27 @@ export default function Home() {
     <div className="brand-mesh-bg min-h-full font-sans">
       <header className="sticky top-0 z-10 border-b border-zinc-200/70 bg-white/80 backdrop-blur-md dark:border-zinc-800/70 dark:bg-black/60">
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-6 py-4">
-          <div className="brand-gradient-bg flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white shadow-sm shadow-indigo-500/30">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth={2}
-              className="h-5 w-5"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9.813 15.904 9 18.75l-.813-2.846a4.5 4.5 0 0 0-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 0 0 3.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 0 0 3.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 0 0-3.09 3.09Z"
-              />
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M18.259 8.715 18 9.75l-.259-1.035a3.375 3.375 0 0 0-2.456-2.456L14.25 6l1.035-.259a3.375 3.375 0 0 0 2.456-2.456L18 2.25l.259 1.035a3.375 3.375 0 0 0 2.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 0 0-2.456 2.456Z"
-              />
-            </svg>
-          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            className="brand-solid-text h-8 w-8 shrink-0"
+            aria-hidden="true"
+          >
+            <circle cx="10" cy="10" r="7" />
+            <path d="M20.5 20.5 15.8 15.8" />
+            <path d="M6.5 10.3 9 12.8 13.5 7.3" />
+          </svg>
           <div>
             <h1 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
-              Career <span className="brand-gradient-text">Co-Pilot</span>
+              Gap<span className="brand-solid-text">Lens</span>
             </h1>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
-              Tailored resumes, cover letters, and honest scoring — before you hit send.
+              See exactly what&apos;s missing — before you hit send.
             </p>
           </div>
         </div>
@@ -143,7 +136,7 @@ export default function Home() {
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               placeholder="Paste the full job description here…"
-              className="h-48 flex-1 resize-y rounded-xl border border-zinc-300 p-3 text-sm shadow-inner shadow-zinc-100 transition-shadow focus:border-indigo-500 focus:shadow-none focus:outline-none focus:ring-4 focus:ring-indigo-500/15 dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-none lg:h-auto"
+              className="h-48 flex-1 resize-y rounded-xl border border-zinc-300 p-3 text-sm shadow-inner shadow-zinc-100 transition-shadow focus:border-emerald-500 focus:shadow-none focus:outline-none focus:ring-4 focus:ring-emerald-500/15 dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-none lg:h-auto"
             />
           </div>
 
@@ -151,7 +144,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={!canSubmit || status === "loading"}
-              className="brand-gradient-bg group flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 font-semibold text-white shadow-md shadow-indigo-500/25 transition-all hover:shadow-lg hover:shadow-indigo-500/35 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none sm:w-auto"
+              className="brand-gradient-bg group flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 font-semibold text-white shadow-md shadow-emerald-500/25 transition-all hover:shadow-lg hover:shadow-emerald-500/35 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none sm:w-auto"
             >
               {status === "loading" ? (
                 <>
@@ -183,7 +176,7 @@ export default function Home() {
 
         {status === "loading" && (
           <div className="mt-10 flex items-center justify-center gap-3 text-zinc-500">
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-300 border-t-indigo-600" />
+            <span className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-300 border-t-emerald-600" />
             Reading your resume and matching it against the role…
           </div>
         )}
