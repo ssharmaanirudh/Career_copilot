@@ -14,7 +14,7 @@ export function WordingFixList({ fixes }: { fixes: WordingFix[] }) {
       </p>
       <ul className="mt-3 flex flex-col gap-3">
         {fixes.map((fix, i) => (
-          <li key={i} className="rounded-lg border border-zinc-200 p-3 dark:border-zinc-800">
+          <li key={i} className="rounded-xl border border-zinc-200 p-3 transition-shadow hover:shadow-sm dark:border-zinc-800">
             <p className="text-xs font-medium uppercase tracking-wide text-zinc-500">
               {fix.requirement}
             </p>

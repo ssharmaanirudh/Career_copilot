@@ -32,7 +32,7 @@ export function SkillGapList({ skillGaps }: { skillGaps: SkillGap[] }) {
       {skillGaps.map((gap, i) => (
         <li
           key={i}
-          className="rounded-lg border border-zinc-200 p-4 dark:border-zinc-800"
+          className="rounded-xl border border-zinc-200 p-4 transition-shadow hover:shadow-sm dark:border-zinc-800"
         >
           <div className="flex flex-wrap items-center justify-between gap-2">
             <h4 className="font-semibold text-zinc-900 dark:text-zinc-100">

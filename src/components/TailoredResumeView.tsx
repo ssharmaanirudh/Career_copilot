@@ -65,7 +65,7 @@ export function TailoredResumeView({ resume }: { resume: TailoredResume }) {
         <button
           type="button"
           onClick={handleCopy}
-          className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
         >
           {copied ? "Copied!" : "Copy"}
         </button>
@@ -73,7 +73,7 @@ export function TailoredResumeView({ resume }: { resume: TailoredResume }) {
           type="button"
           onClick={() => handleDownload("docx")}
           disabled={busy !== null}
-          className="rounded-md border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-60 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-60 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
         >
           {busy === "docx" ? "Preparing…" : "Download .docx"}
         </button>
@@ -81,13 +81,13 @@ export function TailoredResumeView({ resume }: { resume: TailoredResume }) {
           type="button"
           onClick={() => handleDownload("pdf")}
           disabled={busy !== null}
-          className="rounded-md bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-indigo-500 disabled:opacity-60"
+          className="brand-gradient-bg rounded-lg px-3 py-1.5 text-sm font-medium text-white shadow-sm shadow-indigo-500/25 transition-shadow hover:shadow-md hover:shadow-indigo-500/30 disabled:opacity-60 disabled:shadow-none"
         >
           {busy === "pdf" ? "Preparing…" : "Download .pdf"}
         </button>
       </div>
 
-      <div className="max-h-[36rem] overflow-y-auto rounded-lg border border-zinc-200 bg-white p-6 text-[13px] leading-relaxed text-zinc-900 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100">
+      <div className="max-h-[36rem] overflow-y-auto rounded-xl border border-zinc-200 bg-white p-6 text-[13px] leading-relaxed text-zinc-900 shadow-inner shadow-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:shadow-none">
         <div className="text-center">
           <h2 className="text-lg font-bold tracking-wide">{resume.name}</h2>
           {resume.title && <p className="text-sm">{resume.title}</p>}

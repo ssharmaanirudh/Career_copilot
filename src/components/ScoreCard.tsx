@@ -27,7 +27,7 @@ function RequirementsChecklist({ items }: { items: RequirementCheck[] }) {
 
   return (
     <details className="mt-5 border-t border-zinc-100 pt-4 dark:border-zinc-800">
-      <summary className="cursor-pointer text-sm font-medium text-zinc-700 dark:text-zinc-300">
+      <summary className="cursor-pointer text-sm font-medium text-zinc-700 transition-colors hover:text-indigo-600 dark:text-zinc-300 dark:hover:text-indigo-400">
         Why this score? {items.length} requirement{items.length === 1 ? "" : "s"} checked
         {unmet > 0 && <span className="ml-1 text-zinc-500">({unmet} not met)</span>}
       </summary>
@@ -73,6 +73,49 @@ function scoreColor(score: number): string {
   if (score >= 80) return "text-emerald-600 dark:text-emerald-400";
   if (score >= 60) return "text-amber-600 dark:text-amber-400";
   return "text-rose-600 dark:text-rose-400";
+}
+
+function scoreRingColor(score: number): string {
+  if (score >= 80) return "stroke-emerald-500";
+  if (score >= 60) return "stroke-amber-500";
+  return "stroke-rose-500";
+}
+
+/** Meter: same-ramp track, fill carries severity — the score's headline visual. */
+function ScoreRing({ score }: { score: number }) {
+  const radius = 42;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - score / 100);
+
+  return (
+    <div className="relative flex h-28 w-28 shrink-0 items-center justify-center">
+      <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
+        <circle
+          cx="50"
+          cy="50"
+          r={radius}
+          fill="none"
+          strokeWidth="10"
+          className="stroke-zinc-100 dark:stroke-zinc-800"
+        />
+        <circle
+          cx="50"
+          cy="50"
+          r={radius}
+          fill="none"
+          strokeWidth="10"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className={`transition-[stroke-dashoffset] duration-700 ease-out ${scoreRingColor(score)}`}
+        />
+      </svg>
+      <div className="absolute flex flex-col items-center">
+        <span className={`text-3xl font-bold tabular-nums ${scoreColor(score)}`}>{score}</span>
+        <span className="text-[10px] uppercase tracking-wide text-zinc-400">/ 100</span>
+      </div>
+    </div>
+  );
 }
 
 function DeltaBadge({ before, after }: { before: number; after: number }) {
@@ -157,24 +200,27 @@ function DumbbellRow({
 
 export function ScoreCard({ original, tailored, requirementsChecklist }: ScoreCardProps) {
   return (
-    <div className="rounded-xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+    <div className="rounded-2xl border border-zinc-200/70 bg-white p-6 shadow-sm shadow-zinc-200/60 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none">
       <div className="flex flex-wrap items-center gap-6">
-        <div className="flex items-center gap-4">
-          <div className="flex flex-col items-center opacity-70">
-            <span className="text-2xl font-semibold tabular-nums text-zinc-400">
+        <div className="flex items-center gap-3">
+          <div className="flex flex-col items-center opacity-60">
+            <span className="text-xl font-semibold tabular-nums text-zinc-400">
               {original.matchScore}
             </span>
             <span className="text-[10px] uppercase tracking-wide text-zinc-400">Before</span>
           </div>
-          <span className="text-xl text-zinc-300 dark:text-zinc-600">→</span>
-          <div className="flex flex-col items-center">
-            <span
-              className={`text-5xl font-bold tabular-nums ${scoreColor(tailored.matchScore)}`}
-            >
-              {tailored.matchScore}
-            </span>
-            <span className="text-xs uppercase tracking-wide text-zinc-500">After / 100</span>
-          </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth={2}
+            className="h-4 w-4 text-zinc-300 dark:text-zinc-700"
+            aria-hidden="true"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+          </svg>
+          <ScoreRing score={tailored.matchScore} />
           <DeltaBadge before={original.matchScore} after={tailored.matchScore} />
         </div>
         <div className="min-w-[16rem] flex-1">
