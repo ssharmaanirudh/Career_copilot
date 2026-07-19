@@ -4,6 +4,8 @@ import { useState } from "react";
 import { ResumeUploader } from "@/components/ResumeUploader";
 import { ResultsView } from "@/components/ResultsView";
 import { RefineBox } from "@/components/RefineBox";
+import { WhyDifferent } from "@/components/WhyDifferent";
+import { SamplePreview } from "@/components/SamplePreview";
 import type { AnalysisResult } from "@/lib/types";
 
 type Status = "idle" | "loading" | "error" | "done";
@@ -111,6 +113,13 @@ export default function Home() {
       </header>
 
       <main className="mx-auto max-w-5xl px-6 py-10">
+        {status === "idle" && (
+          <>
+            <WhyDifferent />
+            <SamplePreview />
+          </>
+        )}
+
         <form
           onSubmit={handleSubmit}
           className="grid grid-cols-1 gap-6 rounded-2xl border border-zinc-200/70 bg-white/90 p-6 shadow-sm shadow-zinc-200/60 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/90 dark:shadow-none lg:grid-cols-2"
@@ -168,6 +177,9 @@ export default function Home() {
                 </>
               )}
             </button>
+            <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
+              Your resume and job description are processed once and never stored.
+            </p>
             {error && (
               <p className="mt-3 text-sm text-rose-600 dark:text-rose-400">{error}</p>
             )}
