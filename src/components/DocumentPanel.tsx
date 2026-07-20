@@ -36,13 +36,11 @@ export function DocumentPanel({ text }: DocumentPanelProps) {
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
-        {error && (
-          <span className="mr-auto text-sm text-rose-600 dark:text-rose-400">{error}</span>
-        )}
+        {error && <span className="mr-auto text-sm text-gl-crimson">{error}</span>}
         <button
           type="button"
           onClick={handleCopy}
-          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="rounded-lg border border-gl-ink/15 px-3 py-1.5 text-sm font-medium text-gl-ink-muted transition-colors hover:bg-gl-ink/5"
         >
           {copied ? "Copied!" : "Copy"}
         </button>
@@ -50,7 +48,7 @@ export function DocumentPanel({ text }: DocumentPanelProps) {
           type="button"
           onClick={() => handleDownload("docx")}
           disabled={busy !== null}
-          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-60 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="rounded-lg border border-gl-ink/15 px-3 py-1.5 text-sm font-medium text-gl-ink-muted transition-colors hover:bg-gl-ink/5 disabled:opacity-60"
         >
           {busy === "docx" ? "Preparing…" : "Download .docx"}
         </button>
@@ -58,7 +56,7 @@ export function DocumentPanel({ text }: DocumentPanelProps) {
           type="button"
           onClick={() => handleDownload("pdf")}
           disabled={busy !== null}
-          className="brand-gradient-bg rounded-lg px-3 py-1.5 text-sm font-medium text-white shadow-sm shadow-emerald-500/25 transition-shadow hover:shadow-md hover:shadow-emerald-500/30 disabled:opacity-60 disabled:shadow-none"
+          className="brand-gradient-bg rounded-lg px-3 py-1.5 text-sm font-medium text-white shadow-sm shadow-gl-teal/25 transition-shadow hover:shadow-md hover:shadow-gl-teal/30 disabled:opacity-60 disabled:shadow-none"
         >
           {busy === "pdf" ? "Preparing…" : "Download .pdf"}
         </button>
@@ -66,7 +64,7 @@ export function DocumentPanel({ text }: DocumentPanelProps) {
       <textarea
         readOnly
         value={text}
-        className="h-[28rem] w-full resize-y rounded-xl border border-zinc-200 bg-zinc-50 p-4 font-mono text-sm leading-relaxed text-zinc-800 shadow-inner shadow-zinc-100 focus:outline-none dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-200 dark:shadow-none"
+        className="h-[28rem] w-full resize-y rounded-xl border border-gl-ink/10 bg-gl-ink/5 p-4 font-mono text-sm leading-relaxed text-gl-ink-muted shadow-inner shadow-black/5 focus:outline-none"
       />
     </div>
   );

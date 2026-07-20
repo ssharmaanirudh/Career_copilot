@@ -53,17 +53,17 @@ export function ResumeUploader({ file, onFileSelected }: ResumeUploaderProps) {
         }}
         className={`group flex w-full flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-9 text-center transition-all ${
           isDragging
-            ? "border-emerald-500 bg-emerald-50 scale-[1.01] dark:bg-emerald-950/30"
+            ? "border-gl-teal bg-gl-teal-bg scale-[1.01]"
             : file
-              ? "border-emerald-300 bg-emerald-50/50 dark:border-emerald-800 dark:bg-emerald-950/20"
-              : "border-zinc-300 hover:border-emerald-400 hover:bg-emerald-50/40 dark:border-zinc-700 dark:hover:bg-emerald-950/10"
+              ? "border-gl-teal/40 bg-gl-teal-bg/50"
+              : "border-gl-ink/20 hover:border-gl-teal/60 hover:bg-gl-teal-bg/40"
         }`}
       >
         <div
           className={`flex h-12 w-12 items-center justify-center rounded-full transition-colors ${
             file
-              ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400"
-              : "bg-emerald-100 text-emerald-600 group-hover:bg-emerald-200 dark:bg-emerald-950/60 dark:text-emerald-400"
+              ? "bg-gl-teal-bg text-gl-teal"
+              : "bg-gl-teal-bg text-gl-teal group-hover:bg-gl-teal-bg/70"
           }`}
         >
           {file ? (
@@ -102,15 +102,17 @@ export function ResumeUploader({ file, onFileSelected }: ResumeUploaderProps) {
         </div>
         {file ? (
           <div className="text-sm">
-            <p className="font-medium text-zinc-900 dark:text-zinc-100">{file.name}</p>
-            <p className="text-zinc-500">{fileSizeLabel(file.size)} &middot; click to replace</p>
+            <p className="font-medium text-gl-ink">{file.name}</p>
+            <p className="text-gl-ink-faint">
+              {fileSizeLabel(file.size)} &middot; click to replace
+            </p>
           </div>
         ) : (
           <div className="text-sm">
-            <p className="font-medium text-zinc-900 dark:text-zinc-100">
+            <p className="font-medium text-gl-ink">
               Drop your resume here, or click to browse
             </p>
-            <p className="text-zinc-500">PDF, DOCX, or TXT &middot; up to 8 MB</p>
+            <p className="text-gl-ink-faint">PDF, DOCX, or TXT &middot; up to 8 MB</p>
           </div>
         )}
       </button>

@@ -22,7 +22,7 @@ export function RefineBox({ questions, notes, busy, error, onSubmit }: RefineBox
   }
 
   return (
-    <div className="rounded-2xl border border-zinc-200/70 bg-white p-6 shadow-sm shadow-zinc-200/60 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none">
+    <div className="rounded-2xl border border-gl-ink/10 bg-gl-paper-card p-6 shadow-sm shadow-black/5">
       <div className="flex items-center gap-2">
         <div className="brand-gradient-bg flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white">
           <svg
@@ -41,13 +41,11 @@ export function RefineBox({ questions, notes, busy, error, onSubmit }: RefineBox
             />
           </svg>
         </div>
-        <h3 className="font-semibold text-zinc-900 dark:text-zinc-100">
-          Anything to add or correct?
-        </h3>
+        <h3 className="font-semibold text-gl-ink">Anything to add or correct?</h3>
       </div>
 
       {questions.length > 0 && (
-        <div className="mt-3 rounded-xl bg-emerald-50 p-3 text-sm text-emerald-900 dark:bg-emerald-950/50 dark:text-emerald-200">
+        <div className="mt-3 rounded-xl bg-gl-teal-bg p-3 text-sm text-gl-teal">
           <p className="font-medium">A few quick questions that could strengthen this:</p>
           <ul className="mt-1 list-disc space-y-1 pl-5">
             {questions.map((q, i) => (
@@ -57,16 +55,16 @@ export function RefineBox({ questions, notes, busy, error, onSubmit }: RefineBox
         </div>
       )}
 
-      <p className="mt-2 text-sm text-zinc-500">
+      <p className="mt-2 text-sm text-gl-ink-faint">
         Tell us about experience that isn&apos;t on your resume, or ask for edits like
         &ldquo;make the cover letter shorter&rdquo; — we&apos;ll only use facts you actually
         confirm, never invent anything.
       </p>
 
       {notes.length > 0 && (
-        <ul className="mt-3 flex flex-col gap-1.5 text-xs text-zinc-500">
+        <ul className="mt-3 flex flex-col gap-1.5 text-xs text-gl-ink-faint">
           {notes.map((n, i) => (
-            <li key={i} className="rounded-lg bg-zinc-50 px-2.5 py-1.5 dark:bg-zinc-800/60">
+            <li key={i} className="rounded-lg bg-gl-ink/5 px-2.5 py-1.5">
               {n}
             </li>
           ))}
@@ -79,17 +77,17 @@ export function RefineBox({ questions, notes, busy, error, onSubmit }: RefineBox
           onChange={(e) => setInput(e.target.value)}
           placeholder="e.g. I actually used Python for two years at my last job automating reports…"
           rows={2}
-          className="flex-1 resize-y rounded-xl border border-zinc-300 p-2.5 text-sm transition-shadow focus:border-emerald-500 focus:outline-none focus:ring-4 focus:ring-emerald-500/15 dark:border-zinc-700 dark:bg-zinc-950"
+          className="flex-1 resize-y rounded-xl border border-gl-ink/15 p-2.5 text-sm transition-shadow focus:border-gl-teal focus:outline-none focus:ring-4 focus:ring-gl-teal/15"
         />
         <button
           type="submit"
           disabled={busy || !input.trim()}
-          className="brand-gradient-bg shrink-0 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-emerald-500/25 transition-shadow hover:shadow-md hover:shadow-emerald-500/30 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+          className="brand-gradient-bg shrink-0 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm shadow-gl-teal/25 transition-shadow hover:shadow-md hover:shadow-gl-teal/30 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
         >
           {busy ? "Updating…" : "Update my resume"}
         </button>
       </form>
-      {error && <p className="mt-2 text-sm text-rose-600 dark:text-rose-400">{error}</p>}
+      {error && <p className="mt-2 text-sm text-gl-crimson">{error}</p>}
     </div>
   );
 }

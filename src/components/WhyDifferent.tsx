@@ -16,19 +16,17 @@ const POINTS = [
 export function WhyDifferent() {
   return (
     <section className="mb-8">
-      <h2 className="text-sm font-semibold uppercase tracking-wide text-zinc-500 dark:text-zinc-400">
+      <h2 className="text-sm font-semibold uppercase tracking-wide text-gl-ink-faint">
         Why GapLens is different
       </h2>
       <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-3">
         {POINTS.map((point) => (
           <div
             key={point.title}
-            className="rounded-xl border border-zinc-200/70 bg-white/70 p-4 dark:border-zinc-800 dark:bg-zinc-900/70"
+            className="rounded-xl border border-gl-ink/10 bg-gl-paper-card/70 p-4"
           >
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              {point.title}
-            </p>
-            <p className="mt-1.5 text-sm text-zinc-600 dark:text-zinc-400">{point.body}</p>
+            <p className="text-sm font-semibold text-gl-ink">{point.title}</p>
+            <p className="mt-1.5 text-sm text-gl-ink-muted">{point.body}</p>
           </div>
         ))}
       </div>

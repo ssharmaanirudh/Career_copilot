@@ -20,7 +20,7 @@ function BulletList({ bullets }: { bullets: ResumeBullet[] }) {
 
 function SectionHeading({ children }: { children: React.ReactNode }) {
   return (
-    <h3 className="mb-2 mt-5 border-b-2 border-zinc-800 pb-1 text-xs font-bold uppercase tracking-wide text-zinc-900 first:mt-0 dark:border-zinc-300 dark:text-zinc-100">
+    <h3 className="mb-2 mt-5 border-b-2 border-gl-ink pb-1 text-xs font-bold uppercase tracking-wide text-gl-ink first:mt-0">
       {children}
     </h3>
   );
@@ -59,13 +59,11 @@ export function TailoredResumeView({ resume }: { resume: TailoredResume }) {
   return (
     <div>
       <div className="mb-3 flex flex-wrap items-center justify-end gap-2">
-        {error && (
-          <span className="mr-auto text-sm text-rose-600 dark:text-rose-400">{error}</span>
-        )}
+        {error && <span className="mr-auto text-sm text-gl-crimson">{error}</span>}
         <button
           type="button"
           onClick={handleCopy}
-          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="rounded-lg border border-gl-ink/15 px-3 py-1.5 text-sm font-medium text-gl-ink-muted transition-colors hover:bg-gl-ink/5"
         >
           {copied ? "Copied!" : "Copy"}
         </button>
@@ -73,7 +71,7 @@ export function TailoredResumeView({ resume }: { resume: TailoredResume }) {
           type="button"
           onClick={() => handleDownload("docx")}
           disabled={busy !== null}
-          className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 disabled:opacity-60 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-800"
+          className="rounded-lg border border-gl-ink/15 px-3 py-1.5 text-sm font-medium text-gl-ink-muted transition-colors hover:bg-gl-ink/5 disabled:opacity-60"
         >
           {busy === "docx" ? "Preparing…" : "Download .docx"}
         </button>
@@ -81,19 +79,17 @@ export function TailoredResumeView({ resume }: { resume: TailoredResume }) {
           type="button"
           onClick={() => handleDownload("pdf")}
           disabled={busy !== null}
-          className="brand-gradient-bg rounded-lg px-3 py-1.5 text-sm font-medium text-white shadow-sm shadow-emerald-500/25 transition-shadow hover:shadow-md hover:shadow-emerald-500/30 disabled:opacity-60 disabled:shadow-none"
+          className="brand-gradient-bg rounded-lg px-3 py-1.5 text-sm font-medium text-white shadow-sm shadow-gl-teal/25 transition-shadow hover:shadow-md hover:shadow-gl-teal/30 disabled:opacity-60 disabled:shadow-none"
         >
           {busy === "pdf" ? "Preparing…" : "Download .pdf"}
         </button>
       </div>
 
-      <div className="max-h-[36rem] overflow-y-auto rounded-xl border border-zinc-200 bg-white p-6 text-[13px] leading-relaxed text-zinc-900 shadow-inner shadow-zinc-100 dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-100 dark:shadow-none">
+      <div className="max-h-[36rem] overflow-y-auto rounded-xl border border-gl-ink/10 bg-gl-paper-card p-6 text-[13px] leading-relaxed text-gl-ink shadow-inner shadow-black/5">
         <div className="text-center">
           <h2 className="text-lg font-bold tracking-wide">{resume.name}</h2>
           {resume.title && <p className="text-sm">{resume.title}</p>}
-          {contact && (
-            <p className="text-xs text-zinc-600 dark:text-zinc-400">{contact}</p>
-          )}
+          {contact && <p className="text-xs text-gl-ink-muted">{contact}</p>}
         </div>
 
         {resume.profile && (
@@ -104,9 +100,7 @@ export function TailoredResumeView({ resume }: { resume: TailoredResume }) {
         )}
 
         {resume.objective && (
-          <p className="mt-2 italic text-zinc-700 dark:text-zinc-300">
-            Objective: {resume.objective}
-          </p>
+          <p className="mt-2 italic text-gl-ink-muted">Objective: {resume.objective}</p>
         )}
 
         {resume.coreStrengths.length > 0 && (
@@ -126,14 +120,11 @@ export function TailoredResumeView({ resume }: { resume: TailoredResume }) {
                     {job.title}
                     {job.company && <span className="font-normal"> · {job.company}</span>}
                     {job.location && (
-                      <span className="font-normal text-zinc-600 dark:text-zinc-400">
-                        {" "}
-                        · {job.location}
-                      </span>
+                      <span className="font-normal text-gl-ink-muted"> · {job.location}</span>
                     )}
                   </p>
                   {job.dates && (
-                    <p className="whitespace-nowrap text-xs italic text-zinc-600 dark:text-zinc-400">
+                    <p className="whitespace-nowrap text-xs italic text-gl-ink-muted">
                       {job.dates}
                     </p>
                   )}
@@ -150,12 +141,10 @@ export function TailoredResumeView({ resume }: { resume: TailoredResume }) {
             <table className="w-full border-collapse text-[13px]">
               <tbody>
                 {resume.education.map((ed, i) => (
-                  <tr key={i} className="border-b border-zinc-200 dark:border-zinc-800">
+                  <tr key={i} className="border-b border-gl-ink/10">
                     <td className="py-1 pr-3 font-semibold">{ed.program}</td>
                     <td className="py-1 pr-3">{ed.institution}</td>
-                    <td className="py-1 text-right text-zinc-600 dark:text-zinc-400">
-                      {ed.date}
-                    </td>
+                    <td className="py-1 text-right text-gl-ink-muted">{ed.date}</td>
                   </tr>
                 ))}
               </tbody>

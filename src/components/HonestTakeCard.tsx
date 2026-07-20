@@ -1,7 +1,7 @@
 function scoreColor(score: number): string {
-  if (score >= 80) return "text-emerald-600 dark:text-emerald-400";
-  if (score >= 60) return "text-amber-600 dark:text-amber-400";
-  return "text-rose-600 dark:text-rose-400";
+  if (score >= 80) return "text-gl-teal";
+  if (score >= 60) return "text-amber-600";
+  return "text-gl-crimson";
 }
 
 export function HonestTakeCard({
@@ -14,8 +14,8 @@ export function HonestTakeCard({
   if (!summary) return null;
 
   return (
-    <div className="flex gap-3 rounded-2xl border border-zinc-200/70 bg-zinc-50 p-4 shadow-sm shadow-zinc-200/60 dark:border-zinc-800 dark:bg-zinc-900/60 dark:shadow-none">
-      <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-zinc-200 text-zinc-600 dark:bg-zinc-800 dark:text-zinc-400">
+    <div className="flex gap-3 rounded-2xl border border-gl-ink/10 bg-gl-ink/5 p-4 shadow-sm shadow-black/5">
+      <div className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gl-ink/10 text-gl-ink-muted">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 24 24"
@@ -34,15 +34,15 @@ export function HonestTakeCard({
       </div>
       <div>
         <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-          <p className="text-sm font-semibold text-zinc-800 dark:text-zinc-200">The honest take</p>
-          <p className="text-xs text-zinc-500">
+          <p className="text-sm font-semibold text-gl-ink-muted">The honest take</p>
+          <p className="text-xs text-gl-ink-faint">
             Ceiling from wording fixes alone:{" "}
             <span className={`font-semibold tabular-nums ${scoreColor(ceiling)}`}>
               {ceiling}/100
             </span>
           </p>
         </div>
-        <p className="mt-1.5 text-sm text-zinc-600 dark:text-zinc-400">{summary}</p>
+        <p className="mt-1.5 text-sm text-gl-ink-muted">{summary}</p>
       </div>
     </div>
   );

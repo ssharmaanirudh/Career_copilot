@@ -64,7 +64,7 @@ export function ResultsView({ result }: { result: AnalysisResult }) {
   return (
     <div className="flex flex-col gap-6">
       {result.flags.length > 0 && (
-        <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800 shadow-sm shadow-amber-100 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200 dark:shadow-none">
+        <div className="rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-800 shadow-sm shadow-amber-100">
           <p className="font-semibold">Flagged during review</p>
           <ul className="mt-1 list-disc space-y-1 pl-5">
             {result.flags.map((flag, i) => (
@@ -84,8 +84,8 @@ export function ResultsView({ result }: { result: AnalysisResult }) {
         summary={result.honestSummary}
       />
 
-      <div className="rounded-2xl border border-zinc-200/70 bg-white shadow-sm shadow-zinc-200/60 dark:border-zinc-800 dark:bg-zinc-900 dark:shadow-none">
-        <div className="flex overflow-x-auto border-b border-zinc-200 px-2 dark:border-zinc-800">
+      <div className="rounded-2xl border border-gl-ink/10 bg-gl-paper-card shadow-sm shadow-black/5">
+        <div className="flex overflow-x-auto border-b border-gl-ink/10 px-2">
           {TABS.map((tab) => (
             <button
               key={tab.id}
@@ -93,8 +93,8 @@ export function ResultsView({ result }: { result: AnalysisResult }) {
               onClick={() => setActiveTab(tab.id)}
               className={`flex shrink-0 items-center gap-1.5 border-b-2 px-4 py-3 text-sm font-medium transition-colors ${
                 activeTab === tab.id
-                  ? "border-emerald-600 text-emerald-600 dark:text-emerald-400"
-                  : "border-transparent text-zinc-500 hover:text-zinc-800 dark:hover:text-zinc-200"
+                  ? "border-gl-teal text-gl-teal"
+                  : "border-transparent text-gl-ink-faint hover:text-gl-ink"
               }`}
             >
               <svg
@@ -118,9 +118,9 @@ export function ResultsView({ result }: { result: AnalysisResult }) {
           {activeTab === "cover-letter" && <DocumentPanel text={result.coverLetter} />}
           {activeTab === "changes" && (
             <div>
-              <ul className="list-disc space-y-2 pl-5 text-sm text-zinc-700 dark:text-zinc-300">
+              <ul className="list-disc space-y-2 pl-5 text-sm text-gl-ink-muted">
                 {result.keyChanges.length === 0 && (
-                  <p className="text-zinc-500">No changes were recorded.</p>
+                  <p className="text-gl-ink-faint">No changes were recorded.</p>
                 )}
                 {result.keyChanges.map((change, i) => (
                   <li key={i}>{change}</li>

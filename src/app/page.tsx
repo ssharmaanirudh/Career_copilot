@@ -84,7 +84,7 @@ export default function Home() {
 
   return (
     <div className="brand-mesh-bg min-h-full font-sans">
-      <header className="sticky top-0 z-10 border-b border-zinc-200/70 bg-white/80 backdrop-blur-md dark:border-zinc-800/70 dark:bg-black/60">
+      <header className="sticky top-0 z-10 border-b border-gl-ink/10 bg-gl-paper-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-6 py-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -102,10 +102,10 @@ export default function Home() {
             <path d="M6.5 10.3 9 12.8 13.5 7.3" />
           </svg>
           <div>
-            <h1 className="text-lg font-bold tracking-tight text-zinc-900 dark:text-zinc-50">
+            <h1 className="text-lg font-bold tracking-tight text-gl-ink">
               Gap<span className="brand-solid-text">Lens</span>
             </h1>
-            <p className="text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="text-xs text-gl-ink-faint">
               See exactly what&apos;s missing — before you hit send.
             </p>
           </div>
@@ -115,6 +115,10 @@ export default function Home() {
       <main className="mx-auto max-w-5xl px-6 py-10">
         {status === "idle" && (
           <>
+            {/* Phase 1 typography check only — confirms Newsreader loads; removed/restyled in Phase 2. */}
+            <p className="font-serif mb-6 text-2xl font-semibold text-gl-ink">
+              Newsreader loaded — Phase 1 check
+            </p>
             <WhyDifferent />
             <SamplePreview />
           </>
@@ -122,10 +126,10 @@ export default function Home() {
 
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 gap-6 rounded-2xl border border-zinc-200/70 bg-white/90 p-6 shadow-sm shadow-zinc-200/60 backdrop-blur-sm dark:border-zinc-800 dark:bg-zinc-900/90 dark:shadow-none lg:grid-cols-2"
+          className="grid grid-cols-1 gap-6 rounded-2xl border border-gl-ink/10 bg-gl-paper-card/90 p-6 shadow-sm shadow-black/5 backdrop-blur-sm lg:grid-cols-2"
         >
           <div>
-            <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-zinc-800 dark:text-zinc-200">
+            <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gl-ink">
               <StepBadge n={1} />
               Your resume
             </label>
@@ -135,7 +139,7 @@ export default function Home() {
           <div className="flex flex-col">
             <label
               htmlFor="job-description"
-              className="mb-2 flex items-center gap-2 text-sm font-semibold text-zinc-800 dark:text-zinc-200"
+              className="mb-2 flex items-center gap-2 text-sm font-semibold text-gl-ink"
             >
               <StepBadge n={2} />
               Target job description
@@ -145,7 +149,7 @@ export default function Home() {
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               placeholder="Paste the full job description here…"
-              className="h-48 flex-1 resize-y rounded-xl border border-zinc-300 p-3 text-sm shadow-inner shadow-zinc-100 transition-shadow focus:border-emerald-500 focus:shadow-none focus:outline-none focus:ring-4 focus:ring-emerald-500/15 dark:border-zinc-700 dark:bg-zinc-950 dark:shadow-none lg:h-auto"
+              className="h-48 flex-1 resize-y rounded-xl border border-gl-ink/15 p-3 text-sm shadow-inner shadow-black/5 transition-shadow focus:border-gl-teal focus:shadow-none focus:outline-none focus:ring-4 focus:ring-gl-teal/15 lg:h-auto"
             />
           </div>
 
@@ -153,7 +157,7 @@ export default function Home() {
             <button
               type="submit"
               disabled={!canSubmit || status === "loading"}
-              className="brand-gradient-bg group flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 font-semibold text-white shadow-md shadow-emerald-500/25 transition-all hover:shadow-lg hover:shadow-emerald-500/35 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none sm:w-auto"
+              className="brand-gradient-bg group flex w-full items-center justify-center gap-2 rounded-xl px-5 py-3.5 font-semibold text-white shadow-md shadow-gl-teal/25 transition-all hover:shadow-lg hover:shadow-gl-teal/35 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none sm:w-auto"
             >
               {status === "loading" ? (
                 <>
@@ -177,18 +181,16 @@ export default function Home() {
                 </>
               )}
             </button>
-            <p className="mt-3 text-xs text-zinc-500 dark:text-zinc-400">
+            <p className="mt-3 text-xs text-gl-ink-faint">
               Your resume and job description are processed once and never stored.
             </p>
-            {error && (
-              <p className="mt-3 text-sm text-rose-600 dark:text-rose-400">{error}</p>
-            )}
+            {error && <p className="mt-3 text-sm text-gl-crimson">{error}</p>}
           </div>
         </form>
 
         {status === "loading" && (
-          <div className="mt-10 flex items-center justify-center gap-3 text-zinc-500">
-            <span className="h-5 w-5 animate-spin rounded-full border-2 border-zinc-300 border-t-emerald-600" />
+          <div className="mt-10 flex items-center justify-center gap-3 text-gl-ink-faint">
+            <span className="h-5 w-5 animate-spin rounded-full border-2 border-gl-ink/20 border-t-gl-teal" />
             Reading your resume and matching it against the role…
           </div>
         )}

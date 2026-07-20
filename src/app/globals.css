@@ -2,53 +2,65 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/*
+ * GapLens design tokens (DESIGN.md). Light, paper-toned product —
+ * no dark mode variant. The `dark` custom-variant above is kept
+ * registered (inert, since no .dark class is applied anywhere) so any
+ * leftover `dark:` utility classes in components fail closed rather
+ * than reverting to Tailwind's OS-preference-based default.
+ */
 :root {
-  --background: #f7f7fb;
-  --foreground: #16161d;
-  --brand-from: #059669;
-  --brand-to: #22c55e;
-  --brand-solid: #16a34a;
+  --gl-paper: #f1f2ed; /* page background, cool off-white */
+  --gl-paper-card: #ffffff; /* card/document surface */
+  --gl-ink: #1b1c19; /* primary text, near-black */
+  --gl-ink-muted: #4a4a44; /* body copy */
+  --gl-ink-faint: #8a8a82; /* captions, labels, metadata */
+  --gl-teal: #0f6e56; /* verified / met / brand accent */
+  --gl-teal-bg: #e1f5ee; /* pale teal fill for badges */
+  --gl-crimson: #c23b3b; /* gap / unmet / flagged */
+  --gl-crimson-bg: #fbeaea; /* pale crimson fill for badges */
+  --gl-amber: #e8b84b; /* highlighter accent, sparing use only — not yet used */
+  --gl-grid-line: #00000008; /* faint background grid */
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-gl-paper: var(--gl-paper);
+  --color-gl-paper-card: var(--gl-paper-card);
+  --color-gl-ink: var(--gl-ink);
+  --color-gl-ink-muted: var(--gl-ink-muted);
+  --color-gl-ink-faint: var(--gl-ink-faint);
+  --color-gl-teal: var(--gl-teal);
+  --color-gl-teal-bg: var(--gl-teal-bg);
+  --color-gl-crimson: var(--gl-crimson);
+  --color-gl-crimson-bg: var(--gl-crimson-bg);
+  --color-gl-amber: var(--gl-amber);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-.dark {
-  --background: #08080c;
-  --foreground: #ededed;
-  --brand-from: #34d399;
-  --brand-to: #4ade80;
-  --brand-solid: #4ade80;
-  color-scheme: dark;
+  --font-serif: var(--font-newsreader);
+  --font-mono-evidence: var(--font-ibm-plex-mono);
+  --font-body: var(--font-inter);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--gl-paper);
+  color: var(--gl-ink);
   font-family: var(--font-sans), ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
 
 .brand-gradient-text {
-  background-image: linear-gradient(135deg, var(--brand-from), var(--brand-to));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+  color: var(--gl-teal);
 }
 
 .brand-solid-text {
-  color: var(--brand-solid);
+  color: var(--gl-teal);
 }
 
 .brand-gradient-bg {
-  background-image: linear-gradient(135deg, var(--brand-from), var(--brand-to));
+  background-color: var(--gl-teal);
 }
 
 .brand-mesh-bg {
   background-image:
-    radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--brand-from) 12%, transparent) 0%, transparent 45%),
-    radial-gradient(circle at 85% 15%, color-mix(in srgb, var(--brand-to) 12%, transparent) 0%, transparent 45%);
+    radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--gl-teal) 10%, transparent) 0%, transparent 45%),
+    radial-gradient(circle at 85% 15%, color-mix(in srgb, var(--gl-teal) 10%, transparent) 0%, transparent 45%);
 }
