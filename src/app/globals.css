@@ -59,8 +59,11 @@ body {
   background-color: var(--gl-teal);
 }
 
-.brand-mesh-bg {
+/* DESIGN.md "Background grid" — page/section backgrounds only, never card surfaces. */
+.gl-page-grid {
+  background-color: var(--gl-paper);
   background-image:
-    radial-gradient(circle at 15% 0%, color-mix(in srgb, var(--gl-teal) 10%, transparent) 0%, transparent 45%),
-    radial-gradient(circle at 85% 15%, color-mix(in srgb, var(--gl-teal) 10%, transparent) 0%, transparent 45%);
+    linear-gradient(var(--gl-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--gl-grid-line) 1px, transparent 1px);
+  background-size: 24px 24px;
 }

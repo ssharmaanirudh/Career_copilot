@@ -53,7 +53,7 @@ export function SamplePreview() {
         </span>
       </div>
 
-      <div className="rounded-2xl border border-dashed border-gl-ink/20 bg-gl-paper-card/70 p-6">
+      <div className="rounded-2xl border border-dashed border-gl-ink/20 bg-gl-paper-card p-6">
         <div className="flex flex-wrap items-center gap-6">
           <div className="relative flex h-24 w-24 shrink-0 items-center justify-center">
             <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">

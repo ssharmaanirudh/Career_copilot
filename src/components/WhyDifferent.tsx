@@ -23,7 +23,7 @@ export function WhyDifferent() {
         {POINTS.map((point) => (
           <div
             key={point.title}
-            className="rounded-xl border border-gl-ink/10 bg-gl-paper-card/70 p-4"
+            className="rounded-xl border border-gl-ink/10 bg-gl-paper-card p-4"
           >
             <p className="text-sm font-semibold text-gl-ink">{point.title}</p>
             <p className="mt-1.5 text-sm text-gl-ink-muted">{point.body}</p>

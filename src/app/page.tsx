@@ -83,8 +83,8 @@ export default function Home() {
   }
 
   return (
-    <div className="brand-mesh-bg min-h-full font-sans">
-      <header className="sticky top-0 z-10 border-b border-gl-ink/10 bg-gl-paper-card/80 backdrop-blur-md">
+    <div className="gl-page-grid min-h-full font-sans">
+      <header className="sticky top-0 z-10 border-b border-gl-ink/10 bg-gl-paper-card">
         <div className="mx-auto flex max-w-5xl items-center gap-3 px-6 py-4">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -126,7 +126,7 @@ export default function Home() {
 
         <form
           onSubmit={handleSubmit}
-          className="grid grid-cols-1 gap-6 rounded-2xl border border-gl-ink/10 bg-gl-paper-card/90 p-6 shadow-sm shadow-black/5 backdrop-blur-sm lg:grid-cols-2"
+          className="grid grid-cols-1 gap-6 rounded-2xl border border-gl-ink/10 bg-gl-paper-card p-6 shadow-sm shadow-black/5 lg:grid-cols-2"
         >
           <div>
             <label className="mb-2 flex items-center gap-2 text-sm font-semibold text-gl-ink">
