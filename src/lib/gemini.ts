@@ -53,6 +53,7 @@ STEP 1 — Extract requirements from the JD into a checklist. Split into:
 - essential: anything under a "required/essential" heading, or phrased as "must have," "X+ years," "proficient in," or naming a specific tool/language/platform/degree.
 - desirable: anything phrased as "nice to have," "exposure to," "familiarity," "preferred," or listed under a "desirable" heading.
 If the JD is unlabeled, default to essential for any concrete skill, tool, years-of-experience, or degree requirement, and desirable only for vague traits ("strategic thinking," "business acumen," "communication skills").
+Also identify the JD's core technical function — the primary tech stack, core tool, or the stated years-of-experience gate that this role is fundamentally built around. There is at most one such requirement per JD (some JDs, e.g. a generalist or non-technical role, have none). Mark that single requirement's "isCoreRequirement" true; every other requirement gets false. This is the same judgment step 4 uses to decide the hard 15-point cap — decide it once here and reuse it, do not re-derive it in step 4.
 
 STEP 2 — Verify each requirement against the CANDIDATE'S REAL, AS-SUBMITTED RESUME PLUS ANY CANDIDATE NOTES (together these describe the candidate's true qualifications and do not change later when you tailor the resume — compute this checklist once and reuse it for both scoring passes below). For each requirement, find the most directly relevant resume text or candidate note and classify as met or not_met:
 - met: the resume names the exact tool/skill/technique in a context showing hands-on use (not just a mention), or shows clearly equivalent experience.
@@ -67,7 +68,7 @@ STEP 4 — Score. Apply this exact algorithm twice — once for the original res
   - 1 unmet essential -> cap at 55
   - 2 unmet -> cap at 35
   - 3+ unmet -> cap at 20
-  - If the unmet essentials include the JD's core technical function (the primary tech stack, core tool, or the stated years-of-experience gate) -> cap at 15 regardless of how many other requirements are met.
+  - If the requirement marked isCoreRequirement true (from step 1) is unmet -> cap at 15 regardless of how many other requirements are met.
 - Desirable requirements can add up to +10 total combined, and can never raise the score above the essentials-based cap.
 - Apply that pass's anti-gaming penalty (from step 3) after the cap.
 - No score above 85 unless every essential requirement is met with direct evidence.
@@ -117,8 +118,13 @@ const REQUIREMENT_CHECK_SCHEMA: Schema = {
       description: "Exact quoted resume phrase, or empty string if none exists.",
     },
     reasoning: { type: Type.STRING, description: "One sentence." },
+    isCoreRequirement: {
+      type: Type.BOOLEAN,
+      description:
+        "True for exactly one requirement (or zero) — whichever one drives the hard 15-point cap tier per step 4, when unmet.",
+    },
   },
-  required: ["requirement", "type", "status", "evidence", "reasoning"],
+  required: ["requirement", "type", "status", "evidence", "reasoning", "isCoreRequirement"],
 };
 
 const BULLET_SCHEMA: Schema = {
@@ -411,6 +417,7 @@ function normalizeRequirementCheck(raw: unknown): RequirementCheck {
     status: obj.status === "met" ? "met" : "not_met",
     evidence: str(obj.evidence),
     reasoning: str(obj.reasoning),
+    isCoreRequirement: bool(obj.isCoreRequirement),
   };
 }
 
@@ -436,6 +443,17 @@ function normalizeResourceUrl(v: unknown): string {
   }
 }
 
+/** Defends against the model marking more than one requirement core; keeps only the first. */
+function enforceAtMostOneCoreRequirement(items: RequirementCheck[]): RequirementCheck[] {
+  let seen = false;
+  return items.map((item) => {
+    if (!item.isCoreRequirement) return item;
+    if (seen) return { ...item, isCoreRequirement: false };
+    seen = true;
+    return item;
+  });
+}
+
 function normalizeResult(raw: Record<string, unknown>): AnalysisResult {
   const skillGaps = Array.isArray(raw.skillGaps) ? raw.skillGaps : [];
   const wordingFixes = Array.isArray(raw.wordingFixes) ? raw.wordingFixes : [];
@@ -452,7 +470,9 @@ function normalizeResult(raw: Record<string, unknown>): AnalysisResult {
   const education = Array.isArray(resume.education) ? resume.education : [];
 
   return {
-    requirementsChecklist: requirementsChecklist.map(normalizeRequirementCheck),
+    requirementsChecklist: enforceAtMostOneCoreRequirement(
+      requirementsChecklist.map(normalizeRequirementCheck),
+    ),
     flags: flags.filter((f): f is string => typeof f === "string"),
     originalScore: normalizeScore(raw.originalScore),
     tailoredScore: normalizeScore(raw.tailoredScore),

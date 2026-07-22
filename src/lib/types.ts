@@ -17,6 +17,8 @@ export interface RequirementCheck {
   /** Exact quoted resume phrase used as evidence; empty string if none exists. */
   evidence: string;
   reasoning: string;
+  /** True for exactly one requirement (or zero) — whichever one drives the hard 15-point cap tier when unmet. */
+  isCoreRequirement: boolean;
 }
 
 /** Category A: real evidence exists in the resume but is buried/vague — a wording fix, not a skills gap. */
