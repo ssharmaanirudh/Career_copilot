@@ -30,6 +30,10 @@ export function WhyDifferent() {
           </div>
         ))}
       </div>
+      <p className="mt-3 text-sm text-gl-ink-faint">
+        Works against any job posting from any employer — no marketplace, no partner list, no
+        signup wall just to check a single role.
+      </p>
     </section>
   );
 }
