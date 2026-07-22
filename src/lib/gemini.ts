@@ -59,6 +59,7 @@ STEP 2 — Verify each requirement against the CANDIDATE'S REAL, AS-SUBMITTED RE
 - met: the resume names the exact tool/skill/technique in a context showing hands-on use (not just a mention), or shows clearly equivalent experience.
 - not_met: no direct evidence, OR the resume only shows an adjacent or analogous skill (e.g. "used ChatGPT for reporting" does NOT satisfy "build/fine-tune LLMs"; "Excel VBA" does NOT satisfy "Python/SQL"; "Power BI dashboards" does NOT satisfy "AWS SageMaker").
 Do not award "met" for confident phrasing, synonyms, or vocabulary overlap alone. If you are inferring rather than reading direct evidence, mark it not_met. Quote the exact resume phrase used as evidence in "evidence" (empty string if none exists), and give a one-sentence "reasoning".
+For every requirement marked "met", also set "evidenceStrength": "thin" if it rests on a single brief mention with no real depth (no metric, no elaboration, no repeated instance) — "strong" if it's backed by real detail, a quantified result, or shows up more than once. Set "evidenceStrength" to "thin" as an unused placeholder for "not_met" requirements (it only carries meaning for "met" ones).
 
 STEP 3 — Anti-gaming check, applied separately to whichever resume text you are scoring (the original resume for originalScore, the tailored resume you write in step 5 for tailoredScore): flag any resume language that mirrors the JD's exact wording without a concrete task, tool, metric, or artifact behind it (a sign of keyword-stuffing rather than real skill). Apply a fixed penalty of -3 points to that pass's score for each such flagged phrase, up to a maximum penalty of -15, and report the total as that pass's antiGamingPenalty.
 
@@ -123,8 +124,22 @@ const REQUIREMENT_CHECK_SCHEMA: Schema = {
       description:
         "True for exactly one requirement (or zero) — whichever one drives the hard 15-point cap tier per step 4, when unmet.",
     },
+    evidenceStrength: {
+      type: Type.STRING,
+      enum: ["strong", "thin"],
+      description:
+        "Only meaningful when status is 'met': 'thin' if the evidence is a single/brief mention with no real depth. Use 'thin' as a default placeholder when status is 'not_met' (unused in that case).",
+    },
   },
-  required: ["requirement", "type", "status", "evidence", "reasoning", "isCoreRequirement"],
+  required: [
+    "requirement",
+    "type",
+    "status",
+    "evidence",
+    "reasoning",
+    "isCoreRequirement",
+    "evidenceStrength",
+  ],
 };
 
 const BULLET_SCHEMA: Schema = {
@@ -418,6 +433,7 @@ function normalizeRequirementCheck(raw: unknown): RequirementCheck {
     evidence: str(obj.evidence),
     reasoning: str(obj.reasoning),
     isCoreRequirement: bool(obj.isCoreRequirement),
+    evidenceStrength: obj.evidenceStrength === "strong" ? "strong" : "thin",
   };
 }
 

@@ -2,6 +2,7 @@ export type SkillPriority = "high" | "medium" | "low";
 export type RequirementType = "essential" | "desirable";
 export type RequirementStatus = "met" | "not_met";
 export type EffortEstimate = "quick" | "medium" | "substantial";
+export type EvidenceStrength = "strong" | "thin";
 
 export interface ScoreBreakdown {
   skillsMatch: number;
@@ -19,6 +20,8 @@ export interface RequirementCheck {
   reasoning: string;
   /** True for exactly one requirement (or zero) — whichever one drives the hard 15-point cap tier when unmet. */
   isCoreRequirement: boolean;
+  /** Only meaningful when status is "met": "thin" means a single/brief mention with no real depth, worth confirming further. */
+  evidenceStrength: EvidenceStrength;
 }
 
 /** Category A: real evidence exists in the resume but is buried/vague — a wording fix, not a skills gap. */
