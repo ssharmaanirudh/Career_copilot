@@ -1,4 +1,4 @@
-import { GoogleGenAI, ApiError, type Schema, Type } from "@google/genai";
+import { type Schema, Type } from "@google/genai";
 import type {
   AnalysisResult,
   RequirementCheck,
@@ -7,27 +7,12 @@ import type {
   ScoreResult,
   WordingFix,
 } from "./types";
+import { MODEL, AnalysisError, generateStructuredJson } from "./geminiClient";
+import { clampScore, str, bool } from "./normalize";
 
-const MODEL = "gemini-2.5-flash";
-
-export class AnalysisError extends Error {}
+export { AnalysisError } from "./geminiClient";
 /** The submitted resume or job description text doesn't resemble one — a user-input problem, not an upstream failure. */
 export class InvalidInputError extends Error {}
-
-let client: GoogleGenAI | null = null;
-
-function getClient(): GoogleGenAI {
-  const apiKey = process.env.GEMINI_API_KEY;
-  if (!apiKey) {
-    throw new AnalysisError(
-      "Server is missing GEMINI_API_KEY. Set it in your environment to enable analysis.",
-    );
-  }
-  if (!client) {
-    client = new GoogleGenAI({ apiKey });
-  }
-  return client;
-}
 
 const SYSTEM_PROMPT = `You are an adversarial resume screener AND resume-tailoring assistant embedded in a hiring/resume-scoring product. As a screener, your default assumption is that the candidate does NOT meet a requirement unless the resume contains direct, literal, unambiguous evidence. When in doubt, score down, not up. Be consistent: identical inputs must always produce the same output.
 
@@ -368,19 +353,6 @@ const RESPONSE_SCHEMA: Schema = {
   ],
 };
 
-function clampScore(n: unknown): number {
-  const num = typeof n === "number" && Number.isFinite(n) ? n : 0;
-  return Math.max(0, Math.min(100, Math.round(num)));
-}
-
-function str(v: unknown): string {
-  return typeof v === "string" ? v : "";
-}
-
-function bool(v: unknown): boolean {
-  return v === true;
-}
-
 /** Strips any trailing colon the model added, since renderers append their own. */
 function cleanLabel(v: unknown): string {
   return str(v).trim().replace(/:+\s*$/, "");
@@ -546,39 +518,11 @@ function normalizeResult(raw: Record<string, unknown>): AnalysisResult {
   };
 }
 
-// Transient upstream conditions worth retrying: 503 = Gemini overloaded
-// (common on the free tier under load), 429 = rate limited.
-const RETRYABLE_STATUS = new Set([429, 503]);
-const RETRY_DELAYS_MS = [1000, 2500];
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-async function generateWithRetry(
-  ai: GoogleGenAI,
-  params: Parameters<GoogleGenAI["models"]["generateContent"]>[0],
-) {
-  for (let attempt = 0; ; attempt++) {
-    try {
-      return await ai.models.generateContent(params);
-    } catch (err) {
-      const isRetryable = err instanceof ApiError && RETRYABLE_STATUS.has(err.status);
-      if (!isRetryable || attempt >= RETRY_DELAYS_MS.length) {
-        throw err;
-      }
-      await sleep(RETRY_DELAYS_MS[attempt]);
-    }
-  }
-}
-
 export async function analyzeResumeAgainstJob(
   resumeText: string,
   jobDescription: string,
   candidateNotes: string[] = [],
 ): Promise<AnalysisResult> {
-  const ai = getClient();
-
   const notesSection =
     candidateNotes.length > 0
       ? `\n\nCANDIDATE NOTES (in the order the candidate provided them):\n"""\n${candidateNotes
@@ -588,38 +532,15 @@ export async function analyzeResumeAgainstJob(
 
   const userMessage = `CANDIDATE RESUME:\n"""\n${resumeText}\n"""\n\nTARGET JOB DESCRIPTION:\n"""\n${jobDescription}\n"""${notesSection}`;
 
-  let responseText: string | undefined;
-  try {
-    const response = await generateWithRetry(ai, {
-      model: process.env.GEMINI_MODEL || MODEL,
-      contents: userMessage,
-      config: {
-        systemInstruction: SYSTEM_PROMPT,
-        responseMimeType: "application/json",
-        responseSchema: RESPONSE_SCHEMA,
-      },
-    });
-    responseText = response.text;
-  } catch (err) {
-    if (err instanceof ApiError) {
-      if (err.status === 503) {
-        throw new AnalysisError(
-          "Our AI provider is experiencing very high demand right now. Please wait a moment and try again.",
-        );
-      }
-      if (err.status === 429) {
-        throw new AnalysisError(
-          "We've hit our AI usage limit for the moment. Please try again in a minute.",
-        );
-      }
-      throw new AnalysisError(`AI request failed: ${err.message}`);
-    }
-    throw err;
-  }
-
-  if (!responseText) {
-    throw new AnalysisError("The AI didn't return a structured analysis. Please try again.");
-  }
+  const responseText = await generateStructuredJson({
+    model: process.env.GEMINI_MODEL || MODEL,
+    contents: userMessage,
+    config: {
+      systemInstruction: SYSTEM_PROMPT,
+      responseMimeType: "application/json",
+      responseSchema: RESPONSE_SCHEMA,
+    },
+  });
 
   let parsed: unknown;
   try {
