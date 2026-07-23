@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ResumeUploader } from "@/components/ResumeUploader";
 import { ResultsView } from "@/components/ResultsView";
 import { RefineBox } from "@/components/RefineBox";
+import { ActionPlanBox } from "@/components/ActionPlanBox";
 import { WhyDifferent } from "@/components/WhyDifferent";
 import { SamplePreview } from "@/components/SamplePreview";
 import type { AnalysisResult } from "@/lib/types";
@@ -198,6 +199,7 @@ export default function Home() {
         {status === "done" && result && (
           <div className="mt-10 flex flex-col gap-6">
             <ResultsView result={result} />
+            <ActionPlanBox scoringResult={result} />
             <RefineBox
               questions={result.clarifyingQuestions}
               notes={notes}

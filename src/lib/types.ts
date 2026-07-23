@@ -116,6 +116,44 @@ export interface AnalysisResult {
   clarifyingQuestions: string[];
 }
 
+/** How long until the candidate needs to apply/be ready — directly gates which actions are even feasible to suggest. */
+export type TimeBudget = "today" | "this week" | "2-4 weeks" | "1-3 months" | "3+ months";
+
+export type ActionType = "wording_fix" | "real_gap_closure";
+export type ActionPlanVerdict = "achievable" | "partial" | "not_reachable";
+
+export interface ActionPlanAction {
+  rank: number;
+  requirementAddressed: string;
+  actionType: ActionType;
+  /** Specific and actionable — the exact rewrite for a wording fix, or a concrete way to build evidence for a real gap. */
+  description: string;
+  /** Whether completing this action would flip requirementAddressed from not_met to met. */
+  flipsRequirementToMet: boolean;
+  effortEstimate: EffortEstimate;
+}
+
+export interface ExcludedActionItem {
+  requirement: string;
+  /** Why this high-leverage item couldn't be included — e.g. "not reachable in stated timeframe." */
+  reason: string;
+}
+
+export interface ActionPlanResult {
+  timeBudget: TimeBudget;
+  /** Top actions ranked by leverage, feasibility-filtered against timeBudget. Fewer than 4 if fewer are genuinely feasible — never padded. */
+  actions: ActionPlanAction[];
+  /** High-leverage items (e.g. the core requirement) excluded because they aren't feasible in the stated time budget. */
+  excludedHighLeverageItems: ExcludedActionItem[];
+  /** The score cap if all actions were completed and their target requirements became met, using the same cap-tier rules as standard scoring. */
+  projectedScoreCapAfterActions: number;
+  verdict: ActionPlanVerdict;
+  /** Essential requirements that would remain unmet even after completing all actions. Empty only if verdict is "achievable". */
+  unmetEssentialsAfterActions: string[];
+  /** One or two blunt sentences: what these actions do and don't achieve, and what to do about any remaining gap. */
+  honestSummary: string;
+}
+
 export interface AnalyzeErrorResponse {
   error: string;
 }
