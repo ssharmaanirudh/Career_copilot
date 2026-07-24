@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { parseJsonResponse } from "@/lib/fetchJson";
 import type { ActionPlanResult, AnalysisResult, TimeBudget } from "@/lib/types";
 
 const TIME_BUDGETS: TimeBudget[] = ["today", "this week", "2-4 weeks", "1-3 months", "3+ months"];
@@ -30,11 +31,11 @@ export function ActionPlanBox({ scoringResult }: ActionPlanBoxProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ scoringResult, timeBudget }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.error || "Something went wrong. Please try again.");
-      }
-      setPlan(data as ActionPlanResult);
+      const data = await parseJsonResponse<ActionPlanResult>(
+        res,
+        "Something went wrong while building your action plan. Please try again.",
+      );
+      setPlan(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong.");
     } finally {

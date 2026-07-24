@@ -7,6 +7,7 @@ import { RefineBox } from "@/components/RefineBox";
 import { ActionPlanBox } from "@/components/ActionPlanBox";
 import { WhyDifferent } from "@/components/WhyDifferent";
 import { SamplePreview } from "@/components/SamplePreview";
+import { parseJsonResponse } from "@/lib/fetchJson";
 import type { AnalysisResult } from "@/lib/types";
 
 type Status = "idle" | "loading" | "error" | "done";
@@ -41,12 +42,10 @@ export default function Home() {
     }
 
     const res = await fetch("/api/analyze", { method: "POST", body: formData });
-    const data = await res.json();
-
-    if (!res.ok) {
-      throw new Error(data.error || "Something went wrong. Please try again.");
-    }
-    return data as AnalysisResult;
+    return parseJsonResponse<AnalysisResult>(
+      res,
+      "Something went wrong while analyzing your resume. Please try again.",
+    );
   }
 
   async function handleSubmit(e: React.FormEvent) {
