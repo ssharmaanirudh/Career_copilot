@@ -5,7 +5,6 @@ import { checkRateLimit, RateLimitedError } from "@/lib/rateLimiter";
 import type { AnalysisResult, TimeBudget } from "@/lib/types";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
 
 const VALID_TIME_BUDGETS: TimeBudget[] = [
   "today",

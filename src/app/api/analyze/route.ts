@@ -4,7 +4,6 @@ import { analyzeResumeAgainstJob, AnalysisError, InvalidInputError } from "@/lib
 import { checkRateLimit, RateLimitedError } from "@/lib/rateLimiter";
 
 export const runtime = "nodejs";
-export const maxDuration = 60;
 
 const MAX_JOB_DESCRIPTION_LENGTH = 20000;
 const MAX_NOTE_LENGTH = 4000;
