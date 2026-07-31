@@ -1,0 +1,16 @@
+Sam Rivera
+Operations Analyst
+sam.rivera@example.com | 555-9876
+
+EXPERIENCE
+
+Operations Analyst, Northwind Logistics, 2021-Present
+- Handled a wide variety of day-to-day tasks to keep the reporting process running smoothly, including some scripting work in Python to speed up a few recurring monthly reports and occasional SQL queries against the warehouse database when the standard reports didn't cut it.
+- Worked with the regional team on various projects.
+- Helped out with process documentation from time to time.
+
+Junior Analyst, Northwind Logistics, 2019-2021
+- Supported the operations team with data entry and basic reporting tasks.
+
+EDUCATION
+BS in Business Administration, State University, 2019

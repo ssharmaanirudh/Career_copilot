@@ -1,0 +1,20 @@
+Business Intelligence Analyst — Regional Operations
+
+About the role
+
+Our regional operations team is growing and we're looking for a Business
+Intelligence Analyst to help leadership make faster, better-informed
+decisions. This is a highly visible role that partners directly with
+regional directors and works across finance, operations, and customer
+success to surface insights from our growing data footprint. Candidates
+must have 5+ years of hands-on experience building dashboards in Tableau
+to be considered for this role — our entire reporting stack is built on
+Tableau and there is no ramp-up time built into this position.
+
+Responsibilities
+
+- Partner with regional directors to define KPIs and reporting priorities.
+- Build and maintain dashboards used in weekly leadership reviews.
+- Investigate anomalies in regional performance data and present findings.
+- Coordinate with finance and operations teams to validate reported numbers.
+- Document reporting processes and train new team members on dashboard use.

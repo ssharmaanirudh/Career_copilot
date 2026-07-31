@@ -1,0 +1,9 @@
+Jane Doe
+Software Engineer
+
+Experience:
+- Built REST APIs using Node.js and Express for an e-commerce platform serving 50k users.
+- Led migration from monolith to microservices, reducing deploy time by 40%.
+- Mentored 3 junior engineers.
+
+Skills: JavaScript, TypeScript, Node.js, React, PostgreSQL, Docker

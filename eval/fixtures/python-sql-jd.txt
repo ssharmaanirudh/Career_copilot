@@ -1,0 +1,10 @@
+Operations Data Analyst
+
+Essential requirements:
+- Experience using Python for automating recurring reports.
+- Experience writing SQL queries against a database for ad-hoc reporting.
+- Experience leading cross-functional projects with regional teams.
+- 3+ years of experience in an operations or analyst role.
+
+Desirable:
+- Experience with process documentation.

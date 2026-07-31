@@ -1,0 +1,43 @@
+ANIRUDH SHARMA
+Business & Insights Analyst | GTM Enablement, Cross-Functional Strategy & AI-Driven Execution
++91 9560971364 | ssharmaanirudh@gmail.com | linkedin.com/in/anirudhsharma-69a295162 | New Delhi, India
+
+PROFILE
+Analytics and strategy professional with 5 years turning large, multi-market datasets into user insights and executive decisions across national-scale programmes (23 districts, 150+ stakeholders). Built GenAI-powered workflows (Claude, Copilot, ChatGPT) that cut reporting time by 75%. Direct, hands-on experience with the AI-first speed modern GTM teams need. MBA in Data Science & Analytics; consulting background (IQVIA, Persolkelly) spanning cross-functional stakeholder management across government, donor, and product teams.
+
+Objective: Bring this data-to-decision discipline to Google's India Marketing team — building the user insights and value proposition work behind establishing Android as the OS of choice.
+
+CORE STRENGTHS
+- Data-to-Narrative Strategy: translating complex, multi-source data into user insights and executive storytelling
+- GenAI-Driven Workflow & Strategy Design: hands-on use of Claude, Copilot, ChatGPT to build faster, leaner reporting and research workflows
+- Cross-Functional Buy-In & Program Leadership: aligning IT, Product, Operations, government, and donor stakeholders across national-scale rollouts
+- Competitive & Landscape Research: synthesising multi-source intelligence (NIH, CDC, PubMed, FDA) into strategic, decision-ready recommendations
+- Performance Measurement: building dashboards and executive readouts that track programme impact and inform resource-allocation decisions
+- Financial & Behavioral Data Analytics: donor/leadership performance reporting, root-cause and geographic analysis
+- Multi-Market Standardization: designing SOPs and frameworks adopted consistently across 10-23 sites and 150+ users
+- Consulting Delivery: structured engagement work at IQVIA and Persolkelly (global consulting and staffing firms)
+
+PROFESSIONAL EXPERIENCE
+MIS Data Analyst | IQVIA/CMS NHM Punjab Engagement, Chandigarh | May 2024 - Present
+- Reporting & User/Field Insight: Extracted, cleaned and synthesised 20,000+ row datasets across 23 districts into 8 Power BI performance-measurement dashboards, delivering weekly insight that informed senior leadership decisions.
+- AI & Automation for Speed: Designed 5+ GenAI-powered workflows (Claude, Copilot, ChatGPT) and Excel VBA automations, cutting report turnaround from 2 hours to 30 minutes - saving 8+ hours/week.
+- Executive Communication: Delivered structured PowerPoint readouts translating complex, multi-source data into clear, decision-ready narratives for senior stakeholders.
+- Standardization & Governance: Designed SOPs and reporting standards adopted programme-wide, improving consistency, accountability and audit-readiness across all 23 districts.
+
+Project Coordinator | Persolkelly - NCDC Engagement, New Delhi | Jul 2023 - Apr 2024
+- Research & Synthesis: Synthesised multi-source research (NIH, CDC, PubMed, FDA) into structured, decision-ready reports for ministry-level senior stakeholders - comparable to landscape/competitive analysis feeding strategic positioning.
+- Stakeholder-Facing Deliverables: Built client-ready analytical decks that directly informed leadership resource-allocation decisions across 2 national programmes.
+- Cross-Functional Coordination: Partnered with central and state teams, resolving data gaps and tracking deliverables across a complex, multi-stakeholder programme landscape.
+- Scaled Adoption: Authored process documentation enabling 150+ officers across every Indian state to adopt a standardized framework - a national-scale rollout and adoption effort.
+
+Data Management Officer | Sightsavers India, Kanpur | Apr 2021 - Jun 2023
+- System Rebuild: Rebuilt fragmented data systems from scratch across 10 centres, managing 15,000+ row datasets to ensure reliable inputs for reporting and decision-making.
+- Executive & Financial Reporting: Delivered monthly performance packs to leadership and donor agency SCB, synthesising operational and financial data into executive narratives.
+- Process Improvement: Standardized reporting templates and QA checks across 10 centres, improving accuracy and cutting turnaround time.
+- Research & Insights: Conducted geographic and root-cause analysis, translating findings into actionable recommendations adopted programme-wide.
+
+EDUCATION & CERTIFICATIONS
+Forward Learning | McKinsey & Company | Jul 2026
+Career Essentials in Generative AI | Microsoft & LinkedIn | Jan 2025
+MBA - Data Science & Analytics | Manipal University | Dec 2024
+B.Tech - Food Technology | Amity University | Dec 2020

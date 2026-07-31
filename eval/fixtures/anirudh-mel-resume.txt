@@ -1,0 +1,151 @@
+ANIRUDH SHARMA
+
+Programme Monitoring & Analytics Professional
+
++91 9560971364   |   ssharmaanirudh@gmail.com   |   linkedin.com/in/anirudhsharma-69a295162   |   New Delhi, India
+
+
+
+PROFESSIONAL SUMMARY
+
+Programme monitoring and analytics professional with 5 years of experience across public health, digital health transformation, and development sector programmes. Hands-on expertise spanning MIS reporting, donor narrative writing, milestone tracking, KPI dashboard development, field data management, research synthesis, stakeholder engagement, and cross-functional coordination. Worked across all levels of government — district, state, and central ministry — as well as international NGOs and institutional donors. Built reporting and analytics systems from scratch across national-scale programmes. Proficient in Power BI, Advanced Excel (VBA, Macros), SQL, Kobo Collect, Google Sheets, Google Analytics, and MS PowerPoint. Actively uses GenAI tools (Claude, Copilot, ChatGPT) to drive efficiency. MBA in Data Science & Analytics.
+
+
+
+SKILLS
+
+Programme M&E    Donor Reporting    Milestone Tracking    KPI Design & Monitoring    Indicator Performance Review    Evidence Package Compilation    M&E Framework Design    Data Quality Assessment 
+
+Analytics & BI    Power BI (DAX, Power Query)    Advanced Excel (VBA, Macros)    SQL    Google Analytics    Tableau    Google Sheets    Kobo Collect 
+
+Research    Research Synthesis    Literature Review    Policy Analysis    Landscape & Competitive Analysis    Benchmarking    Evidence-based Reporting 
+
+Operations    SOP Development    Process Documentation    Cross-functional Coordination    Stakeholder Engagement    Field Team Management    Training & Capacity Building 
+
+AI & Automation    GenAI Tools (Claude, Copilot, ChatGPT)    Workflow Automation    Reporting Automation    Excel VBA Scripting 
+
+Languages    English    Hindi    Punjabi    German 
+
+
+
+PROFESSIONAL EXPERIENCE
+
+MIS Data Analyst (Programme Monitoring & Analytics)	May 2024 – Present
+
+IQVIA — National Health Mission Punjab Engagement, Chandigarh
+
+Dashboard Development: Built 8 Power BI dashboards entirely from scratch (DAX, data modelling, Power Query) — nothing existed before joining; dashboards tracked ABHA registration & adoption rates, facility digitisation progress, health worker onboarding, and district-wise comparative performance across all 23 districts of Punjab
+
+Data Integration: Integrated and synthesised data from multiple sources — NHA government portals, state health portals, Excel submissions from district teams, and Kobo Collect field data — into unified analytical frameworks supporting weekly reporting cycles
+
+KPI Implementation: Implemented government-defined KPIs across the reporting framework, translating national programme targets into district-level tracking metrics and performance indicators monitored across all 23 districts
+
+Automation: Designed and deployed 5+ automated reporting workflows using Excel VBA and GenAI tools (Claude, Copilot, ChatGPT) — reduced per-report preparation time from 2 hours to 30 minutes, saving 8+ hours weekly
+
+Weekly Reporting: Produced weekly performance reports delivered to district government officials, state health ministry, and central NHM/ministry officials — translated complex multi-source datasets into clear, decision-ready narratives
+
+Monthly Reporting: Compiled and authored monthly consolidated state reports synthesising performance across all 23 districts for senior government and ministry leadership
+
+Review Presentations: Prepared and delivered PowerPoint presentation decks for state-level programme review meetings — presented analytical findings directly to senior government stakeholders
+
+Field Reports: Produced field visit observation reports documenting data entry processes, training gaps, and implementation challenges identified across district facilities
+
+Field Visits: Conducted independent and team-based field visits across all 23 districts of Punjab — interviewed district health officials, observed data entry processes at facilities, and identified training gaps among health workers to validate and improve data quality
+
+Training Delivery: Trained district officers on data entry protocols and reporting standards; conducted workshops on ABDM adoption strategies; created training materials subsequently used by field teams across the state
+
+State Review Meetings: Presented analytical findings at state-level programme review meetings — communicated data-driven insights and recommendations directly to government stakeholders
+
+Programme Impact: Analytical work and intervention recommendations contributed to statewide digital adoption growth from 15% to 53% across Punjab — adoption more than tripled over the programme period
+
+Governance & SOPs: Designed and maintained programme-wide SOPs and reporting standards adopted across all 23 districts — improved consistency, accountability, and audit-readiness of data and reporting
+
+
+
+Project Coordinator	Jul 2023 – Apr 2024
+
+Persolkelly — National Centre for Disease Control (NCDC) Engagement, New Delhi
+
+Programme Coordination: Coordinated two national public health programmes — One Health and Climate Change & Human Health — tracking activities, milestones, and deliverables against approved activity plans across central and state-level government teams
+
+Data Collection Framework Design: Designed data collection frameworks and tools from scratch including data entry forms, structured trackers, and reporting templates — implemented across field teams and government counterparts for both programmes
+
+Data Analysis & Reporting: Analysed programme data from multiple sources to identify operational gaps, underperforming indicators, and implementation bottlenecks; contributed sections to monthly and quarterly progress reports for central ministry stakeholders
+
+Research Synthesis: Conducted evidence synthesis from WHO, UNICEF, World Bank reports, Indian government health policies, and peer-reviewed academic journals — produced research-backed briefs, landscape analyses, and policy summaries for programme design and government reporting
+
+Stakeholder Coordination: Coordinated monthly internal review meetings for both programmes; tracked action points, followed up with owners, and confirmed closure before next review cycles; liaised between field teams, NCDC internal leadership, and central ministry officials
+
+Documentation: Authored SOPs and process documentation adopted by 150+ nodal officers across all Indian states — designed for practical field use and audit readiness; maintained structured project repositories including meeting minutes, government correspondence, and activity records
+
+Review Meetings: Attended and prepared materials for government review meetings — compiled programme inputs from multiple field leads into structured briefings for ministry-level decision-makers
+
+
+
+Data Management Officer	Apr 2021 – Jun 2023
+
+Sightsavers India, Kanpur
+
+Programme Scope: Managed data across Sightsavers India's eye health programme encompassing community outreach, inclusion, and allied health activities — overseeing data from 10 eye-care centres and a 32-member field team
+
+Donor Reporting: Wrote and submitted monthly donor reports, quarterly progress reports, and annual programme reports for institutional donor Standard Chartered Bank (SCB) — compiled field inputs, synthesised programme data, and produced structured performance summaries meeting donor compliance requirements
+
+KPI Dashboards: Designed and maintained KPI dashboards monitoring operational and outreach performance across all 10 eye-care centres — tracked service delivery, beneficiary reach, community mobilisation, and programme quality indicators
+
+Budget Tracking: Tracked budget versus actual spend across programme costs, staff allocation, and operational expenditure — contributed to financial performance reporting for donor SCB supporting evidence-based resource deployment decisions
+
+Field Team Management: Supervised 32-member field team on a day-to-day basis — trained staff on data collection tools and protocols, reviewed and validated data submissions, conducted performance reviews, and designed data collection forms and tools used by the team
+
+Milestone Evidence Packages: Built and maintained milestone evidence packages for donor submission — compiled training attendance records, activity outputs, service delivery records, and beneficiary information into organised, audit-ready documentation
+
+Geographic Analysis: Conducted geographical footfall analysis and patient journey mapping across programme catchment areas — identified underserved locations and populations with lowest access to eye care services
+
+Business Case & Intervention Design: Designed data-driven intervention models based on geographic analysis findings — proposed and implemented a community health worker incentive scheme that improved patient conversion and programme sustainability
+
+Community Mobilisation: Supported community mobilisation and outreach activities — engaged community leaders, panchayat members, local government health departments, and partner NGOs to increase programme reach and health-seeking behaviour
+
+Partner Coordination: Coordinated with local government health departments, partner NGOs, community leaders, and panchayat members — built and maintained relationships to support programme delivery and field data collection
+
+Data Quality: Implemented validation protocols and quality checks across all 10 centres — identified data gaps and inconsistencies before escalation, ensuring reliable programme reporting for both internal leadership and institutional donor
+
+Process Improvement: Rebuilt fragmented data collection and reporting processes from scratch — standardised entry protocols, reporting templates, and QA procedures across all centres, significantly shortening the reporting cycle
+
+
+
+PERSONAL PROJECTS
+
+GapLens — AI Resume-to-Job Fit Analyzer	2026
+
+Built an LLM-based scoring engine that verifies resume claims against job requirements using cited evidence, hard requirement caps, and anti-gaming safeguards — not keyword matching
+
+Directed end-to-end product development (Next.js, Vercel) using AI-assisted coding tools, including structured prompt engineering, consistency testing, and documentation of reusable scoring specs
+
+
+
+PulseTrail — AI-Personalized Fitness Tracker	2026
+
+Directed design of a fitness app with activity tracking (walking, running, cycling), BMI-based health profiles, AI workout planner personalised to lifestyle data, and a community leaderboard
+
+Applied the same iterative AI-assisted development and prompt-experimentation approach used on GapLens — building reusable product development frameworks across both projects
+
+
+
+EDUCATION
+
+MBA — Data Science & Analytics	2024
+
+Manipal University
+
+B.Tech — Food Technology	2020
+
+Amity University
+
+
+
+CERTIFICATIONS & TRAINING
+
+Forward Learning Programme  —  McKinsey & Company	Jun 2026
+
+Career Essentials in Generative AI  —  Microsoft & LinkedIn	Jan 2025
+
+Salesforce Administration  —  Salesforce	Mar 2025

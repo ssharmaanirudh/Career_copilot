@@ -1,0 +1,18 @@
+Priya Nair
+Business Intelligence Analyst
+priya.nair@example.com | 555-2231
+
+EXPERIENCE
+
+Senior BI Analyst, Meridian Retail Group, 2019-Present
+- Built and maintained 20+ Tableau dashboards used in weekly regional leadership reviews, covering sales, inventory, and customer service KPIs.
+- Partnered directly with 6 regional directors to define reporting priorities and translate business questions into Tableau data models.
+- Investigated data anomalies across regional performance dashboards and presented root-cause findings to senior leadership.
+- Documented reporting processes into a team playbook and trained 12 new hires on Tableau dashboard usage and internal reporting standards.
+
+BI Analyst, Northbridge Consumer Goods, 2016-2019
+- Six years of combined experience building and maintaining Tableau dashboards for operations and finance stakeholders.
+- Coordinated with both finance and operations teams to validate reported revenue, cost, and utilization figures across three regions.
+
+EDUCATION
+BS in Business Analytics, State University, 2016

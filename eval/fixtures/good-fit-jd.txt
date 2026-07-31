@@ -1,0 +1,14 @@
+MIS / Reporting Analyst - Multi-Site Program Operations
+
+We are hiring an MIS / Reporting Analyst to support a multi-site government program.
+
+Essential requirements:
+- 3+ years experience extracting, cleaning, and synthesizing large datasets (10,000+ rows) into reporting dashboards.
+- Hands-on experience with Power BI or a similar BI/dashboarding tool for performance-measurement reporting.
+- Proven experience delivering executive-level PowerPoint or presentation readouts to senior stakeholders.
+- Experience designing SOPs/standardized reporting processes across multiple sites or districts.
+- Experience using Excel automation (macros/VBA) to speed up reporting workflows.
+
+Nice to have:
+- Exposure to GenAI tools for workflow acceleration.
+- Consulting background.

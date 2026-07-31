@@ -1,0 +1,18 @@
+Daniel Osei
+Business Intelligence Analyst
+daniel.osei@example.com | 555-7743
+
+EXPERIENCE
+
+BI Analyst, Fairview Logistics, 2020-Present
+- Built and maintained 15+ Power BI dashboards used in weekly regional leadership reviews, covering sales, inventory, and customer service KPIs.
+- Partnered directly with regional directors to define reporting priorities and translate business questions into Power BI data models.
+- Investigated data anomalies across regional performance dashboards and presented root-cause findings to senior leadership.
+- Trained new hires on Power BI dashboard usage and internal reporting standards.
+
+Reporting Analyst, Coastal Retail Partners, 2018-2020
+- Built Excel-based reporting workflows and pivot-table dashboards for finance stakeholders.
+- Coordinated with finance teams to validate reported revenue and cost figures.
+
+EDUCATION
+BS in Business Analytics, State University, 2018

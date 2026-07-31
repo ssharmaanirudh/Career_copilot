@@ -1,0 +1,16 @@
+Data Scientist - AI Product & Insights
+
+We are looking for a Data Scientist to join our AI product team, building models and insights that directly power our platform's features.
+
+Essential Skills:
+- Strong, hands-on experience in Python and SQL, capable of writing close to production standard code.
+- Practical, commercial experience applying machine learning techniques (clustering, classification, regression, NLP) to generate real business value.
+- Experience leveraging AWS services for data transformation, feature engineering, and AI product development and deployment, specifically SageMaker and Bedrock.
+- Experience working with an MLOps team to take models from prototype to production, including containerization and deployment pipelines.
+- Familiarity with LLM-based systems and retrieval-augmented generation (RAG) approaches.
+
+Nice to have:
+- Experience presenting technical findings to non-technical stakeholders.
+- Background in a fast-paced, data-heavy environment.
+
+You will work closely with engineering and product teams to ship models into production, monitor their performance, and iterate based on real user data.
