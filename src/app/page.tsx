@@ -5,6 +5,7 @@ import { ResumeUploader } from "@/components/ResumeUploader";
 import { ResultsView } from "@/components/ResultsView";
 import { RefineBox } from "@/components/RefineBox";
 import { ActionPlanBox } from "@/components/ActionPlanBox";
+import { Hero } from "@/components/Hero";
 import { WhyDifferent } from "@/components/WhyDifferent";
 import { SamplePreview } from "@/components/SamplePreview";
 import { parseJsonResponse } from "@/lib/fetchJson";
@@ -115,10 +116,7 @@ export default function Home() {
       <main className="mx-auto max-w-5xl px-6 py-10">
         {status === "idle" && (
           <>
-            {/* Phase 1 typography check only — confirms Newsreader loads; removed/restyled in Phase 2. */}
-            <p className="font-serif mb-6 text-2xl font-semibold text-gl-ink">
-              Newsreader loaded — Phase 1 check
-            </p>
+            <Hero />
             <WhyDifferent />
             <SamplePreview />
           </>

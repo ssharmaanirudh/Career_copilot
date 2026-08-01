@@ -1,21 +1,11 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Newsreader, IBM_Plex_Mono, Inter } from "next/font/google";
+import { Newsreader, IBM_Plex_Mono, Inter } from "next/font/google";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-// DESIGN.md typography: Newsreader for h1/h2 only (Phase 2), IBM Plex
-// Mono for evidence/citations/labels, Inter for body copy and UI chrome.
-// Loaded here now so they're available; application beyond the Phase 1
-// test heading happens in later phases per DESIGN.md's phasing.
+// DESIGN.md typography, applied sitewide as of Phase 2 (the hero rebuild):
+// Newsreader for h1/h2 only, IBM Plex Mono for evidence/citations/labels,
+// Inter for body copy and UI chrome. Geist Sans/Mono dropped — DESIGN.md
+// specifies exactly these three fonts, no more.
 const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
@@ -49,7 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${newsreader.variable} ${ibmPlexMono.variable} ${inter.variable} h-full antialiased`}
+      className={`${newsreader.variable} ${ibmPlexMono.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

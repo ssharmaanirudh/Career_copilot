@@ -34,11 +34,12 @@
   --color-gl-crimson: var(--gl-crimson);
   --color-gl-crimson-bg: var(--gl-crimson-bg);
   --color-gl-amber: var(--gl-amber);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* DESIGN.md's three fonts. font-sans/font-mono are Tailwind's default
+     scale keys, so this is a one-time repoint — no component needs to
+     reference a custom font utility name. */
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-ibm-plex-mono);
   --font-serif: var(--font-newsreader);
-  --font-mono-evidence: var(--font-ibm-plex-mono);
-  --font-body: var(--font-inter);
 }
 
 body {
