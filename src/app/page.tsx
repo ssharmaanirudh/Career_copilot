@@ -7,6 +7,7 @@ import { RefineBox } from "@/components/RefineBox";
 import { ActionPlanBox } from "@/components/ActionPlanBox";
 import { Hero } from "@/components/Hero";
 import { WhyDifferent } from "@/components/WhyDifferent";
+import { VerificationProcess } from "@/components/VerificationProcess";
 import { SamplePreview } from "@/components/SamplePreview";
 import { parseJsonResponse } from "@/lib/fetchJson";
 import type { AnalysisResult } from "@/lib/types";
@@ -118,6 +119,7 @@ export default function Home() {
           <>
             <Hero />
             <WhyDifferent />
+            <VerificationProcess />
             <SamplePreview />
           </>
         )}
