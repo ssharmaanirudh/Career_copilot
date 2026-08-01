@@ -68,3 +68,13 @@ body {
     linear-gradient(90deg, var(--gl-grid-line) 1px, transparent 1px);
   background-size: 24px 24px;
 }
+
+/* DESIGN.md "Requirement row" — unmet rows flash pale crimson once on reveal, then settle to transparent. */
+@keyframes gl-flash-crimson {
+  from {
+    background-color: var(--gl-crimson-bg);
+  }
+  to {
+    background-color: transparent;
+  }
+}

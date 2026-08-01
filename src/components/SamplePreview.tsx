@@ -1,5 +1,9 @@
 /** Static, hardcoded sample output for the landing page — never wired to real data. */
 
+import { BigScore } from "./BigScore";
+import { RequirementRow } from "./RequirementRow";
+import { VerdictStamp } from "./VerdictStamp";
+
 const SCORE = 42;
 
 const CHECKLIST = [
@@ -7,39 +11,31 @@ const CHECKLIST = [
     type: "essential",
     status: "met",
     requirement: "3+ years of backend development",
-    detail: "“5 years building backend services in Node.js and Python”",
+    detail: "5 years building backend services in Node.js and Python",
+    isEvidence: true,
   },
   {
     type: "essential",
     status: "not_met",
     requirement: "AWS (EC2, S3, Lambda)",
     detail: "No mention of AWS or any cloud infrastructure work.",
+    isEvidence: false,
   },
   {
     type: "essential",
     status: "not_met",
     requirement: "Kubernetes / container orchestration",
     detail: "No mention of Kubernetes or container orchestration.",
+    isEvidence: false,
   },
   {
     type: "desirable",
     status: "met",
     requirement: "CI/CD pipeline experience",
-    detail: "“Built CI/CD pipelines using GitHub Actions”",
+    detail: "Built CI/CD pipelines using GitHub Actions",
+    isEvidence: true,
   },
 ] as const;
-
-const STATUS_STYLES: Record<"met" | "not_met", string> = {
-  met: "bg-gl-teal-bg text-gl-teal",
-  not_met: "bg-gl-crimson-bg text-gl-crimson",
-};
-
-const STATUS_ICON: Record<"met" | "not_met", string> = { met: "✓", not_met: "✗" };
-
-const TYPE_STYLES: Record<"essential" | "desirable", string> = {
-  essential: "bg-gl-ink/10 text-gl-ink-muted",
-  desirable: "bg-gl-ink/5 text-gl-ink-faint",
-};
 
 export function SamplePreview() {
   return (
@@ -54,67 +50,30 @@ export function SamplePreview() {
       </div>
 
       <div className="rounded-2xl border border-dashed border-gl-ink/20 bg-gl-paper-card p-6">
-        <div className="flex flex-wrap items-center gap-6">
-          <div className="relative flex h-24 w-24 shrink-0 items-center justify-center">
-            <svg viewBox="0 0 100 100" className="h-full w-full -rotate-90">
-              <circle
-                cx="50"
-                cy="50"
-                r={42}
-                fill="none"
-                strokeWidth="10"
-                className="stroke-gl-ink/10"
-              />
-              <circle
-                cx="50"
-                cy="50"
-                r={42}
-                fill="none"
-                strokeWidth="10"
-                strokeLinecap="round"
-                strokeDasharray={2 * Math.PI * 42}
-                strokeDashoffset={2 * Math.PI * 42 * (1 - SCORE / 100)}
-                className="stroke-gl-crimson"
-              />
-            </svg>
-            <div className="absolute flex flex-col items-center">
-              <span className="text-2xl font-bold tabular-nums text-gl-crimson">{SCORE}</span>
-              <span className="text-[10px] uppercase tracking-wide text-gl-ink-faint">
-                / 100
-              </span>
-            </div>
-          </div>
-          <div className="min-w-[16rem] flex-1">
-            <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <BigScore score={SCORE} size="md" />
+            <div className="min-w-[14rem]">
               <h3 className="font-semibold text-gl-ink">Application strength</h3>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-gl-crimson-bg px-2.5 py-1 text-xs font-semibold text-gl-crimson">
-                Would not clear a screen
-              </span>
+              <p className="mt-1 text-sm text-gl-ink-muted">
+                Score capped: 2 essential requirements are unmet — AWS and Kubernetes.
+              </p>
             </div>
-            <p className="mt-2 rounded-lg bg-amber-50 px-3 py-2 text-sm text-amber-800">
-              Score capped: 2 essential requirements are unmet — AWS and Kubernetes.
-            </p>
           </div>
+          <VerdictStamp label="SCORE CAPPED" tone="crimson" trigger />
         </div>
 
-        <ul className="mt-5 flex flex-col gap-2.5 border-t border-gl-ink/10 pt-4">
+        <ul className="mt-5 flex flex-col gap-1 border-t border-gl-ink/10 pt-4">
           {CHECKLIST.map((item) => (
-            <li key={item.requirement} className="flex items-start gap-2 text-sm">
-              <span
-                className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[10px] font-bold ${STATUS_STYLES[item.status]}`}
-              >
-                {STATUS_ICON[item.status]}
-              </span>
-              <span>
-                <span
-                  className={`mr-1.5 rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${TYPE_STYLES[item.type]}`}
-                >
-                  {item.type}
-                </span>
-                <span className="font-medium text-gl-ink">{item.requirement}</span>
-                <span className="text-gl-ink-faint"> — {item.detail}</span>
-              </span>
-            </li>
+            <RequirementRow
+              key={item.requirement}
+              type={item.type}
+              status={item.status}
+              requirement={item.requirement}
+              detail={item.detail}
+              isEvidence={item.isEvidence}
+              flash={item.status === "not_met"}
+            />
           ))}
         </ul>
 
