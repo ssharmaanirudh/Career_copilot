@@ -27,6 +27,8 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
+const CHECKLIST_PANEL_ID = "requirements-checklist-panel";
+
 function RequirementsChecklist({ items }: { items: RequirementCheck[] }) {
   const [open, setOpen] = useState(false);
   if (items.length === 0) return null;
@@ -37,6 +39,8 @@ function RequirementsChecklist({ items }: { items: RequirementCheck[] }) {
       <button
         type="button"
         onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls={CHECKLIST_PANEL_ID}
         className="flex items-center gap-1.5 text-sm font-medium text-gl-ink-muted transition-colors hover:text-gl-teal"
       >
         <ChevronIcon open={open} />
@@ -44,7 +48,7 @@ function RequirementsChecklist({ items }: { items: RequirementCheck[] }) {
         {unmet > 0 && <span className="text-gl-ink-faint">({unmet} not met)</span>}
       </button>
       {open && (
-        <ul className="mt-3 flex flex-col gap-1">
+        <ul id={CHECKLIST_PANEL_ID} className="mt-3 flex flex-col gap-1">
           {items.map((item, i) => (
             <RequirementRow
               key={i}
