@@ -64,7 +64,7 @@ export function DocumentPanel({ text }: DocumentPanelProps) {
       <textarea
         readOnly
         value={text}
-        className="h-[28rem] w-full resize-y rounded-xl border border-gl-ink/10 bg-gl-ink/5 p-4 font-mono text-sm leading-relaxed text-gl-ink-muted shadow-inner shadow-black/5 focus:outline-none"
+        className="h-[28rem] w-full resize-y rounded-xl border border-gl-ink/10 bg-gl-ink/5 p-4 font-mono text-sm leading-relaxed text-gl-ink-muted shadow-inner shadow-black/5 focus:border-gl-teal focus:outline-none focus:ring-4 focus:ring-gl-teal/15"
       />
     </div>
   );
