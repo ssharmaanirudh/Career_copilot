@@ -14,7 +14,7 @@
   --gl-paper-card: #ffffff; /* card/document surface */
   --gl-ink: #1b1c19; /* primary text, near-black */
   --gl-ink-muted: #4a4a44; /* body copy */
-  --gl-ink-faint: #8a8a82; /* captions, labels, metadata */
+  --gl-ink-faint: #6b6b65; /* captions, labels, metadata — darkened from #8A8A82 for WCAG AA (4.5:1) on gl-paper/gl-paper-card */
   --gl-teal: #0f6e56; /* verified / met / brand accent */
   --gl-teal-bg: #e1f5ee; /* pale teal fill for badges */
   --gl-crimson: #c23b3b; /* gap / unmet / flagged */
