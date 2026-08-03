@@ -151,6 +151,11 @@ export default function Home() {
               placeholder="Paste the full job description here…"
               className="h-48 flex-1 resize-y rounded-xl border border-gl-ink/15 p-3 text-sm shadow-inner shadow-black/5 transition-shadow focus:border-gl-teal focus:shadow-none focus:outline-none focus:ring-4 focus:ring-gl-teal/15 lg:h-auto"
             />
+            <p className="mt-2 text-xs text-gl-ink-faint">
+              Don&apos;t have a specific posting yet? Search your target role on LinkedIn or
+              Indeed, and paste in one real listing close to what you want — GapLens works best
+              checked against an actual posting, not a general idea of a role.
+            </p>
           </div>
 
           <div className="lg:col-span-2">
