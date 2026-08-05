@@ -540,6 +540,7 @@ export async function analyzeResumeAgainstJob(
       systemInstruction: SYSTEM_PROMPT,
       responseMimeType: "application/json",
       responseSchema: RESPONSE_SCHEMA,
+      temperature: 0,
     },
   });
 
