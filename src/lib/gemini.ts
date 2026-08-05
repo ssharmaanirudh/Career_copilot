@@ -9,6 +9,7 @@ import type {
 } from "./types";
 import { MODEL, AnalysisError, generateStructuredJson } from "./geminiClient";
 import { clampScore, str, bool } from "./normalize";
+import { annotateJdStructure } from "./jdStructure";
 
 export { AnalysisError } from "./geminiClient";
 /** The submitted resume or job description text doesn't resemble one — a user-input problem, not an upstream failure. */
@@ -34,11 +35,12 @@ Before doing anything else, check that both inputs are usable:
 
 If both inputs are valid, you will:
 
-STEP 1 — Extract requirements from the JD into a checklist. Split into:
-- essential: anything under a "required/essential" heading, phrased as "must have," "X+ years," "proficient in," naming a specific tool/language/platform/degree, or appearing as a bulleted item within a structured "duties," "responsibilities," or "requirements" list.
-- desirable: anything phrased as "nice to have," "exposure to," "familiarity," "preferred," listed under a "desirable" heading, or a specific/concrete-sounding activity that appears only ONCE, only in unstructured background/context narrative — never inside a structured duties/responsibilities list, and never repeated elsewhere.
-If the JD has a structured duties/responsibilities/requirements list, treat that list as the authoritative source of what the role actually requires. A concrete-sounding activity mentioned once in the surrounding background/context narrative but absent from that list is desirable, not essential — even if it names a specific tool or platform, and even if the sentence uses the generic verb "require(s)"/"will require" to describe an ordinary duty in flowing prose (e.g. "the position will also require X" is normal descriptive phrasing, NOT a hard gate — do not let the word "require" alone promote it to essential). Only treat a narrative-only mention as essential if it states a specific, measurable gate tied to that exact activity — a minimum years-of-experience, a named required credential/certification, or an explicit "must have X" / "required: X" qualification statement structured as a standalone criterion, not a verb inside a sentence describing job duties.
-If the JD is unlabeled and has no structured list at all, default to essential for any concrete skill, tool, years-of-experience, or degree requirement, and desirable only for vague traits ("strategic thinking," "business acumen," "communication skills").
+STEP 1 — Extract requirements from the JD into a checklist. The JD text below may already contain marker lines like "[STRUCTURED REQUIREMENTS SECTION START/END]" or "[STRUCTURED DUTIES LIST START/END]" — these were inserted by deterministic parsing of the document's actual formatting (headings, bullets, or a heading followed by short listed items) BEFORE you saw this text. Treat them as ground truth about document structure, not something to re-derive yourself: content between a START/END pair is structured-list content; content that falls outside every marker pair is narrative by definition. Do not second-guess or override what the markers say a given line's structural context is — your job is to judge what each item MEANS (essential vs. desirable), not to re-decide whether it's inside a list.
+Split into:
+- essential: anything under a "required/essential" heading, phrased as "must have," "X+ years," "proficient in," naming a specific tool/language/platform/degree, or appearing inside a "[STRUCTURED REQUIREMENTS SECTION]" or "[STRUCTURED DUTIES LIST]" marker pair.
+- desirable: anything phrased as "nice to have," "exposure to," "familiarity," "preferred," listed under a "desirable" heading, or a specific/concrete-sounding activity that appears only ONCE, entirely outside any marker pair (i.e. in narrative/background text), and never repeated elsewhere.
+Content inside a marker pair is authoritative — treat it as the real source of what the role requires. A concrete-sounding activity mentioned once outside any marker pair is desirable, not essential — even if it names a specific tool or platform, and even if the sentence uses the generic verb "require(s)"/"will require" to describe an ordinary duty in flowing prose (e.g. "the position will also require X" is normal descriptive phrasing, NOT a hard gate — do not let the word "require" alone promote it to essential). Only treat a narrative mention (outside every marker pair) as essential if it states a specific, measurable gate tied to that exact activity — a minimum years-of-experience, a named required credential/certification, or an explicit "must have X" / "required: X" qualification statement structured as a standalone criterion, not a verb inside a sentence describing job duties.
+If the JD contains no marker pairs at all (the deterministic parser found no clear headed list anywhere), default to essential for any concrete skill, tool, years-of-experience, or degree requirement, and desirable only for vague traits ("strategic thinking," "business acumen," "communication skills").
 Also identify the JD's core technical function — the primary tech stack, core tool, or the stated years-of-experience gate that this role is fundamentally built around. There is at most one such requirement per JD (some JDs, e.g. a generalist or non-technical role, have none). Mark that single requirement's "isCoreRequirement" true; every other requirement gets false. This is the same judgment step 4 uses to decide the hard 15-point cap — decide it once here and reuse it, do not re-derive it in step 4.
 
 STEP 2 — Verify each requirement against the CANDIDATE'S REAL, AS-SUBMITTED RESUME PLUS ANY CANDIDATE NOTES (together these describe the candidate's true qualifications and do not change later when you tailor the resume — compute this checklist once and reuse it for both scoring passes below). For each requirement, find the most directly relevant resume text or candidate note and classify as met or not_met:
@@ -531,7 +533,9 @@ export async function analyzeResumeAgainstJob(
           .join("\n")}\n"""`
       : "";
 
-  const userMessage = `CANDIDATE RESUME:\n"""\n${resumeText}\n"""\n\nTARGET JOB DESCRIPTION:\n"""\n${jobDescription}\n"""${notesSection}`;
+  const annotatedJd = annotateJdStructure(jobDescription);
+
+  const userMessage = `CANDIDATE RESUME:\n"""\n${resumeText}\n"""\n\nTARGET JOB DESCRIPTION:\n"""\n${annotatedJd}\n"""${notesSection}`;
 
   const responseText = await generateStructuredJson({
     model: process.env.GEMINI_MODEL || MODEL,
