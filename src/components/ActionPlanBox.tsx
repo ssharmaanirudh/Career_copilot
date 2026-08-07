@@ -45,7 +45,7 @@ export function ActionPlanBox({ scoringResult }: ActionPlanBoxProps) {
 
   return (
     <div className="rounded-2xl border border-gl-ink/10 bg-gl-paper-card p-6 shadow-sm shadow-black/5">
-      <h3 className="font-semibold text-gl-ink">Action plan (dev preview)</h3>
+      <h3 className="font-semibold text-gl-ink">Action plan</h3>
       <p className="mt-1 text-sm text-gl-ink-faint">
         How long until you need to apply or be ready?
       </p>
