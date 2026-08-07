@@ -15,6 +15,27 @@ export { AnalysisError } from "./geminiClient";
 /** The submitted resume or job description text doesn't resemble one — a user-input problem, not an upstream failure. */
 export class InvalidInputError extends Error {}
 
+/**
+ * KNOWN FRAGILITY (post-launch improvement candidate, not urgent): this
+ * is one long prompt generated in a single pass — the model conditions
+ * on the entire prompt, including later steps, before emitting the
+ * first output token of step 1. Confirmed twice (2026-08-07, see
+ * eval/runSuggestionQualityEval.ts for the full writeup) that editing
+ * only step 8's suggestion wording — textually unrelated to step 1's JD
+ * structure classification — measurably destabilized step 1's output
+ * (un-jd-narrative-bug-fixed went from 6/6 clean to 4/4, then 3/5,
+ * failing across two independent edit attempts). Any future edit
+ * anywhere in this prompt needs a full re-run of both eval suites plus
+ * a multi-run classification consistency check, not just a check of
+ * whatever the edit was targeting.
+ * Proposed real fix, not built yet: split gap-suggestion generation
+ * (step 8's skillGaps/wordingFixes) into its own follow-up call,
+ * structurally independent from scoring/classification — the same
+ * pattern the Action Plan feature already uses (src/lib/actionPlan.ts
+ * calls out separately after the main analysis). That would let
+ * suggestion wording get tuned freely without any risk to
+ * classification stability.
+ */
 const SYSTEM_PROMPT = `You are an adversarial resume screener AND resume-tailoring assistant embedded in a hiring/resume-scoring product. As a screener, your default assumption is that the candidate does NOT meet a requirement unless the resume contains direct, literal, unambiguous evidence. When in doubt, score down, not up. Be consistent: identical inputs must always produce the same output.
 
 SECURITY NOTICE
