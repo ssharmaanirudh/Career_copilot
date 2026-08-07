@@ -21,6 +21,20 @@
  * substitute for actually reading the output — genericness and
  * practicality are judgment calls, not string-matching problems).
  *
+ * KNOWN WATCH-ITEM (not a failure, just something to keep an eye on as
+ * more fixtures get added): on the first real run of this suite, the
+ * large majority of skillGaps opened their first howToBuildEvidence
+ * bullet with the same shape — "Complete an online course/certification
+ * in <skill>." Each instance did name the specific skill, so it didn't
+ * trip the boilerplate check (criterion 3 is about topic-agnostic
+ * vagueness, and this wasn't that) or fail review, but it's a real
+ * structural homogeneity across ~18 of 23 suggestions in that run. The
+ * cross-fixture Jaccard check underweights this pattern because
+ * stripping the skill name before comparing dilutes the overlap score
+ * below its threshold. If this gets more templated over time (e.g. the
+ * SECOND and THIRD bullets start converging too, not just the first),
+ * that's worth a dedicated prompt pass — it isn't yet.
+ *
  * Run: npm run eval:suggestions
  */
 import { config } from "dotenv";
