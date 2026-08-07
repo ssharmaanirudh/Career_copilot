@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { extractResumeText, ResumeParseError } from "@/lib/parseResume";
 import { analyzeResumeAgainstJob, AnalysisError, InvalidInputError } from "@/lib/gemini";
-import { checkRateLimit, RateLimitedError } from "@/lib/rateLimiter";
+import { checkRateLimit, getClientIp, RateLimitedError } from "@/lib/rateLimiter";
 
 export const runtime = "nodejs";
 
@@ -11,7 +11,7 @@ const MAX_NOTES = 20;
 
 export async function POST(request: Request) {
   try {
-    checkRateLimit();
+    checkRateLimit(getClientIp(request));
   } catch (err) {
     if (err instanceof RateLimitedError) {
       return NextResponse.json({ error: err.message }, { status: 429 });

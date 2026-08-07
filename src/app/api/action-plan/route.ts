@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { generateActionPlan } from "@/lib/actionPlan";
 import { AnalysisError } from "@/lib/geminiClient";
-import { checkRateLimit, RateLimitedError } from "@/lib/rateLimiter";
+import { checkRateLimit, getClientIp, RateLimitedError } from "@/lib/rateLimiter";
 import type { AnalysisResult, TimeBudget } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -16,7 +16,7 @@ const VALID_TIME_BUDGETS: TimeBudget[] = [
 
 export async function POST(request: Request) {
   try {
-    checkRateLimit();
+    checkRateLimit(getClientIp(request));
   } catch (err) {
     if (err instanceof RateLimitedError) {
       return NextResponse.json({ error: err.message }, { status: 429 });
