@@ -35,6 +35,23 @@
  * SECOND and THIRD bullets start converging too, not just the first),
  * that's worth a dedicated prompt pass — it isn't yet.
  *
+ * DO NOT fix suggestion-quality issues by editing Step 8's prompt text
+ * in gemini.ts without re-running BOTH `npm run eval` and
+ * `npm run eval:suggestions` afterward, and re-checking classification
+ * stability with a multi-run consistency check, not just a single pass.
+ * Confirmed twice on 2026-08-07: editing only Step 8 (gap-suggestion
+ * wording, textually unrelated to Step 1's JD-structure classification)
+ * caused un-jd-narrative-bug-fixed to regress from 6/6 clean to 4/4 and
+ * then 3/5 failing, even with a small, self-contained edit. The whole
+ * system prompt is one generation — the model conditions on all of it
+ * before emitting the first output token, so a change anywhere can
+ * shift earlier fields' output distribution, not just the section it's
+ * textually inside. Both attempts were reverted; the MLOps suggestion
+ * fix from that investigation was abandoned rather than shipped with
+ * degraded classification reliability. If this needs fixing again,
+ * consider a separate follow-up call for suggestion polishing (like the
+ * Action Plan feature already does) instead of another mega-prompt edit.
+ *
  * Run: npm run eval:suggestions
  */
 import { config } from "dotenv";
