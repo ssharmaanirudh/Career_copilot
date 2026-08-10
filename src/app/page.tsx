@@ -8,7 +8,6 @@ import { RefineBox } from "@/components/RefineBox";
 import { ActionPlanBox } from "@/components/ActionPlanBox";
 import { Hero } from "@/components/Hero";
 import { SiteHeader } from "@/components/SiteHeader";
-import { SamplePreview } from "@/components/SamplePreview";
 import { parseJsonResponse } from "@/lib/fetchJson";
 import { MIN_JOB_DESCRIPTION_LENGTH } from "@/lib/validation";
 import type { AnalysisResult } from "@/lib/types";
@@ -114,7 +113,6 @@ export default function Home() {
                 </svg>
               </Link>
             </p>
-            <SamplePreview />
           </>
         )}
 

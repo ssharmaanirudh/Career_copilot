@@ -2,6 +2,7 @@ import Link from "next/link";
 import { SiteHeader } from "@/components/SiteHeader";
 import { WhyDifferent } from "@/components/WhyDifferent";
 import { VerificationProcess } from "@/components/VerificationProcess";
+import { SamplePreview } from "@/components/SamplePreview";
 
 export const metadata = {
   title: "How GapLens works",
@@ -39,6 +40,7 @@ export default function HowItWorks() {
 
         <WhyDifferent />
         <VerificationProcess />
+        <SamplePreview />
       </main>
     </div>
   );
