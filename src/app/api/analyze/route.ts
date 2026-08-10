@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { extractResumeText, ResumeParseError } from "@/lib/parseResume";
 import { analyzeResumeAgainstJob, AnalysisError, InvalidInputError } from "@/lib/gemini";
 import { checkRateLimit, getClientIp, RateLimitedError } from "@/lib/rateLimiter";
+import { MIN_JOB_DESCRIPTION_LENGTH } from "@/lib/validation";
 
 export const runtime = "nodejs";
 
@@ -35,9 +36,15 @@ export async function POST(request: Request) {
   if (!(resumeFile instanceof File)) {
     return NextResponse.json({ error: "Missing resume file." }, { status: 400 });
   }
-  if (typeof jobDescription !== "string" || jobDescription.trim().length < 30) {
+  if (
+    typeof jobDescription !== "string" ||
+    jobDescription.trim().length < MIN_JOB_DESCRIPTION_LENGTH
+  ) {
     return NextResponse.json(
-      { error: "Please paste the full job description (at least a few sentences)." },
+      {
+        error:
+          "This looks like a job title rather than a full posting — please paste the full job description.",
+      },
       { status: 400 },
     );
   }
