@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { parseJsonResponse } from "@/lib/fetchJson";
-import type { ActionPlanResult, AnalysisResult, TimeBudget } from "@/lib/types";
+import type { ActionPlanAction, ActionPlanResult, AnalysisResult, TimeBudget } from "@/lib/types";
 
 const TIME_BUDGETS: TimeBudget[] = ["today", "this week", "2-4 weeks", "1-3 months", "3+ months"];
 
@@ -10,11 +10,75 @@ interface ActionPlanBoxProps {
   scoringResult: AnalysisResult;
 }
 
+const ACTION_TYPE_LABELS: Record<ActionPlanAction["actionType"], string> = {
+  wording_fix: "quick fix",
+  real_gap_closure: "real gap",
+};
+
+const EFFORT_LABELS: Record<ActionPlanAction["effortEstimate"], string> = {
+  quick: "quick · days",
+  medium: "medium · weeks",
+  substantial: "substantial · months+",
+};
+
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      className={`h-3.5 w-3.5 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="m9 5 7 7-7 7" />
+    </svg>
+  );
+}
+
+function ActionCard({ action }: { action: ActionPlanAction }) {
+  const [open, setOpen] = useState(false);
+  const panelId = `action-detail-${action.rank}`;
+
+  return (
+    <li className="rounded-lg border border-gl-ink/10">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls={panelId}
+        className="flex w-full items-start gap-2.5 p-2.5 text-left transition-colors hover:bg-gl-ink/5"
+      >
+        <span className="mt-0.5 shrink-0 font-mono text-xs text-gl-ink-faint">
+          #{action.rank}
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium text-gl-ink">{action.requirementAddressed}</p>
+          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wide text-gl-ink-faint">
+            {ACTION_TYPE_LABELS[action.actionType]}
+            <span className="mx-1.5">·</span>
+            {EFFORT_LABELS[action.effortEstimate]}
+          </p>
+          <p className="mt-1 line-clamp-1 text-sm text-gl-ink-muted">{action.description}</p>
+        </div>
+        <span className="mt-0.5 shrink-0 text-gl-ink-faint">
+          <ChevronIcon open={open} />
+        </span>
+      </button>
+
+      {open && (
+        <div id={panelId} className="border-t border-gl-ink/10 p-2.5 pt-2">
+          <p className="text-sm text-gl-ink-muted">{action.description}</p>
+        </div>
+      )}
+    </li>
+  );
+}
+
 /**
- * Functional plumbing only — collects the time budget and calls /api/action-plan.
- * Deliberately minimal, unstyled rendering of the result; Phase B replaces this
- * with the actual DESIGN.md-styled results view (verdict stamp, ranked action
- * cards, link back to the full checklist).
+ * Collects the time budget and calls /api/action-plan. Ranked actions render
+ * with the same collapse-by-default pattern as SkillGapList: icon/rank + label
+ * line + one-line summary, full detail on expand.
  */
 export function ActionPlanBox({ scoringResult }: ActionPlanBoxProps) {
   const [timeBudget, setTimeBudget] = useState<TimeBudget>("2-4 weeks");
@@ -85,12 +149,7 @@ export function ActionPlanBox({ scoringResult }: ActionPlanBoxProps) {
           {plan.actions.length > 0 && (
             <ol className="mt-3 flex flex-col gap-2">
               {plan.actions.map((a) => (
-                <li key={a.rank} className="rounded-lg border border-gl-ink/10 p-2">
-                  <p className="font-medium text-gl-ink">
-                    #{a.rank} · {a.requirementAddressed} ({a.effortEstimate})
-                  </p>
-                  <p className="text-gl-ink-muted">{a.description}</p>
-                </li>
+                <ActionCard key={a.rank} action={a} />
               ))}
             </ol>
           )}
