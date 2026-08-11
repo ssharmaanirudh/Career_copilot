@@ -1,59 +1,83 @@
+"use client";
+
+import { useState } from "react";
 import type { SkillGap } from "@/lib/types";
 
-const PRIORITY_STYLES: Record<SkillGap["priority"], string> = {
-  high: "bg-gl-crimson-bg text-gl-crimson",
-  medium: "bg-amber-100 text-amber-700",
-  low: "bg-gl-ink/10 text-gl-ink-muted",
+function XIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4 shrink-0" aria-hidden="true">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+    </svg>
+  );
+}
+
+function ChevronIcon({ open }: { open: boolean }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      className={`h-3.5 w-3.5 shrink-0 transition-transform ${open ? "rotate-90" : ""}`}
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" strokeLinejoin="round" d="m9 5 7 7-7 7" />
+    </svg>
+  );
+}
+
+/** High priority is the one tier that earns crimson — a genuine "needs attention" claim, not decoration. Medium/low stay neutral ink shades. */
+const PRIORITY_TEXT_STYLES: Record<SkillGap["priority"], string> = {
+  high: "text-gl-crimson",
+  medium: "text-gl-ink-muted",
+  low: "text-gl-ink-faint",
 };
 
 const EFFORT_LABELS: Record<SkillGap["effortEstimate"], string> = {
-  quick: "Quick (days)",
-  medium: "Medium (weeks)",
-  substantial: "Substantial (months+)",
+  quick: "quick · days",
+  medium: "medium · weeks",
+  substantial: "substantial · months+",
 };
 
-const EFFORT_STYLES: Record<SkillGap["effortEstimate"], string> = {
-  quick: "bg-gl-teal-bg text-gl-teal",
-  medium: "bg-amber-50 text-amber-700",
-  substantial: "bg-gl-ink/10 text-gl-ink-muted",
-};
-
-export function SkillGapList({ skillGaps }: { skillGaps: SkillGap[] }) {
-  if (skillGaps.length === 0) {
-    return (
-      <p className="text-sm text-gl-ink-faint">
-        No genuine gaps found — your background lines up well with this role.
-      </p>
-    );
-  }
+function GapCard({ gap }: { gap: SkillGap }) {
+  const [open, setOpen] = useState(false);
+  const panelId = `skill-gap-detail-${gap.skill.replace(/\W+/g, "-").toLowerCase()}`;
 
   return (
-    <ul className="flex flex-col gap-3">
-      {skillGaps.map((gap, i) => (
-        <li
-          key={i}
-          className="rounded-xl border border-gl-ink/10 p-4 transition-shadow hover:shadow-sm"
-        >
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <h4 className="font-semibold text-gl-ink">{gap.skill}</h4>
-            <div className="flex shrink-0 items-center gap-1.5">
-              <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium capitalize ${PRIORITY_STYLES[gap.priority]}`}
-              >
-                {gap.priority} priority
-              </span>
-              <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium ${EFFORT_STYLES[gap.effortEstimate]}`}
-              >
-                {EFFORT_LABELS[gap.effortEstimate]}
-              </span>
-            </div>
-          </div>
-          <p className="mt-1 text-sm text-gl-ink-muted">{gap.whatsMissing}</p>
+    <li className="rounded-xl border border-gl-ink/10">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls={panelId}
+        className="flex w-full items-start gap-2.5 p-3 text-left transition-colors hover:bg-gl-ink/5"
+      >
+        <span className="mt-0.5 shrink-0 text-gl-crimson">
+          <XIcon />
+        </span>
+        <div className="min-w-0 flex-1">
+          <p className="text-sm font-medium text-gl-ink">{gap.skill}</p>
+          <p className="mt-0.5 font-mono text-[10px] uppercase tracking-wide">
+            <span className={PRIORITY_TEXT_STYLES[gap.priority]}>{gap.priority} priority</span>
+            <span className="mx-1.5 text-gl-ink-faint">·</span>
+            <span className="text-gl-ink-faint">{EFFORT_LABELS[gap.effortEstimate]}</span>
+          </p>
+          <p className="mt-1 line-clamp-1 text-sm text-gl-ink-muted">{gap.whatsMissing}</p>
+        </div>
+        <span className="mt-1 shrink-0 text-gl-ink-faint">
+          <ChevronIcon open={open} />
+        </span>
+      </button>
+
+      {open && (
+        <div id={panelId} className="border-t border-gl-ink/10 p-3 pt-2.5">
+          <p className="text-sm text-gl-ink-muted">{gap.whatsMissing}</p>
           {gap.howToBuildEvidence.length > 0 && (
             <div className="mt-2 text-sm text-gl-ink-muted">
-              <span className="font-medium">How to build real evidence:</span>
-              <ul className="mt-1 list-disc space-y-1 pl-5">
+              <span className="font-mono text-[10px] uppercase tracking-wide text-gl-ink-faint">
+                How to build real evidence
+              </span>
+              <ul className="mt-1.5 list-disc space-y-1 pl-5">
                 {gap.howToBuildEvidence.map((item, j) => (
                   <li key={j}>{item}</li>
                 ))}
@@ -85,7 +109,25 @@ export function SkillGapList({ skillGaps }: { skillGaps: SkillGap[] }) {
               </svg>
             </a>
           )}
-        </li>
+        </div>
+      )}
+    </li>
+  );
+}
+
+export function SkillGapList({ skillGaps }: { skillGaps: SkillGap[] }) {
+  if (skillGaps.length === 0) {
+    return (
+      <p className="text-sm text-gl-ink-faint">
+        No genuine gaps found — your background lines up well with this role.
+      </p>
+    );
+  }
+
+  return (
+    <ul className="flex flex-col gap-2">
+      {skillGaps.map((gap, i) => (
+        <GapCard key={i} gap={gap} />
       ))}
     </ul>
   );
