@@ -38,6 +38,22 @@ never quietly substitute invented requirements.
    not optional polish, it is the core honesty mechanism of this
    entire mode.
 
+## Data source restriction (non-negotiable)
+
+Only use data sources that are legitimately public and intended for 
+this kind of aggregate use: real job postings retrieved via a 
+compliant search/API method, and/or public aggregate skills databases 
+(e.g. O*NET). Do not scrape or aggregate individual people's profiles 
+(LinkedIn or any other platform) under any circumstance — including in 
+service of a "what skills do people in this role actually have" 
+question. Analyzing publicly published role descriptions (job 
+postings) is fine; using private individuals' profile data without 
+their consent is a different and unacceptable category, regardless of 
+how the underlying question is framed. This restriction applies even 
+if a technical method to access such data becomes available — the 
+restriction is about consent and legitimate use, not just technical 
+or ToS feasibility.
+
 ## Step-by-step logic
 
 STEP 1 — Retrieve real postings
