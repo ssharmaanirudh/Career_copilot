@@ -1,13 +1,31 @@
 import Link from "next/link";
 import { Hero } from "@/components/Hero";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SecondSamplePreview } from "@/components/SecondSamplePreview";
+import { ScrollReveal } from "@/components/ScrollReveal";
+import { CheckBadgeMark, HighlighterMark, IndexCardMark, PinMark } from "@/components/DecorativeMarks";
 
 export default function Home() {
   return (
     <div className="gl-page-grid min-h-full font-sans">
       <SiteHeader />
 
-      <main className="mx-auto max-w-5xl px-6 py-10">
+      <main className="relative mx-auto max-w-5xl px-6 py-10">
+        {/*
+          Decorative margin marks — DESIGN.md's rule that teal/crimson only
+          ever make a status claim means these stay off crimson entirely;
+          teal is used once here the same way the logo mark uses it (brand
+          identity, not a verification claim about anything specific).
+          Hidden below lg since the margin space they live in doesn't exist
+          on narrow viewports.
+        */}
+        <CheckBadgeMark
+          className="pointer-events-none absolute -right-2 top-1 hidden h-14 w-14 rotate-[8deg] text-gl-teal opacity-[0.16] lg:block xl:-right-8"
+        />
+        <IndexCardMark
+          className="pointer-events-none absolute -left-3 top-72 hidden h-16 w-16 -rotate-[7deg] text-gl-ink-faint opacity-[0.16] lg:block xl:-left-12"
+        />
+
         <Hero />
 
         <div className="-mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
@@ -46,6 +64,19 @@ export default function Home() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
             </svg>
           </Link>
+        </div>
+
+        <div className="relative mt-16">
+          <HighlighterMark
+            className="pointer-events-none absolute -right-4 -top-9 hidden h-7 w-24 -rotate-[4deg] text-gl-amber opacity-40 lg:block xl:-right-10"
+          />
+          <PinMark
+            className="pointer-events-none absolute -left-6 bottom-6 hidden h-12 w-10 rotate-[10deg] text-gl-ink-faint opacity-[0.18] lg:block xl:-left-14"
+          />
+
+          <ScrollReveal translateYPx={16} delayMs={100}>
+            <SecondSamplePreview />
+          </ScrollReveal>
         </div>
       </main>
     </div>
