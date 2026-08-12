@@ -99,41 +99,75 @@ export function DocumentMarkupDemo() {
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
-      <div
-        className="rounded"
-        style={{
-          background: "var(--gl-paper-card)",
-          borderRadius: "4px",
-          padding: "1.75rem",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
-        }}
-      >
-        <p className="mb-3 font-mono text-[10px] uppercase tracking-wide text-gl-ink-faint">
-          Sample resume excerpt — illustrative only
-        </p>
-        <p className="font-semibold text-gl-ink">Priya Nair — Product Analyst</p>
-        <ul className="mt-3 flex flex-col gap-2.5 text-sm text-gl-ink-muted">
-          <li>
-            5+ years building dashboards in{" "}
-            <MarkedPhrase mark={MARKS[0]} revealed={effectiveStage >= 1}>
-              Power BI and writing SQL
-            </MarkedPhrase>{" "}
-            for ad-hoc reporting.
-          </li>
-          <li>
-            Led{" "}
-            <MarkedPhrase mark={MARKS[1]} revealed={effectiveStage >= 2}>
-              cross-functional rollout across 12 regional teams
-            </MarkedPhrase>
-            .
-          </li>
-          <li>
-            <MarkedPhrase mark={MARKS[2]} revealed={effectiveStage >= 3}>
-              Familiar with AWS services
-            </MarkedPhrase>{" "}
-            for data pipelines.
-          </li>
-        </ul>
+      <div className="relative">
+        {/* Two rotated paper layers behind the real card, matching its box exactly since they're inset-0 within this wrapper. */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 rotate-[1.5deg] rounded"
+          style={{ background: "var(--gl-paper-card)", borderRadius: "4px", boxShadow: "0 1px 3px rgba(0,0,0,0.06)" }}
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 rotate-[-2deg] rounded"
+          style={{ background: "var(--gl-paper-card)", borderRadius: "4px", boxShadow: "0 1px 3px rgba(0,0,0,0.07)" }}
+        />
+
+        <div
+          className="relative rounded"
+          style={{
+            background: "var(--gl-paper-card)",
+            borderRadius: "4px",
+            padding: "1.75rem",
+            boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
+          }}
+        >
+          <p className="mb-3 font-mono text-[10px] uppercase tracking-wide text-gl-ink-faint">
+            Sample resume excerpt — illustrative only
+          </p>
+          <p className="font-semibold text-gl-ink">Priya Nair — Product Analyst</p>
+          <ul className="mt-3 flex flex-col gap-2.5 text-sm text-gl-ink-muted">
+            <li>
+              5+ years building dashboards in{" "}
+              <MarkedPhrase mark={MARKS[0]} revealed={effectiveStage >= 1}>
+                Power BI and writing SQL
+              </MarkedPhrase>{" "}
+              for ad-hoc reporting.
+            </li>
+            <li>
+              Led{" "}
+              <MarkedPhrase mark={MARKS[1]} revealed={effectiveStage >= 2}>
+                cross-functional rollout across 12 regional teams
+              </MarkedPhrase>
+              .
+            </li>
+            <li>
+              <MarkedPhrase mark={MARKS[2]} revealed={effectiveStage >= 3}>
+                Familiar with AWS services
+              </MarkedPhrase>{" "}
+              for data pipelines.
+            </li>
+          </ul>
+
+          {/* Floating callout — the same gap MarginNote[2] already announces to screen readers, so this is aria-hidden. */}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-3 -bottom-5 hidden max-w-[12.5rem] rounded-lg p-3 shadow-lg transition-all duration-500 ease-out motion-reduce:transition-none sm:block"
+            style={{
+              background: "var(--gl-ink)",
+              opacity: effectiveStage >= 3 ? 1 : 0,
+              transform:
+                effectiveStage >= 3
+                  ? "translateY(0) rotate(-2deg) scale(1)"
+                  : "translateY(6px) rotate(-2deg) scale(0.95)",
+            }}
+          >
+            <p className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-wide text-gl-crimson">
+              <XIcon />
+              Gap detected
+            </p>
+            <p className="mt-1 text-xs text-white/90">Familiarity isn&apos;t hands-on evidence.</p>
+          </div>
+        </div>
       </div>
 
       <div className="flex flex-col gap-3 sm:w-48 sm:pt-10">

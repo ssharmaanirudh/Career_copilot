@@ -2,8 +2,9 @@ import Link from "next/link";
 import { Hero } from "@/components/Hero";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SecondSamplePreview } from "@/components/SecondSamplePreview";
+import { SimpleSteps } from "@/components/SimpleSteps";
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { CheckBadgeMark, HighlighterMark, IndexCardMark, PinMark } from "@/components/DecorativeMarks";
+import { HighlighterMark, PinMark } from "@/components/DecorativeMarks";
 
 export default function Home() {
   return (
@@ -11,21 +12,6 @@ export default function Home() {
       <SiteHeader />
 
       <main className="relative mx-auto max-w-5xl px-6 py-10">
-        {/*
-          Decorative margin marks — DESIGN.md's rule that teal/crimson only
-          ever make a status claim means these stay off crimson entirely;
-          teal is used once here the same way the logo mark uses it (brand
-          identity, not a verification claim about anything specific).
-          Hidden below lg since the margin space they live in doesn't exist
-          on narrow viewports.
-        */}
-        <CheckBadgeMark
-          className="pointer-events-none absolute -right-2 top-1 hidden h-14 w-14 rotate-[8deg] text-gl-teal opacity-[0.16] lg:block xl:-right-8"
-        />
-        <IndexCardMark
-          className="pointer-events-none absolute -left-3 top-72 hidden h-16 w-16 -rotate-[7deg] text-gl-ink-faint opacity-[0.16] lg:block xl:-left-12"
-        />
-
         <Hero />
 
         <div className="-mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
@@ -76,6 +62,12 @@ export default function Home() {
 
           <ScrollReveal translateYPx={16} delayMs={100}>
             <SecondSamplePreview />
+          </ScrollReveal>
+        </div>
+
+        <div className="mt-20">
+          <ScrollReveal translateYPx={16}>
+            <SimpleSteps />
           </ScrollReveal>
         </div>
       </main>

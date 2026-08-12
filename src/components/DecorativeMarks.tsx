@@ -71,3 +71,48 @@ export function PinMark({ className = "" }: { className?: string }) {
     </svg>
   );
 }
+
+/** A small folded-paper dart with a dashed trail — the crease line is drawn in the page color so it reads regardless of the fill color passed in. */
+export function PaperAirplaneMark({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 90 70" className={className} aria-hidden="true">
+      <path
+        d="M18 44c-9 5-14 12-14 12"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth={1.5}
+        strokeLinecap="round"
+        strokeDasharray="1 6"
+        opacity={0.6}
+      />
+      <path fill="currentColor" d="M20 40 78 12 48 40 78 66 46 48Z" />
+      <path d="M48 40 78 12" fill="none" stroke="var(--gl-paper)" strokeWidth={1.25} opacity={0.7} />
+    </svg>
+  );
+}
+
+/** A simple 4-point sparkle — used sparingly as a hand-drawn accent, not a repeated icon-pack motif. */
+export function SparkleMark({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
+      <path d="M12 2 14 10 22 12 14 14 12 22 10 14 2 12 10 10Z" />
+    </svg>
+  );
+}
+
+/** A hand-sketched arrow for annotation callouts — a wobbled curve with a small open arrowhead, not a straight system-icon arrow. */
+export function SketchArrowMark({ className = "" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 60 60"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={1.75}
+      className={className}
+      aria-hidden="true"
+    >
+      <path strokeLinecap="round" d="M6 50c10-2 18-10 20-24s10-18 22-20" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M40 4l8 2-3 8" />
+    </svg>
+  );
+}
