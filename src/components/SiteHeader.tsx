@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-/** Shared sticky site header — used identically on the main page and the secondary "How it works" page. */
+/** Shared sticky site header — used identically on the landing page, the tool page, and the "How it works" page. Logo always links home (the marketing landing page). */
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-10 border-b border-gl-ink/10 bg-gl-paper-card">

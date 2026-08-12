@@ -41,6 +41,26 @@ export default function HowItWorks() {
         <WhyDifferent />
         <VerificationProcess />
         <SamplePreview />
+
+        <div className="mt-4 border-t border-gl-ink/10 pt-8">
+          <Link
+            href="/analyze"
+            className="brand-gradient-bg group inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 font-semibold text-white shadow-md shadow-gl-teal/25 transition-all hover:shadow-lg hover:shadow-gl-teal/35"
+          >
+            Try GapLens free
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              className="h-4 w-4 transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
+            </svg>
+          </Link>
+        </div>
       </main>
     </div>
   );
