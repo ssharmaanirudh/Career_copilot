@@ -100,6 +100,26 @@ export function SparkleMark({ className = "" }: { className?: string }) {
   );
 }
 
+/**
+ * A small multi-color confetti fleck cluster — a deliberate, approved
+ * one-off exception to DESIGN.md's teal/crimson-only status-color rule,
+ * used exactly once (the "Know your real match" card) to match a specific
+ * reference design. Not a pattern to reuse elsewhere in the product.
+ */
+export function ConfettiMark({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 90 70" className={className} aria-hidden="true">
+      <rect x="4" y="10" width="6" height="3" rx="1" fill="var(--gl-teal)" transform="rotate(-20 7 11.5)" />
+      <circle cx="26" cy="4" r="3" fill="var(--gl-crimson)" />
+      <rect x="46" y="14" width="6" height="3" rx="1" fill="var(--gl-amber)" transform="rotate(15 49 15.5)" />
+      <circle cx="70" cy="8" r="2.5" fill="var(--gl-teal)" />
+      <rect x="10" y="34" width="6" height="3" rx="1" fill="var(--gl-ink-faint)" transform="rotate(30 13 35.5)" />
+      <circle cx="80" cy="30" r="3" fill="var(--gl-crimson)" />
+      <rect x="60" y="42" width="6" height="3" rx="1" fill="var(--gl-teal)" transform="rotate(-10 63 43.5)" />
+    </svg>
+  );
+}
+
 /** A hand-sketched arrow for annotation callouts — a wobbled curve with a small open arrowhead, not a straight system-icon arrow. */
 export function SketchArrowMark({ className = "" }: { className?: string }) {
   return (

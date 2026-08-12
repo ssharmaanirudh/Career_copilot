@@ -3,7 +3,7 @@
 import { BigScore } from "./BigScore";
 import { RequirementRow } from "./RequirementRow";
 import { VerdictStamp } from "./VerdictStamp";
-import { SketchArrowMark } from "./DecorativeMarks";
+import { ConfettiMark, SketchArrowMark } from "./DecorativeMarks";
 
 const SCORE = 82;
 
@@ -33,19 +33,21 @@ const CHECKLIST = [
 
 export function SecondSamplePreview() {
   return (
-    <section>
-      <p className="text-xs font-semibold uppercase tracking-wide text-gl-teal">
-        Know your real match
+    <section id="examples" className="scroll-mt-24">
+      <p className="text-xs font-semibold uppercase tracking-wide text-gl-ink-faint">
+        A different fit
       </p>
-      <h2 className="font-serif mt-1 max-w-xl text-2xl font-semibold text-gl-ink sm:text-3xl">
-        A different role, the same honest check.
+      <h2 className="font-serif mt-1 max-w-xl text-3xl font-semibold text-gl-ink sm:text-4xl">
+        Know your <span className="text-gl-teal">real</span> match.
       </h2>
       <p className="mt-2 max-w-xl text-gl-ink-muted">
-        We check real-world evidence, not keyword overlap — and cap the score
-        whenever an essential requirement is missing.
+        We don&apos;t do keyword bingo. We check for real-world evidence and cap scores when
+        essentials are missing.
       </p>
 
       <div className="relative mt-6">
+        <ConfettiMark className="pointer-events-none absolute -top-8 -left-6 hidden h-14 w-16 opacity-80 sm:block" />
+
         <div className="mb-3 flex items-center gap-2">
           <span className="text-sm font-semibold uppercase tracking-wide text-gl-ink-faint">
             Application strength
@@ -91,9 +93,11 @@ export function SecondSamplePreview() {
           read as an informal margin note instead.
         */}
         <div className="pointer-events-none absolute -right-4 -bottom-10 hidden w-40 rotate-2 sm:block lg:-right-16">
-          <SketchArrowMark className="h-9 w-9 -rotate-90 text-gl-ink-faint" />
-          <p className="mt-1 font-mono text-xs text-gl-ink-faint">
-            we quote the exact evidence, every time
+          <SketchArrowMark className="h-9 w-9 -rotate-90 text-gl-teal" />
+          <p className="mt-1 font-mono text-xs text-gl-teal">
+            we explain
+            <br />
+            why it matters
           </p>
         </div>
       </div>

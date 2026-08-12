@@ -78,12 +78,17 @@ function MarkedPhrase({ mark, revealed, children }: { mark: Mark; revealed: bool
   );
 }
 
+interface DocumentMarkupDemoProps {
+  /** Hides the margin-notes column and stamp, leaving just the card — used when this is layered behind another card in a denser composition where the full two-column layout doesn't fit. The pills row shown alongside it in that case carries the same verified/gap summary. */
+  compact?: boolean;
+}
+
 /**
  * DESIGN.md's signature "live document markup" element. Sample/mock data
  * only, clearly labeled — never wired to real scoring output. One trigger
  * per page (the hero); Phase 4 reuses VerdictStamp but not this whole demo.
  */
-export function DocumentMarkupDemo() {
+export function DocumentMarkupDemo({ compact = false }: DocumentMarkupDemoProps) {
   const reducedMotion = usePrefersReducedMotion();
   const [stage, setStage] = useState(0); // 0 = nothing, 1..3 = marks, 4 = stamp
 
@@ -98,7 +103,7 @@ export function DocumentMarkupDemo() {
   const effectiveStage = reducedMotion ? 4 : stage;
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto] sm:items-start">
+    <div className={compact ? "" : "grid grid-cols-1 gap-4 sm:grid-cols-[1fr_auto] sm:items-start"}>
       <div className="relative">
         {/* Two rotated paper layers behind the real card, matching its box exactly since they're inset-0 within this wrapper. */}
         <div
@@ -170,14 +175,16 @@ export function DocumentMarkupDemo() {
         </div>
       </div>
 
-      <div className="flex flex-col gap-3 sm:w-48 sm:pt-10">
-        <MarginNote mark={MARKS[0]} revealed={effectiveStage >= 1} />
-        <MarginNote mark={MARKS[1]} revealed={effectiveStage >= 2} />
-        <MarginNote mark={MARKS[2]} revealed={effectiveStage >= 3} />
-        <div className="mt-1">
-          <VerdictStamp label="SCORE CAPPED" tone="crimson" trigger={effectiveStage >= 4} />
+      {!compact && (
+        <div className="flex flex-col gap-3 sm:w-48 sm:pt-10">
+          <MarginNote mark={MARKS[0]} revealed={effectiveStage >= 1} />
+          <MarginNote mark={MARKS[1]} revealed={effectiveStage >= 2} />
+          <MarginNote mark={MARKS[2]} revealed={effectiveStage >= 3} />
+          <div className="mt-1">
+            <VerdictStamp label="SCORE CAPPED" tone="crimson" trigger={effectiveStage >= 4} />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
