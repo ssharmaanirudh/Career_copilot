@@ -35,6 +35,46 @@ export class InvalidInputError extends Error {}
  * calls out separately after the main analysis). That would let
  * suggestion wording get tuned freely without any risk to
  * classification stability.
+ *
+ * SEPARATE FINDING (also a future-improvement candidate, also not
+ * urgent, also not touched by this comment's fix above), refined
+ * across three fixture-design attempts in eval/fixtures.ts while
+ * building eval/runWritingQualityEval.ts: what actually triggers a
+ * wordingFix is NOT "not_met status," despite that being the type
+ * comment's stated intent (WordingFix's doc comment in src/lib/types.ts
+ * still says "not_met requirements where evidence exists" — that's now
+ * known to be an incomplete description of the real behavior, not
+ * fixed here since it's a documentation-vs-behavior gap, not a bug).
+ * Two designs that kept the evidence on-topic and simply weakened its
+ * PHRASING — buried-evidence-wording-fix (casual tone: "some scripting
+ * work in Python") and a since-removed variant that split the tool
+ * name from the achievement across a bare skills line and an unlabeled
+ * bullet — both reliably got folded straight into "met" with
+ * evidenceStrength "strong" and produced zero wordingFixes across many
+ * runs, regardless of how hedged or structurally separated the
+ * evidence was ("was sometimes asked to..." didn't move the needle
+ * either). A third design, terminology-gap-wording-fix, instead kept
+ * the evidence direct and quantified but wrote it in vocabulary that
+ * shares zero words with the JD's dense jargon (JD: "forecast-to-
+ * actuals variance reconciliation"; resume: "compare what each
+ * department budgeted against what they actually spent... in plain
+ * language they don't need a finance background to follow") — and
+ * that DOES reliably produce wordingFixes (2 of 3 runs, 3 wordingFixes
+ * each), even though the SAME runs classified those same requirements
+ * "met," not "not_met." So the real trigger in practice looks like
+ * "does this evidence use different vocabulary than the JD," almost
+ * entirely independent of the met/not_met call, not "is this
+ * technically unmet." That's a materially different (and better) story
+ * than the "met but weakly expressed needs a third state" theory this
+ * comment previously proposed here — evidence phrased weakly/casually
+ * doesn't seem to need a third state at all, it just doesn't trigger a
+ * wording fix today, full stop, regardless of status. If that's worth
+ * changing, it's still a classification/generation-behavior change to
+ * this same shared prompt, not something to force through
+ * opportunistically; given the fragility documented above, it deserves
+ * its own deliberate pass with both eval suites re-run, not a drive-by
+ * edit — this note exists to make sure that future pass starts from an
+ * accurate premise instead of re-discovering all of this from scratch.
  */
 const SYSTEM_PROMPT = `You are an adversarial resume screener AND resume-tailoring assistant embedded in a hiring/resume-scoring product. As a screener, your default assumption is that the candidate does NOT meet a requirement unless the resume contains direct, literal, unambiguous evidence. When in doubt, score down, not up. Be consistent: identical inputs must always produce the same output.
 

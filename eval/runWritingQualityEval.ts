@@ -118,6 +118,24 @@ function extractNumberTokens(text: string): string[] {
     .filter((m) => /\d/.test(m));
 }
 
+// Catches spelled-out quantities ("a week," "two days," "a dozen") that
+// extractNumberTokens' digit-only regex misses — real resume bullets quantify
+// time savings this way at least as often as with digits ("cut onboarding
+// from two weeks to three days"). Deliberately NOT used for fabrication
+// cross-checking: "about a week" vs. "one week" are semantically equivalent
+// but don't match as identical tokens, so token-level drop/fabrication
+// comparison stays digit-only (exact-match there is the safer failure mode —
+// a missed word-number fabrication is better than false-flagging paraphrase
+// as invention). This only feeds the softer achievement/quantification
+// craft signals, where a coarser "is there a quantified outcome at all"
+// check is what's actually needed.
+const WORD_NUMBER_PATTERN =
+  /\b(a|an|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|dozen|couple|few|half)\s+(second|minute|hour|day|week|month|quarter|year)s?\b/i;
+
+function hasQuantifiedOutcome(text: string): boolean {
+  return extractNumberTokens(text).length > 0 || WORD_NUMBER_PATTERN.test(text);
+}
+
 interface CriterionResult {
   verdict: "pass" | "flag";
   notes: string[];
@@ -153,7 +171,7 @@ function assessActionVerb(suggestedLine: string): CriterionResult {
 }
 
 function assessAchievementOriented(suggestedLine: string): CriterionResult {
-  const hasNumber = extractNumberTokens(suggestedLine).length > 0;
+  const hasNumber = hasQuantifiedOutcome(suggestedLine);
   const hasOutcomeConnector = OUTCOME_CONNECTOR_PATTERN.test(suggestedLine);
   if (hasNumber || hasOutcomeConnector) {
     return {
@@ -204,7 +222,14 @@ function assessQuantification(currentLine: string, suggestedLine: string, resume
   if (suggestedNumbers.length > 0) {
     return { verdict: "pass", notes: ["suggestedLine surfaces a number not in currentLine — verify it's traceable below"] };
   }
-  const resumeHasNumbersAtAll = extractNumberTokens(resumeText).length > 0;
+  // No digit-based number in either line — check for a spelled-out quantity
+  // ("a week," "two days") before falling through to a flag. Not doing
+  // drop-detection at this level (see hasQuantifiedOutcome's comment) — this
+  // is just "is there a quantified outcome here at all."
+  if (hasQuantifiedOutcome(suggestedLine) || hasQuantifiedOutcome(currentLine)) {
+    return { verdict: "pass", notes: ["quantified via a spelled-out figure rather than a digit (e.g. \"a week,\" \"two days\")"] };
+  }
+  const resumeHasNumbersAtAll = extractNumberTokens(resumeText).length > 0 || hasQuantifiedOutcome(resumeText);
   return {
     verdict: "flag",
     notes: [
@@ -227,9 +252,9 @@ function assessFabrication(currentLine: string, suggestedLine: string, resumeTex
 }
 
 function isThinSource(currentLine: string, suggestedLine: string): boolean {
-  const noNumbersAnywhere = extractNumberTokens(currentLine).length === 0 && extractNumberTokens(suggestedLine).length === 0;
+  const noQuantifiedOutcome = !hasQuantifiedOutcome(currentLine) && !hasQuantifiedOutcome(suggestedLine);
   const noOutcomeConnector = !OUTCOME_CONNECTOR_PATTERN.test(suggestedLine);
-  return noNumbersAnywhere && noOutcomeConnector;
+  return noQuantifiedOutcome && noOutcomeConnector;
 }
 
 function assessWordingFix(fixtureId: string, fix: WordingFix, resumeText: string): WordingFixAssessment {

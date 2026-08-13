@@ -240,6 +240,29 @@ const FIXTURES: Fixture[] = [
     ],
   },
   {
+    id: "terminology-gap-wording-fix",
+    description:
+      "Engineered as a more reliable Category A (wording-fix) trigger, after two prior attempts (buried-evidence-wording-fix above, and an earlier version of this fixture that split Python/SQL evidence across a bare skills line and an unlabeled achievement bullet) both reliably produced zero wordingFixes: on-topic evidence with a clearly present tool name, however casually worded or structurally separated, consistently got folded straight into 'met' with evidenceStrength 'strong', no wordingFix generated. This fixture uses a different axis entirely: a genuine JD-terminology-vs-resume-vocabulary gap. The JD asks for 'forecast-to-actuals variance reconciliation' and 'presenting budget variance findings to non-finance stakeholders' — dense FP&A jargon. The resume describes the literal same activities in plain English with zero shared vocabulary ('compare what each department budgeted against what they actually spent... write a short explanation... in plain language they don't need a finance background to follow'). Confirmed empirically (3 runs) that this DOES reliably produce wordingFixes — 2 of 3 runs returned 3 wordingFixes each, all correctly grounded only in facts already stated, including preserving the resume's one real quantified outcome (closing the monthly review from a week to two days). Also confirms something the wordingFixes/AnalysisResult type comments don't currently capture: wordingFixes were generated for requirements the SAME run had already classified 'met', not only 'not_met' ones — the trigger in practice appears to be the terminology gap itself, largely independent of the met/not_met call. The 1-of-3 miss (no wordingFixes that run, despite an identical met classification) is accepted as the same run-to-run non-determinism documented elsewhere in this file, not a fixture defect.",
+    jdFile: "variance-reconciliation-jd.txt",
+    resumeFile: "variance-jargon-resume.txt",
+    expectedScoreRange: [70, 100],
+    expectedWouldClearScreen: true,
+    requirementExpectations: [
+      {
+        match: /variance reconciliation|forecast.to.actuals/i,
+        label: "forecast-to-actuals variance reconciliation (plain-English evidence, JD-jargon phrasing)",
+        expectedType: "essential",
+        expectedStatus: "met",
+      },
+      {
+        match: /non.finance stakeholders|budget variance findings/i,
+        label: "presenting budget variance findings to non-finance stakeholders (plain-English evidence, JD-jargon phrasing)",
+        expectedType: "essential",
+        expectedStatus: "met",
+      },
+    ],
+  },
+  {
     id: "hard-mismatch-tier-check",
     description:
       "A software engineer resume against a marketing-analyst JD with 3 explicit essentials, all genuinely absent. Isolates the 3+-unmet cap tier (should land near 20, not 35/55) on a clean, unambiguous case.",
