@@ -42,6 +42,30 @@ function findRequirement(
   return checklist.find((r) => expectation.match.test(r.requirement));
 }
 
+// Regression guard for the missing-date-context bug (see current-date-context-regression
+// in fixtures.ts): before the fix, a model with no grounded "today" would sometimes
+// treat an ordinary recent/current-year resume date as suspicious. This scans every
+// text field of the result, not just requirementsChecklist, since the language could
+// plausibly show up in reasoning, evidence commentary, flags, or keyChanges.
+const SUSPICIOUS_DATE_PATTERNS = [
+  /\btypo\b/i,
+  /\b(future|impossible|invalid) date\b/i,
+  /date.{0,20}\b(in the future|hasn't happened|has not (yet )?occurred)\b/i,
+  /\bdate.{0,15}(seems?|appears?|looks?) (like )?(an? )?(error|mistake|typo|inconsistent)\b/i,
+  /\bunusual date\b/i,
+  /\bsuspicious date\b/i,
+];
+
+function findSuspiciousDateLanguage(result: AnalysisResult): string[] {
+  const fullText = JSON.stringify(result);
+  const hits: string[] = [];
+  for (const pattern of SUSPICIOUS_DATE_PATTERNS) {
+    const match = fullText.match(pattern);
+    if (match) hits.push(match[0]);
+  }
+  return hits;
+}
+
 function evaluateFixture(fixture: LoadedFixture, result: AnalysisResult): CheckFailure[] {
   const failures: CheckFailure[] = [];
   const score = result.originalScore;
@@ -117,6 +141,17 @@ function evaluateFixture(fixture: LoadedFixture, result: AnalysisResult): CheckF
         label: `requirement "${expectation.label}" -> evidence`,
         expected: "non-empty (some evidence found)",
         actual: "empty",
+      });
+    }
+  }
+
+  if (fixture.expectNoSuspiciousDateLanguage) {
+    const hits = findSuspiciousDateLanguage(result);
+    if (hits.length > 0) {
+      failures.push({
+        label: "suspicious date language",
+        expected: "no language treating a recent/current-year date as a typo or impossible future date",
+        actual: `found: ${hits.join(", ")}`,
       });
     }
   }

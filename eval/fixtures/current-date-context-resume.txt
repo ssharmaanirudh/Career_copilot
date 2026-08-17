@@ -1,0 +1,22 @@
+Taylor Kim
+BI Analyst
+taylor.kim@example.com | 555-4410
+
+EXPERIENCE
+
+BI Analyst, Meridian Health Systems, Mar 2019 - Present
+- Built and maintained 12 Power BI dashboards tracking clinical operations metrics across 8 facilities.
+- Automated monthly compliance reporting using Power Query, cutting turnaround from 3 days to 4 hours.
+
+Data Analyst, Meridian Health Systems, Jun 2017 - Feb 2019
+- Supported weekly operational reporting using Excel and SQL.
+
+PERSONAL PROJECTS
+Clinic Capacity Tracker | 2025
+- Built a personal Power BI dashboard modeling clinic appointment capacity using public healthcare datasets.
+
+CERTIFICATIONS
+Microsoft Power BI Data Analyst Associate | 2026
+
+EDUCATION
+BS in Health Informatics, State University, 2017

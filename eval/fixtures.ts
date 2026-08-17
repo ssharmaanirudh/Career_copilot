@@ -27,6 +27,8 @@ export interface Fixture {
   expectedUnmetEssentialRange?: [number, number];
   expectedMinFlags?: number;
   requirementExpectations?: RequirementExpectation[];
+  /** Regression guard for the missing-date-context bug (fixed by injecting the real server date into the prompt): scans every text field of the raw result for language suggesting the model treated a recent/current-year resume date as a typo or an impossible future date. */
+  expectNoSuspiciousDateLanguage?: boolean;
 }
 
 export interface LoadedFixture extends Fixture {
@@ -261,6 +263,31 @@ const FIXTURES: Fixture[] = [
         expectedStatus: "met",
       },
     ],
+  },
+  {
+    id: "current-date-context-regression",
+    description:
+      "Regression guard for the missing-date-context bug (root cause: the model had no injected 'today,' so it inferred 'now' from its training cutoff — anything after that looked suspicious, and date arithmetic like a '-Present' range was computed against the wrong 'now'). Confirmed concretely before the fix: the same 'May 2024 - Present' line was computed as 'less than 3 years' in one run and 'approximately 1 month' in another, a ~27-month swing on identical input. This resume has a certification dated the CURRENT year and a personal project dated LAST year (see this file's own comment for how those get stale — refresh them if this fixture starts failing years from now purely because the dates aged past 'recent'), plus a current role starting far enough in the past (2019) that the 5+-years essential stays robustly true regardless of small date drift, so this isolates the date-recency behavior specifically rather than retesting years-of-experience arithmetic in general. After the fix: both essentials should be met (current cert, 7+ years combined experience) and nothing anywhere in the response should read as if a 2025/2026 date were flagged as a typo or an impossible future date purely for being recent.",
+    jdFile: "current-date-context-jd.txt",
+    resumeFile: "current-date-context-resume.txt",
+    expectedScoreRange: [70, 100],
+    expectedWouldClearScreen: true,
+    expectedUnmetEssentialRange: [0, 0],
+    requirementExpectations: [
+      {
+        match: /5\+ years|professional experience/i,
+        label: "5+ years of professional experience (role starts 2019 — should never read as thin/recent)",
+        expectedType: "essential",
+        expectedStatus: "met",
+      },
+      {
+        match: /power ?bi.*certif|certif.*power ?bi/i,
+        label: "current, active Power BI certification (dated this year)",
+        expectedType: "essential",
+        expectedStatus: "met",
+      },
+    ],
+    expectNoSuspiciousDateLanguage: true,
   },
   {
     id: "hard-mismatch-tier-check",
