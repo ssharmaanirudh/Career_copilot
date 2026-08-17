@@ -75,6 +75,33 @@ export class InvalidInputError extends Error {}
  * its own deliberate pass with both eval suites re-run, not a drive-by
  * edit — this note exists to make sure that future pass starts from an
  * accurate premise instead of re-discovering all of this from scratch.
+ *
+ * DATE-GROUNDING FIX, DELIBERATELY NOT APPLIED HERE: the model has no
+ * built-in awareness of the real current date, which produces real bugs
+ * — confirmed concretely, the same "May 2024 - Present" resume line got
+ * computed as "less than 3 years" of experience in one run and
+ * "approximately 1 month" in another, purely from having no grounded
+ * "today" to measure "Present" against. A fix (inject the real date,
+ * computed server-side per request) was built and tested across five
+ * placements — inside SYSTEM_PROMPT, prepended to userMessage, appended
+ * to userMessage at various lengths — and every single one measurably
+ * regressed un-jd-narrative-bug-fixed from its true 4/4 baseline (0/4 to
+ * 8/12 depending on placement), the same failure mode as the step 8
+ * finding above, just newly confirmed to extend to userMessage as well
+ * as SYSTEM_PROMPT — editing this call's input at all is the risk, not
+ * specifically which string gets edited or where. Decision (2026-08-17):
+ * not worth trading a rock-solid pinned regression fixture for a
+ * cosmetic date-suspicion fix, for the same reason the step 8 suggestion
+ * fix above was abandoned rather than shipped degraded. Do not re-attempt
+ * a standalone patch for this. Fold it into the same future refactor
+ * proposed above instead: date-sensitive reasoning (years of experience,
+ * "-Present" ranges, certification recency — steps 2/4's territory, not
+ * step 8's) needs its own independent call the same way skillGaps/
+ * wordingFixes does, each with the real date injected into its own
+ * input, so neither shares this mega-prompt's fragility. Two separate
+ * follow-up calls, not one — they solve different steps — but one
+ * deliberate architecture pass building both, not two separate risky
+ * edits to this shared prompt at different times.
  */
 const SYSTEM_PROMPT = `You are an adversarial resume screener AND resume-tailoring assistant embedded in a hiring/resume-scoring product. As a screener, your default assumption is that the candidate does NOT meet a requirement unless the resume contains direct, literal, unambiguous evidence. When in doubt, score down, not up. Be consistent: identical inputs must always produce the same output.
 
