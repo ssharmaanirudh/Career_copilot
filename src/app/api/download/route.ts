@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { buildResumeDocxBuffer, buildCoverLetterDocxBuffer } from "@/lib/buildResumeDocx";
 import { buildResumePdfBuffer, buildCoverLetterPdfBuffer } from "@/lib/buildResumePdf";
+import { resumeToPlainText } from "@/lib/resumeText";
 import type {
   TailoredResume,
   ResumeBullet,
@@ -13,6 +14,7 @@ export const runtime = "nodejs";
 const CONTENT_TYPES = {
   docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
   pdf: "application/pdf",
+  txt: "text/plain; charset=utf-8",
 } as const;
 
 function str(v: unknown): string {
@@ -81,7 +83,7 @@ export async function POST(request: Request) {
     resume?: unknown;
   };
 
-  if (format !== "docx" && format !== "pdf") {
+  if (format !== "docx" && format !== "pdf" && format !== "txt") {
     return NextResponse.json({ error: "Invalid export format." }, { status: 400 });
   }
 
@@ -93,19 +95,27 @@ export async function POST(request: Request) {
     if (!parsedResume || !parsedResume.name) {
       return NextResponse.json({ error: "Missing resume data to export." }, { status: 400 });
     }
-    buffer =
-      format === "docx"
-        ? await buildResumeDocxBuffer(parsedResume)
-        : await buildResumePdfBuffer(parsedResume);
+    if (format === "txt") {
+      buffer = Buffer.from(resumeToPlainText(parsedResume), "utf-8");
+    } else {
+      buffer =
+        format === "docx"
+          ? await buildResumeDocxBuffer(parsedResume)
+          : await buildResumePdfBuffer(parsedResume);
+    }
     fileName = `Tailored-Resume.${format}`;
   } else if (kind === "cover-letter") {
     if (typeof text !== "string" || text.trim().length === 0) {
       return NextResponse.json({ error: "Missing text to export." }, { status: 400 });
     }
-    buffer =
-      format === "docx"
-        ? await buildCoverLetterDocxBuffer(text)
-        : await buildCoverLetterPdfBuffer(text);
+    if (format === "txt") {
+      buffer = Buffer.from(text, "utf-8");
+    } else {
+      buffer =
+        format === "docx"
+          ? await buildCoverLetterDocxBuffer(text)
+          : await buildCoverLetterPdfBuffer(text);
+    }
     fileName = `Cover-Letter.${format}`;
   } else {
     return NextResponse.json({ error: "Invalid document kind." }, { status: 400 });

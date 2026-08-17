@@ -28,7 +28,7 @@ function SectionHeading({ children }: { children: React.ReactNode }) {
 
 export function TailoredResumeView({ resume }: { resume: TailoredResume }) {
   const [copied, setCopied] = useState(false);
-  const [busy, setBusy] = useState<"docx" | "pdf" | null>(null);
+  const [busy, setBusy] = useState<"docx" | "pdf" | "txt" | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   async function handleCopy() {
@@ -37,7 +37,7 @@ export function TailoredResumeView({ resume }: { resume: TailoredResume }) {
     setTimeout(() => setCopied(false), 2000);
   }
 
-  async function handleDownload(format: "docx" | "pdf") {
+  async function handleDownload(format: "docx" | "pdf" | "txt") {
     setBusy(format);
     setError(null);
     try {
@@ -66,6 +66,14 @@ export function TailoredResumeView({ resume }: { resume: TailoredResume }) {
           className="rounded-lg border border-gl-ink/15 px-3 py-1.5 text-sm font-medium text-gl-ink-muted transition-colors hover:bg-gl-ink/5"
         >
           {copied ? "Copied!" : "Copy"}
+        </button>
+        <button
+          type="button"
+          onClick={() => handleDownload("txt")}
+          disabled={busy !== null}
+          className="rounded-lg border border-gl-ink/15 px-3 py-1.5 text-sm font-medium text-gl-ink-muted transition-colors hover:bg-gl-ink/5 disabled:opacity-60"
+        >
+          {busy === "txt" ? "Preparing…" : "Download .txt"}
         </button>
         <button
           type="button"
