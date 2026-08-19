@@ -102,7 +102,7 @@ export function Hero() {
             href="/analyze"
             className="brand-gradient-bg group inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3.5 font-semibold text-white shadow-md shadow-gl-teal/25 transition-all hover:shadow-lg hover:shadow-gl-teal/35"
           >
-            Try GapLens free
+            Upload resume
             <ArrowIcon />
           </Link>
         </div>

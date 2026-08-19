@@ -91,7 +91,7 @@ function buildResumeContent(resume: TailoredResume): PdfContent[] {
 
   if (resume.profile) {
     content.push(sectionHeading("Profile"));
-    content.push({ text: resume.profile, margin: [0, 0, 0, 6] });
+    content.push({ text: resume.profile, alignment: "justify", margin: [0, 0, 0, 6] });
   }
 
   if (resume.objective) {
@@ -107,7 +107,7 @@ function buildResumeContent(resume: TailoredResume): PdfContent[] {
   if (resume.coreStrengths.length > 0) {
     content.push(sectionHeading("Core Strengths"));
     content.push({
-      ul: resume.coreStrengths.map((b) => ({ text: bulletContent(b) })),
+      ul: resume.coreStrengths.map((b) => ({ text: bulletContent(b), alignment: "justify" })),
       margin: [0, 0, 0, 4],
     });
   }
@@ -136,7 +136,7 @@ function buildResumeContent(resume: TailoredResume): PdfContent[] {
         margin: [0, 6, 0, 0],
       });
       content.push({
-        ul: job.bullets.map((b) => ({ text: bulletContent(b) })),
+        ul: job.bullets.map((b) => ({ text: bulletContent(b), alignment: "justify" })),
         margin: [0, 2, 0, 2],
       });
     }
@@ -175,7 +175,7 @@ export async function buildCoverLetterPdfBuffer(text: string): Promise<Buffer> {
   ensurePdfConfigured();
   const paragraphs = text
     .split(/\n{2,}/)
-    .map((p) => ({ text: p.replace(/\n/g, " "), margin: [0, 0, 0, 10] }));
+    .map((p) => ({ text: p.replace(/\n/g, " "), alignment: "justify", margin: [0, 0, 0, 10] }));
   const doc = pdfMake.createPdf({
     pageSize: "A4",
     pageMargins: [50, 50, 50, 50],

@@ -33,7 +33,12 @@ function bulletParagraph(b: ResumeBullet): Paragraph {
         new TextRun({ text: b.text, size: 20 }),
       ]
     : [new TextRun({ text: b.text, size: 20 })];
-  return new Paragraph({ bullet: { level: 0 }, spacing: { after: 60 }, children });
+  return new Paragraph({
+    bullet: { level: 0 },
+    spacing: { after: 60 },
+    alignment: AlignmentType.JUSTIFIED,
+    children,
+  });
 }
 
 export async function buildResumeDocxBuffer(resume: TailoredResume): Promise<Buffer> {
@@ -70,7 +75,11 @@ export async function buildResumeDocxBuffer(resume: TailoredResume): Promise<Buf
   if (resume.profile) {
     children.push(sectionHeading("Profile"));
     children.push(
-      new Paragraph({ spacing: { after: 80 }, children: [new TextRun({ text: resume.profile, size: 20 })] }),
+      new Paragraph({
+        spacing: { after: 80 },
+        alignment: AlignmentType.JUSTIFIED,
+        children: [new TextRun({ text: resume.profile, size: 20 })],
+      }),
     );
   }
 
@@ -147,7 +156,14 @@ export async function buildResumeDocxBuffer(resume: TailoredResume): Promise<Buf
 export async function buildCoverLetterDocxBuffer(text: string): Promise<Buffer> {
   const paragraphs = text
     .split("\n")
-    .map((line) => new Paragraph({ spacing: { after: 120 }, children: [new TextRun({ text: line, size: 22 })] }));
+    .map(
+      (line) =>
+        new Paragraph({
+          spacing: { after: 120 },
+          alignment: AlignmentType.JUSTIFIED,
+          children: [new TextRun({ text: line, size: 22 })],
+        }),
+    );
   const doc = new Document({
     sections: [{ properties: {}, children: paragraphs }],
   });

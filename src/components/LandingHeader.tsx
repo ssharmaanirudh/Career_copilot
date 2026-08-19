@@ -53,7 +53,7 @@ export function LandingHeader() {
           href="/analyze"
           className="brand-gradient-bg inline-flex shrink-0 items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-white shadow-sm transition-shadow hover:shadow-md"
         >
-          Try GapLens free
+          Upload resume
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 24 24"
