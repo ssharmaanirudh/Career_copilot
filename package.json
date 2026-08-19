@@ -11,6 +11,7 @@
     "start": "next start",
     "lint": "eslint",
     "eval": "tsx eval/runEval.ts",
+    "eval:ambition": "tsx eval/runAmbitionModeEval.ts",
     "eval:suggestions": "tsx eval/runSuggestionQualityEval.ts",
     "eval:writing": "tsx eval/runWritingQualityEval.ts"
   },

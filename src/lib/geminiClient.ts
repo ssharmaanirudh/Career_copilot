@@ -76,3 +76,63 @@ export async function generateStructuredJson(
   }
   return responseText;
 }
+
+export interface GroundingSource {
+  uri: string;
+  /** Falls back to the URI itself if the API didn't supply a title/domain. */
+  label: string;
+}
+
+export interface GroundedGeneration {
+  text: string;
+  sources: GroundingSource[];
+}
+
+/**
+ * Like generateStructuredJson, but for calls using Search Grounding
+ * (tools: [{googleSearch: {}}]), which the API rejects if combined with
+ * responseSchema/responseMimeType — so these calls return free text, and
+ * this also surfaces the grounding source links Gemini actually cited,
+ * deduplicated by URI.
+ */
+export async function generateGrounded(
+  params: Parameters<GoogleGenAI["models"]["generateContent"]>[0],
+): Promise<GroundedGeneration> {
+  const ai = getClient();
+  let response;
+  try {
+    response = await generateWithRetry(ai, params);
+  } catch (err) {
+    if (err instanceof ApiError) {
+      if (err.status === 503) {
+        throw new AnalysisError(
+          "Our AI provider is experiencing very high demand right now. Please wait a moment and try again.",
+        );
+      }
+      if (err.status === 429) {
+        throw new AnalysisError(
+          "We've hit our AI usage limit for the moment. Please try again in a minute.",
+        );
+      }
+      throw new AnalysisError(`AI request failed: ${err.message}`);
+    }
+    throw err;
+  }
+
+  const text = response.text;
+  if (!text) {
+    throw new AnalysisError("The AI didn't return a result. Please try again.");
+  }
+
+  const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks ?? [];
+  const seen = new Set<string>();
+  const sources: GroundingSource[] = [];
+  for (const chunk of chunks) {
+    const uri = chunk.web?.uri;
+    if (!uri || seen.has(uri)) continue;
+    seen.add(uri);
+    sources.push({ uri, label: chunk.web?.title || chunk.web?.domain || uri });
+  }
+
+  return { text, sources };
+}

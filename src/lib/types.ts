@@ -157,3 +157,63 @@ export interface ActionPlanResult {
 export interface AnalyzeErrorResponse {
   error: string;
 }
+
+/** Ambition Mode (AMBITION-MODE.md) — composite scoring against several real, currently-posted job listings for a role, rather than one specific JD. */
+
+export type SeniorityLevel = "" | "entry" | "mid" | "senior";
+
+export interface RetrievedPosting {
+  title: string;
+  company: string;
+  /** As stated by the source, e.g. "posted 5 days ago" or "2026-07-01"; empty if not determinable. */
+  postingDate: string;
+}
+
+/** A grounding citation Gemini's Search Grounding actually returned — shown so the user can verify these are real search results, not invented. */
+export interface AmbitionModeSource {
+  uri: string;
+  label: string;
+}
+
+export interface CompositeRequirementCheck {
+  requirement: string;
+  type: RequirementType;
+  status: RequirementStatus;
+  /** Exact quoted resume phrase used as evidence; empty string if none exists. */
+  evidence: string;
+  reasoning: string;
+  isCoreRequirement: boolean;
+  evidenceStrength: EvidenceStrength;
+  /** How many of the retrieved postings this requirement (or a close equivalent) appeared in. */
+  sourceCount: number;
+  /** Total postings retrieved — the denominator for sourceCount, e.g. "4 of 5". */
+  sourceTotal: number;
+}
+
+export interface AmbitionModeResult {
+  insufficientData: false;
+  targetRole: string;
+  seniorityLevel: SeniorityLevel;
+  location: string;
+  postings: RetrievedPosting[];
+  sources: AmbitionModeSource[];
+  requirementsChecklist: CompositeRequirementCheck[];
+  flags: string[];
+  score: ScoreResult;
+  wordingFixes: WordingFix[];
+  skillGaps: SkillGap[];
+  /** One or two blunt sentences on what this composite picture does and doesn't tell the candidate. */
+  honestSummary: string;
+}
+
+export interface AmbitionModeFallback {
+  insufficientData: true;
+  message: string;
+  postingsFound: number;
+}
+
+export type AmbitionModeResponse = AmbitionModeResult | AmbitionModeFallback;
+
+export interface AmbitionModeErrorResponse {
+  error: string;
+}
