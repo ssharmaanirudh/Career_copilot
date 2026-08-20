@@ -3,6 +3,7 @@ import { LandingHeader } from "@/components/LandingHeader";
 import { FeatureRow } from "@/components/FeatureRow";
 import { SecondSamplePreview } from "@/components/SecondSamplePreview";
 import { SimpleSteps } from "@/components/SimpleSteps";
+import { TrustBand } from "@/components/TrustBand";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { HighlighterMark, PinMark } from "@/components/DecorativeMarks";
 
@@ -14,11 +15,13 @@ export default function Home() {
       <main className="relative mx-auto max-w-5xl px-6 py-10">
         <Hero />
 
-        <div id="features" className="scroll-mt-24">
-          <FeatureRow />
+        <div id="features" className="mt-16 scroll-mt-24 sm:mt-20">
+          <ScrollReveal translateYPx={16}>
+            <FeatureRow />
+          </ScrollReveal>
         </div>
 
-        <div className="relative mt-16">
+        <div className="relative mt-16 sm:mt-20">
           <HighlighterMark
             className="pointer-events-none absolute -right-4 -top-9 hidden h-7 w-24 -rotate-[4deg] text-gl-amber opacity-40 lg:block xl:-right-10"
           />
@@ -31,13 +34,19 @@ export default function Home() {
           </ScrollReveal>
         </div>
 
-        <div className="mt-20">
+        <div className="mt-16 sm:mt-20">
           <ScrollReveal translateYPx={16}>
             <SimpleSteps />
           </ScrollReveal>
         </div>
 
-        <p className="mt-20 text-center text-sm font-medium text-gl-ink-muted">
+        <div className="mt-16 sm:mt-20">
+          <ScrollReveal translateYPx={16}>
+            <TrustBand />
+          </ScrollReveal>
+        </div>
+
+        <p className="mt-10 text-center text-sm font-medium text-gl-ink-muted">
           Built for job seekers. Backed by{" "}
           <span className="text-gl-teal underline decoration-2 underline-offset-2">AI</span>.
         </p>

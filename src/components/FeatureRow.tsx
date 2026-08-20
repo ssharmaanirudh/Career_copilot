@@ -35,10 +35,30 @@ function BoltIcon() {
 }
 
 const FEATURES = [
-  { icon: <ShieldIcon />, label: "Evidence-based analysis", tone: "teal" },
-  { icon: <TargetIcon />, label: "Role-specific matching", tone: "teal" },
-  { icon: <LockIcon />, label: "Private & secure", tone: "ink" },
-  { icon: <BoltIcon />, label: "Instant results", tone: "amber" },
+  {
+    icon: <ShieldIcon />,
+    label: "Evidence-based analysis",
+    body: "Every requirement is checked against a real line in your resume, not just whether the words appear somewhere.",
+    tone: "teal",
+  },
+  {
+    icon: <TargetIcon />,
+    label: "Role-specific matching",
+    body: "Scored against the job you're actually applying for, not a generic template of what a good resume looks like.",
+    tone: "teal",
+  },
+  {
+    icon: <LockIcon />,
+    label: "Private & secure",
+    body: "Your resume and job description are processed once for this check and never stored.",
+    tone: "ink",
+  },
+  {
+    icon: <BoltIcon />,
+    label: "Instant results",
+    body: "See your score, exactly what's missing, and a tailored resume in under a minute.",
+    tone: "amber",
+  },
 ] as const;
 
 const ICON_TONE_STYLES: Record<(typeof FEATURES)[number]["tone"], string> = {
@@ -49,15 +69,32 @@ const ICON_TONE_STYLES: Record<(typeof FEATURES)[number]["tone"], string> = {
 
 export function FeatureRow() {
   return (
-    <div className="flex flex-col divide-y divide-gl-ink/10 rounded-2xl border border-gl-ink/10 bg-gl-paper-card sm:flex-row sm:divide-x sm:divide-y-0">
-      {FEATURES.map((f) => (
-        <div key={f.label} className="flex flex-1 items-center gap-2.5 px-5 py-4">
-          <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${ICON_TONE_STYLES[f.tone]}`}>
-            {f.icon}
-          </span>
-          <span className="text-sm font-medium text-gl-ink">{f.label}</span>
-        </div>
-      ))}
-    </div>
+    <section>
+      <div className="flex items-center justify-center gap-3">
+        <span className="h-px w-8 bg-gl-ink/15" aria-hidden="true" />
+        <h2 className="font-serif text-xl font-semibold text-gl-ink">Why GapLens</h2>
+        <span className="h-px w-8 bg-gl-ink/15" aria-hidden="true" />
+      </div>
+      <p className="mx-auto mt-2 max-w-md text-center text-sm text-gl-ink-muted">
+        Not another score that only goes up. Here&apos;s what makes the check real.
+      </p>
+
+      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {FEATURES.map((f) => (
+          <div
+            key={f.label}
+            className="rounded-2xl border border-gl-ink/10 bg-gl-paper-card p-5 shadow-sm shadow-black/5"
+          >
+            <span
+              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${ICON_TONE_STYLES[f.tone]}`}
+            >
+              {f.icon}
+            </span>
+            <p className="mt-3 font-medium text-gl-ink">{f.label}</p>
+            <p className="mt-1.5 text-sm text-gl-ink-muted">{f.body}</p>
+          </div>
+        ))}
+      </div>
+    </section>
   );
 }
