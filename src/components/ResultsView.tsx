@@ -3,6 +3,7 @@
 import { useState } from "react";
 import type { AnalysisResult } from "@/lib/types";
 import { ScoreCard } from "./ScoreCard";
+import { ScoreBandExplainer } from "./ScoreBandExplainer";
 import { DocumentPanel } from "./DocumentPanel";
 import { TailoredResumeView } from "./TailoredResumeView";
 import { SkillGapList } from "./SkillGapList";
@@ -76,6 +77,11 @@ export function ResultsView({ result }: { result: AnalysisResult }) {
       <ScoreCard
         original={result.originalScore}
         tailored={result.tailoredScore}
+        requirementsChecklist={result.requirementsChecklist}
+      />
+
+      <ScoreBandExplainer
+        score={result.tailoredScore.matchScore}
         requirementsChecklist={result.requirementsChecklist}
       />
 
