@@ -1,0 +1,24 @@
+Senior Data Platform Engineer
+
+We're hiring a Senior Data Platform Engineer to own the infrastructure and
+pipelines that power our analytics and ML platform end to end.
+
+Essential Requirements:
+- 5+ years of production Python development, specifically building and
+  maintaining large-scale data pipelines (ETL/ELT) that run reliably at
+  scale. This is the backbone skill for the role — nearly everything we
+  build runs through Python pipelines you would own.
+- Hands-on Kubernetes experience operating containerized data
+  infrastructure in production, including deployments, scaling, and
+  on-call ownership. Our entire platform runs on Kubernetes, and this
+  role is the primary owner of that infrastructure day to day.
+- Experience with a modern data warehouse (Snowflake, BigQuery, or
+  Redshift).
+- Strong SQL for pipeline debugging and data validation.
+
+Nice to have:
+- Experience with Terraform or another infrastructure-as-code tool.
+- Familiarity with streaming systems (Kafka, Kinesis).
+
+You'll work closely with the ML and analytics teams to keep the
+platform reliable, observable, and fast to iterate on.

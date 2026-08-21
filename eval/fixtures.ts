@@ -29,6 +29,30 @@ export interface Fixture {
   requirementExpectations?: RequirementExpectation[];
   /** Regression guard for the missing-date-context bug (fixed by injecting the real server date into the prompt): scans every text field of the raw result for language suggesting the model treated a recent/current-year resume date as a typo or an impossible future date. */
   expectNoSuspiciousDateLanguage?: boolean;
+  /**
+   * Regression guard for the sub-score independence bug (2026-08-21 investigation):
+   * on a hard-capped result, asserts a specific scoreBreakdown dimension is NOT
+   * collapsed to the capped matchScore/skillsMatch value — i.e. the model reasoned
+   * about that dimension independently from its own evidence rather than defaulting
+   * it to the overall capped number.
+   */
+  expectSubScoreIndependence?: {
+    dimension: "experienceMatch" | "keywordAlignment" | "overallPresentation";
+    /** That dimension must be at least this many points above scoreBreakdown.skillsMatch. */
+    minAboveSkillsMatch: number;
+  };
+  /**
+   * Regression guard for the verdict/core-requirement consistency bug (2026-08-21
+   * investigation): each candidate is a plausible "the core requirement" contender in
+   * this JD, identified by a match pattern against requirementsChecklist[].requirement.
+   * Asserts exactly one requirement in the full checklist (not just these candidates)
+   * carries isCoreRequirement: true, and that BOTH originalScore.summary and
+   * tailoredScore.summary reference that same winning candidate's pattern — never a
+   * different (demoted) candidate.
+   */
+  expectCoreRequirementVerdictConsistency?: {
+    candidates: { match: RegExp; label: string }[];
+  };
 }
 
 export interface LoadedFixture extends Fixture {
@@ -325,6 +349,56 @@ const FIXTURES: Fixture[] = [
     resumeFile: "swe-resume.txt",
     expectedScoreRange: [0, 45],
     expectedWouldClearScreen: false,
+  },
+  {
+    id: "capped-score-subscore-divergence",
+    description:
+      "Regression guard for the sub-score independence bug (2026-08-21 investigation): a real result showed a 15/100 hard-capped score where all four scoreBreakdown dimensions read exactly 15, no movement anywhere — indistinguishable from the model just copying matchScore into every field instead of reasoning about each dimension independently. Same JD/resume pair as explicit-hard-mismatch-datascience (Python/SQL/ML/AWS core stack, unmet -> hard 15 cap), but this resume is genuinely strong on presentation and experience narrative: rich quantified accomplishments (20,000+ row datasets, 8 dashboards, 8+ hours/week saved, cutting turnaround from 2 hours to 30 minutes), clean structure, and real leadership/stakeholder work — just none of it in the required technical stack. If overallPresentation stays pinned to skillsMatch's capped value despite that, the independent-reasoning fix in gemini.ts step 4 didn't take.",
+    jdFile: "datascience-jd.txt",
+    resumeFile: "anirudh-analytics-resume.txt",
+    expectedScoreRange: [5, 22],
+    expectedWouldClearScreen: false,
+    requirementExpectations: [
+      {
+        match: /python/i,
+        label: "Python (core requirement)",
+        expectedType: "essential",
+        expectedStatus: "not_met",
+      },
+    ],
+    expectSubScoreIndependence: {
+      dimension: "overallPresentation",
+      minAboveSkillsMatch: 15,
+    },
+  },
+  {
+    id: "core-requirement-verdict-consistency",
+    description:
+      "Regression guard for the verdict/checklist consistency gap (2026-08-21 investigation): a JD with two comparably-weighted, both-clearly-central, both-unmet technical essentials (production Python pipelines AND Kubernetes infrastructure ownership), against a resume matching neither — engineered so the model could plausibly consider either one 'the' core technical driver, the exact scenario that risks isCoreRequirement:true landing on more than one item before enforceAtMostOneCoreRequirement() collapses it to whichever is listed first. The real assertion: whichever single requirement survives as isCoreRequirement:true, both originalScore.summary and tailoredScore.summary must actually be about THAT one, not the other candidate.",
+    jdFile: "data-platform-dual-core-jd.txt",
+    resumeFile: "anirudh-analytics-resume.txt",
+    expectedScoreRange: [5, 22],
+    expectedWouldClearScreen: false,
+    requirementExpectations: [
+      {
+        match: /python/i,
+        label: "Python production pipelines",
+        expectedType: "essential",
+        expectedStatus: "not_met",
+      },
+      {
+        match: /kubernetes/i,
+        label: "Kubernetes infrastructure ownership",
+        expectedType: "essential",
+        expectedStatus: "not_met",
+      },
+    ],
+    expectCoreRequirementVerdictConsistency: {
+      candidates: [
+        { match: /python/i, label: "Python production pipelines" },
+        { match: /kubernetes/i, label: "Kubernetes infrastructure ownership" },
+      ],
+    },
   },
 ];
 

@@ -156,6 +156,54 @@ function evaluateFixture(fixture: LoadedFixture, result: AnalysisResult): CheckF
     }
   }
 
+  if (fixture.expectSubScoreIndependence) {
+    const { dimension, minAboveSkillsMatch } = fixture.expectSubScoreIndependence;
+    const breakdown = score.scoreBreakdown;
+    const delta = breakdown[dimension] - breakdown.skillsMatch;
+    if (delta < minAboveSkillsMatch) {
+      failures.push({
+        label: `scoreBreakdown.${dimension} (sub-score independence)`,
+        expected: `at least ${minAboveSkillsMatch} points above skillsMatch (${breakdown.skillsMatch})`,
+        actual: `${breakdown[dimension]} (only ${delta} above skillsMatch — looks collapsed to the capped value instead of independently reasoned)`,
+      });
+    }
+  }
+
+  if (fixture.expectCoreRequirementVerdictConsistency) {
+    const { candidates } = fixture.expectCoreRequirementVerdictConsistency;
+    const coreItems = result.requirementsChecklist.filter((r) => r.isCoreRequirement);
+    if (coreItems.length !== 1) {
+      failures.push({
+        label: "core-requirement count",
+        expected: "exactly 1 requirement with isCoreRequirement: true",
+        actual: `${coreItems.length} (${coreItems.map((c) => `"${c.requirement}"`).join(", ") || "none"})`,
+      });
+    } else {
+      const winner = coreItems[0];
+      const winningCandidate = candidates.find((c) => c.match.test(winner.requirement));
+      if (!winningCandidate) {
+        failures.push({
+          label: "core-requirement identity",
+          expected: `the core item to match one of the known candidates (${candidates.map((c) => c.label).join(" / ")})`,
+          actual: `"${winner.requirement}" matched none of them`,
+        });
+      } else {
+        for (const [passLabel, summary] of [
+          ["originalScore.summary", result.originalScore.summary],
+          ["tailoredScore.summary", result.tailoredScore.summary],
+        ] as const) {
+          if (!winningCandidate.match.test(summary)) {
+            failures.push({
+              label: `${passLabel} vs core requirement`,
+              expected: `to reference the winning core requirement (${winningCandidate.label}, isCoreRequirement: true)`,
+              actual: `does not mention it: "${summary}"`,
+            });
+          }
+        }
+      }
+    }
+  }
+
   return failures;
 }
 
