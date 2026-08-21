@@ -122,3 +122,8 @@ Pivot Mode is a distinct scoring path, not a relaxation of standards:
   continuing to the next.
 - If a decision isn't specified here (exact copy wording, colors,
   specific analytics tool), ask rather than guessing silently.
+- `.claude/skills/` (the `ui-ux-pro-max` design-reference skill and its
+  companions) is gitignored, not committed — regenerate it if a future
+  session needs it: `npm install -g ui-ux-pro-max-cli && uipro init --ai
+  claude`, run from the repo root. It's a reference tool only; DESIGN.md
+  stays the actual source of truth for this project's UI.

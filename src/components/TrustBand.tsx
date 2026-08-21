@@ -23,7 +23,7 @@ function ScaleIcon() {
  */
 export function TrustBand() {
   return (
-    <div className="grid grid-cols-1 gap-6 rounded-2xl border border-gl-ink/10 bg-gl-paper-card p-6 sm:grid-cols-2 sm:divide-x sm:divide-gl-ink/10">
+    <div className="grid grid-cols-1 gap-6 rounded-2xl border border-gl-ink/10 bg-gl-paper-card p-6 shadow-sm shadow-black/5 sm:grid-cols-2 sm:divide-x sm:divide-gl-ink/10">
       <div className="flex items-start gap-3">
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gl-ink text-white">
           <LockIcon />
@@ -43,7 +43,8 @@ export function TrustBand() {
         <div>
           <p className="font-medium text-gl-ink">No inflated scores</p>
           <p className="mt-1 text-sm text-gl-ink-muted">
-            We&apos;ll tell you when it&apos;s not a match, before an employer does.
+            A high score always means the essentials are actually met — never rounded up for
+            good writing.
           </p>
         </div>
       </div>

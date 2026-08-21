@@ -37,6 +37,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# AI tooling — regeneratable, not project source (see CLAUDE.md setup notes)
+/.claude/skills/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

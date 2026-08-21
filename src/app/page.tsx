@@ -3,6 +3,7 @@ import { LandingHeader } from "@/components/LandingHeader";
 import { FeatureRow } from "@/components/FeatureRow";
 import { SecondSamplePreview } from "@/components/SecondSamplePreview";
 import { SimpleSteps } from "@/components/SimpleSteps";
+import { PullQuote } from "@/components/PullQuote";
 import { TrustBand } from "@/components/TrustBand";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { HighlighterMark, PinMark } from "@/components/DecorativeMarks";
@@ -42,6 +43,14 @@ export default function Home() {
 
         <div className="mt-16 sm:mt-20">
           <ScrollReveal translateYPx={16}>
+            <PullQuote>
+              We&apos;ll tell you when it&apos;s not a match, before an employer does.
+            </PullQuote>
+          </ScrollReveal>
+        </div>
+
+        <div className="mt-8">
+          <ScrollReveal translateYPx={16} delayMs={100}>
             <TrustBand />
           </ScrollReveal>
         </div>

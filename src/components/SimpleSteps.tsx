@@ -116,7 +116,7 @@ export function SimpleSteps() {
       <div className="mt-8 grid grid-cols-1 items-center gap-6 sm:grid-cols-[1fr_auto_1fr_auto_1fr]">
         {STEPS.map((step, i) => (
           <Fragment key={step.n}>
-            <div className="rounded-xl border border-gl-ink/10 bg-gl-paper-card p-5 shadow-sm shadow-black/5">
+            <div className="rounded-2xl border border-gl-ink/10 bg-gl-paper-card p-5 shadow-sm shadow-black/5">
               <div className="flex items-center gap-2.5">
                 <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gl-teal font-mono text-xs font-semibold text-white">
                   {step.n}

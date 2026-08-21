@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Regeneratable third-party AI-tooling assets (see CLAUDE.md) — gitignored,
+    // not this project's source, and not written to this project's lint rules.
+    ".claude/skills/**",
   ]),
 ]);
 
