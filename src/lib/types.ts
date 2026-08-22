@@ -92,6 +92,28 @@ export interface ScoreResult {
   antiGamingPenalty: number;
 }
 
+export type TraceabilitySection = "profile" | "objective" | "coreStrengths" | "experience" | "coverLetter";
+export type TraceabilityResolution = "rewritten" | "flagged";
+
+/**
+ * One claim in the tailored resume/cover letter that the traceability check
+ * (src/lib/traceabilityCheck.ts) found NOT clearly traceable to the original
+ * source resume/candidate notes, even after accounting for rewording. Every
+ * issue found is surfaced here — "rewritten" issues were corrected in place
+ * (the section's returned text already reflects the fix); "flagged" issues
+ * couldn't be safely rewritten without more information, so the original
+ * text is left as-is and the user is warned instead. Never silently dropped
+ * or silently kept either way.
+ */
+export interface TraceabilityIssue {
+  section: TraceabilitySection;
+  /** The specific overstated phrase/claim, quoted from the tailored text. */
+  claim: string;
+  /** One-sentence explanation of why this isn't traceable to the source resume. */
+  issue: string;
+  resolution: TraceabilityResolution;
+}
+
 export interface AnalysisResult {
   /** The JD's essential/desirable requirements, each checked against the candidate's real background. Grounds both scores. */
   requirementsChecklist: RequirementCheck[];
@@ -114,6 +136,8 @@ export interface AnalysisResult {
   honestSummary: string;
   /** Direct questions to ask the candidate when essential requirements have no evidence at all, so they can supply real background the resume didn't capture. Empty if the resume already covers the essentials reasonably well. */
   clarifyingQuestions: string[];
+  /** Claims in tailoredResume/coverLetter that a separate traceability pass couldn't confirm trace back to the source resume — see TraceabilityIssue. Empty if the tailored output checked out clean. */
+  traceabilityIssues: TraceabilityIssue[];
 }
 
 /** How long until the candidate needs to apply/be ready — directly gates which actions are even feasible to suggest. */

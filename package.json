@@ -12,6 +12,7 @@
     "lint": "eslint",
     "eval": "tsx eval/runEval.ts",
     "eval:ambition": "tsx eval/runAmbitionModeEval.ts",
+    "eval:traceability": "tsx eval/runTraceabilityEval.ts",
     "eval:suggestions": "tsx eval/runSuggestionQualityEval.ts",
     "eval:writing": "tsx eval/runWritingQualityEval.ts"
   },

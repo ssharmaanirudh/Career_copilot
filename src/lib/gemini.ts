@@ -10,6 +10,7 @@ import type {
 import { MODEL, AnalysisError, generateStructuredJson } from "./geminiClient";
 import { clampScore, str, bool } from "./normalize";
 import { annotateJdStructure } from "./jdStructure";
+import { runTraceabilityCheck } from "./traceabilityCheck";
 
 export { AnalysisError } from "./geminiClient";
 /** The submitted resume or job description text doesn't resemble one — a user-input problem, not an upstream failure. */
@@ -606,6 +607,9 @@ function normalizeResult(raw: Record<string, unknown>): AnalysisResult {
     clarifyingQuestions: Array.isArray(raw.clarifyingQuestions)
       ? raw.clarifyingQuestions.filter((q): q is string => typeof q === "string")
       : [],
+    // Populated after normalization by analyzeResumeAgainstJob's traceability
+    // check pass — never comes from this call's own response.
+    traceabilityIssues: [],
   };
 }
 
@@ -654,5 +658,27 @@ export async function analyzeResumeAgainstJob(
     throw new InvalidInputError(message);
   }
 
-  return normalizeResult(parsedObj);
+  const result = normalizeResult(parsedObj);
+
+  // Mandatory traceability self-check (CLAUDE.md "Traceability check"):
+  // fact-checks the just-generated tailoredResume/coverLetter against the
+  // real source resume, in a separate call so a transient failure here
+  // never takes down an otherwise-successful analysis the user already
+  // waited for — degrade to the unchecked tailored output with an empty
+  // traceabilityIssues list rather than failing the whole request.
+  try {
+    const { issues, correctedResume, correctedCoverLetter } = await runTraceabilityCheck(
+      resumeText,
+      candidateNotes,
+      result.tailoredResume,
+      result.coverLetter,
+    );
+    result.tailoredResume = correctedResume;
+    result.coverLetter = correctedCoverLetter;
+    result.traceabilityIssues = issues;
+  } catch (err) {
+    console.error("Traceability check failed; returning unchecked tailored output:", err);
+  }
+
+  return result;
 }

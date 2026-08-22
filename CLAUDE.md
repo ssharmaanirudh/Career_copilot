@@ -59,6 +59,31 @@ softens a hard truth, or hides a gap to improve perceived UX.
      instead, concrete next steps to build real evidence (a specific
      project type, certification, or assignment) with an honest effort
      estimate (quick / medium / substantial).
+6. **Traceability check** — a required, standing step, not an implicit
+   norm scattered across docs. Every tailored resume and cover letter
+   is fact-checked against the original source resume before being
+   returned, using this exact test on every specific claim (tool,
+   skill, technique, metric, scope, outcome):
+
+   > Can this exact claim be traced back to something already true in
+   > the source resume, even if reworded? If the wording changed but
+   > the underlying fact is the same — that's fine. If the claim
+   > states something that isn't actually supported by the source
+   > text — that's not fine, even if it would make the resume a
+   > better match.
+
+   This is the same adjacent-skill trap as step 2 above ("Excel VBA"
+   drifting into an implied "Python," "used ChatGPT for reporting"
+   drifting into implied LLM fine-tuning), applied to the *tailored
+   output* specifically, since that's the text most likely to get
+   optimistically reworded toward the JD. Any claim that fails the
+   test is either rewritten to only state what's traceable, or flagged
+   explicitly for the user's attention — never silently dropped and
+   never silently left in. Implemented as its own structurally
+   independent pass (src/lib/traceabilityCheck.ts), not folded into
+   the main scoring/tailoring prompt. Reference this test verbatim
+   anywhere tailoring or overstatement-risk is discussed going
+   forward, rather than re-explaining it differently each time.
 
 ## Tone and copy rules
 
