@@ -75,7 +75,8 @@ export function ScoreBandExplainer({
   return (
     <div className="rounded-2xl border border-gl-ink/10 bg-gl-paper-card p-5 shadow-sm shadow-black/5">
       <p className="text-sm text-gl-ink-muted">
-        This tells you where you stand against this specific role — not whether you should apply.
+        This tells you where you honestly stand against this specific role — not whether to
+        apply. That decision is yours.
       </p>
 
       <div className="mt-3 flex items-center gap-2.5">
