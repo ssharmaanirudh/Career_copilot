@@ -170,9 +170,9 @@ STEP 7 — List the concrete changes you made to the resume and why (short bulle
 
 STEP 8 — Classify every gap. You are now acting as a career coach turning your own already-computed requirementsChecklist into an honest action plan. Do NOT re-score or re-derive met/not_met status — reuse exactly what you already decided in step 2. For every requirement marked "not_met", decide which category it falls into:
 - CATEGORY A ("wording fix", goes in wordingFixes): the ORIGINAL resume text contains real evidence of this skill/experience, but it's buried, vague, unquantified, or not connected explicitly to the requirement's terminology. For each: quote the specific original-resume line as "currentLine", write a "suggestedLine" that surfaces the existing evidence more clearly using ONLY facts already present in the original resume (no invented metrics or claims — this is exactly what you should have already applied when writing tailoredResume in step 5), and explain in "whyItHelps" why this maps better to the JD's language.
-- CATEGORY B ("genuine gap", goes in skillGaps): the resume contains no evidence of this at all, not buried, not implied, actually not there. Do NOT suggest rewording for these — a rewording that implies a skill the person doesn't have is a misrepresentation, not a fix, and you must never produce one even if it would make the resume read "stronger". Instead: "whatsMissing" is a one-line explanation of the gap; "howToBuildEvidence" is 1-3 concrete, specific, actionable ways to build REAL evidence (a specific project type, certification, or on-the-job assignment — never generic advice like "learn Python"); "effortEstimate" is "quick" (days), "medium" (weeks), or "substantial" (months+); "priority" reflects how much this specific gap matters for this specific role. Include resourceLabel/resourceUrl exactly as in the rules below.
+- CATEGORY B ("genuine gap", goes in skillGaps): the resume contains no evidence of this at all, not buried, not implied, actually not there. Do NOT suggest rewording for these — a rewording that implies a skill the person doesn't have is a misrepresentation, not a fix, and you must never produce one even if it would make the resume read "stronger". Instead: "whatsMissing" is a one-line explanation of the gap; "howToBuildEvidence" is 1-3 concrete, specific, actionable ways to build REAL evidence (a specific project type, certification, or on-the-job assignment — never generic advice like "learn Python"); "effortEstimate" is "quick" (days), "medium" (weeks), or "substantial" (months+); "priority" reflects how much this specific gap matters for this specific role. Include resourceLabel/resourceSearchTerm exactly as in the rules below.
 Be ruthless about the split: if you're tempted to word-fix something that's actually Category B because it would "sound" like a fix, that is exactly the failure mode to avoid.
-For each resourceLabel/resourceUrl in skillGaps, if you are confident of a specific well-known FREE learning resource, include its name and EXACTLY ONE STABLE TOP-LEVEL URL (never two URLs joined together, never a comma-separated list) — e.g. https://www.freecodecamp.org/learn, https://www.kaggle.com/learn, https://www.coursera.org/ (audit-free courses), https://developers.google.com/machine-learning, https://docs.aws.amazon.com/, https://ocw.mit.edu/, https://www.khanacademy.org/ — never a specific course-slug URL you are not certain is stable and correct. Leave resourceLabel/resourceUrl as empty strings if you are not confident of a specific real resource; do not guess or invent a URL.
+For each skillGap, also provide resourceLabel and resourceSearchTerm — but you never produce a URL yourself, anywhere, for this field: the app builds the actual link deterministically from resourceSearchTerm, specifically so a specific course URL is never invented or guessed. resourceSearchTerm is a short, concrete search phrase (1-4 words) naming the skill/tool/technique itself, e.g. "Python", "SQL joins", "public speaking", "AWS SageMaker" — not a sentence, not a URL, not a course name. resourceLabel is a short human-readable description of what searching for that term would surface, e.g. "Courses on Python" or "SQL fundamentals courses" — describe the search, don't name a specific course you aren't certain exists. Always provide both non-empty; a search term is always safe to produce even when you would not be confident enough to name one specific course.
 
 STEP 9 — maxRealisticScoreAfterWordingFixesOnly: using the exact same step 4 scoring algorithm, compute the ceiling score achievable if EVERY Category A wording fix were applied perfectly and EVERY Category B gap remained unaddressed. This should be very close to tailoredScore.matchScore, since tailoredResume already applies those same wording fixes without fabricating anything — treat it as an independent sanity check on that score.
 
@@ -395,11 +395,11 @@ const RESPONSE_SCHEMA: Schema = {
           priority: { type: Type.STRING, enum: ["high", "medium", "low"] },
           resourceLabel: {
             type: Type.STRING,
-            description: "Name of a specific free resource, e.g. 'freeCodeCamp: Python for Everybody'. Empty if unsure.",
+            description: "Short description of what searching resourceSearchTerm would surface, e.g. 'Courses on Python'. Never a specific course name you aren't certain exists.",
           },
-          resourceUrl: {
+          resourceSearchTerm: {
             type: Type.STRING,
-            description: "Stable top-level URL for that resource. Empty if unsure — never guess.",
+            description: "1-4 word search phrase naming the skill/tool itself, e.g. 'Python' or 'public speaking'. Never a URL — the app builds the link from this.",
           },
         },
         required: [
@@ -409,7 +409,7 @@ const RESPONSE_SCHEMA: Schema = {
           "effortEstimate",
           "priority",
           "resourceLabel",
-          "resourceUrl",
+          "resourceSearchTerm",
         ],
       },
     },
@@ -511,16 +511,18 @@ function normalizeWordingFix(raw: unknown): WordingFix {
   };
 }
 
-/** Only trust a single, well-formed http(s) URL the model returned; drop anything else rather than risk a broken/invalid link. */
-function normalizeResourceUrl(v: unknown): string {
-  const s = str(v).trim();
-  if (!s || /[\s,]/.test(s)) return "";
-  try {
-    const url = new URL(s);
-    return url.protocol === "http:" || url.protocol === "https:" ? url.toString() : "";
-  } catch {
-    return "";
-  }
+/**
+ * Builds a resource link deterministically from a search term — the model
+ * never produces a URL itself (see step 8's resourceSearchTerm rule), so a
+ * specific course URL can never be hallucinated or go dead. Coursera's
+ * search page is a stable, well-established URL pattern that stays valid
+ * for any query string, unlike a specific course page which can move or
+ * be retired.
+ */
+function buildResourceUrl(searchTerm: unknown): string {
+  const term = str(searchTerm).trim();
+  if (!term) return "";
+  return `https://www.coursera.org/search?query=${encodeURIComponent(term)}`;
 }
 
 /** Defends against the model marking more than one requirement core; keeps only the first. */
@@ -600,7 +602,7 @@ function normalizeResult(raw: Record<string, unknown>): AnalysisResult {
             ? g.priority
             : "medium",
         resourceLabel: str(g.resourceLabel),
-        resourceUrl: normalizeResourceUrl(g.resourceUrl),
+        resourceUrl: buildResourceUrl(g.resourceSearchTerm),
       })),
     maxRealisticScoreAfterWordingFixesOnly: clampScore(raw.maxRealisticScoreAfterWordingFixesOnly),
     honestSummary: str(raw.honestSummary),

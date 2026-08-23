@@ -104,6 +104,7 @@ interface SuggestionAssessment {
   gap: SkillGap | null;
   specific: CriterionResult;
   practical: CriterionResult;
+  resourceLink: CriterionResult;
   boilerplateSimilarTo: string[]; // other case labels this suggestion closely resembles
 }
 
@@ -130,6 +131,28 @@ function assessSpecific(gap: SkillGap): CriterionResult {
   const verdict = !anyVague && anyConcrete ? "pass" : "flag";
   if (verdict === "pass") notes.push("looks concrete: names a specific action or resource");
   return { automatedVerdict: verdict, notes };
+}
+
+// gemini.ts's buildResourceUrl() is the only thing allowed to produce this
+// field — the model itself only ever supplies a search term, never a URL
+// (see step 8's resourceSearchTerm rule) — so any resourceUrl that doesn't
+// match this exact pattern means a raw/model-produced or otherwise
+// fabricated-looking URL slipped through, which is exactly the hallucinated-
+// or-dead-link risk this mechanism exists to close off entirely.
+const SAFE_RESOURCE_URL_PATTERN = /^https:\/\/www\.coursera\.org\/search\?query=[^\s]+$/;
+
+function assessResourceLink(gap: SkillGap): CriterionResult {
+  const url = gap.resourceUrl.trim();
+  if (url.length === 0) {
+    return { automatedVerdict: "pass", notes: ["no resource link returned — safe (nothing to fabricate)"] };
+  }
+  if (SAFE_RESOURCE_URL_PATTERN.test(url)) {
+    return { automatedVerdict: "pass", notes: [`verified safe search-pattern URL: ${url}`] };
+  }
+  return {
+    automatedVerdict: "flag",
+    notes: [`does NOT match the verified search-pattern URL — looks like a fabricated/specific link: ${url}`],
+  };
 }
 
 function assessPractical(gap: SkillGap): CriterionResult {
@@ -216,6 +239,7 @@ async function main() {
       gap: f.gap,
       specific: assessSpecific(f.gap),
       practical: assessPractical(f.gap),
+      resourceLink: assessResourceLink(f.gap),
       boilerplateSimilarTo,
     };
   });
@@ -235,6 +259,7 @@ async function main() {
     const anyFlag =
       a.specific.automatedVerdict === "flag" ||
       a.practical.automatedVerdict === "flag" ||
+      a.resourceLink.automatedVerdict === "flag" ||
       a.boilerplateSimilarTo.length > 0;
     if (anyFlag) flaggedCount++;
 
@@ -254,6 +279,9 @@ async function main() {
       `  [3] not boilerplate: ${a.boilerplateSimilarTo.length === 0 ? "PASS" : "FLAG"}${
         a.boilerplateSimilarTo.length > 0 ? ` — resembles: ${a.boilerplateSimilarTo.join(", ")}` : ""
       }`,
+    );
+    console.log(
+      `  [4] resource link safety: ${a.resourceLink.automatedVerdict.toUpperCase()} — ${a.resourceLink.notes.join("; ")}`,
     );
   }
 

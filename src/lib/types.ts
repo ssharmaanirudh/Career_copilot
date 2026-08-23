@@ -41,9 +41,9 @@ export interface SkillGap {
   howToBuildEvidence: string[];
   effortEstimate: EffortEstimate;
   priority: SkillPriority;
-  /** Name of a specific free learning resource, e.g. "freeCodeCamp: Python for Everybody". Empty if none confident. */
+  /** Short description of what the resource link's search would surface, e.g. "Courses on Python". Never a specific course name the model can't verify exists. */
   resourceLabel: string;
-  /** Stable top-level/landing-page URL for that resource. Empty if none confident. */
+  /** Built deterministically in code from the model's search term (never a model-generated URL, so a specific course link can never be hallucinated or go dead) — a Coursera search results page for the skill. Empty if no search term was given. */
   resourceUrl: string;
 }
 
