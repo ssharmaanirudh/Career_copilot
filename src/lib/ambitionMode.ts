@@ -46,21 +46,72 @@ function seniorityPhrase(level: SeniorityLevel): string {
   }
 }
 
+const DOMAIN_SCHEMA: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    domain: {
+      type: Type.STRING,
+      description:
+        "3-8 word industry/domain phrase, or empty string if the role title alone is already unambiguous.",
+    },
+  },
+  required: ["domain"],
+};
+
+/**
+ * AMBITION-MODE.md "Domain-aware retrieval" step 1: generic role titles
+ * (Project Manager, Coordinator, Analyst) span unrelated industries, so
+ * searching on the bare title alone can retrieve real, non-hallucinated
+ * postings that are nonetheless the wrong postings for this person (e.g. a
+ * public-health professional's "Project Manager" search pulling a
+ * university campus-construction-liaison posting). This infers a domain
+ * label from the resume BEFORE searching, so it can be folded into the
+ * search query — a separate lightweight call (no search needed), kept
+ * structurally independent from the composite-scoring prompt for the same
+ * reason traceabilityCheck.ts and actionPlan.ts are separate calls.
+ */
+async function inferDomain(resumeText: string, targetRole: string): Promise<string> {
+  const prompt = `CANDIDATE RESUME:\n"""\n${resumeText}\n"""\n\nThe candidate is targeting this role: "${targetRole}"\n\nName the specific industry/domain context this person's job search should be anchored to, combining their real resume background with their stated target role (e.g. "public health / development sector programme management", "software engineering / fintech", "K-12 education administration", "nonprofit development and fundraising"). If the resume shows a genuine pivot toward a different field than their current one, anchor to the TARGET field implied by the role, not just their current field — the goal is avoiding a random unrelated industry, not blocking a legitimate pivot. If the role title is already unambiguous and domain-agnostic on its own (e.g. "Registered Nurse", "Electrician"), return an empty string instead of inventing a distinction that doesn't matter.`;
+
+  const responseText = await generateStructuredJson({
+    model: process.env.GEMINI_MODEL || MODEL,
+    contents: prompt,
+    config: {
+      systemInstruction:
+        "You infer a short industry/domain label from a resume and target role, used only to make a job-posting search more specific. Respond only with the requested JSON.",
+      responseMimeType: "application/json",
+      responseSchema: DOMAIN_SCHEMA,
+      temperature: 0,
+    },
+  });
+
+  try {
+    const parsed = JSON.parse(responseText) as Record<string, unknown>;
+    return str(parsed.domain).trim();
+  } catch {
+    return "";
+  }
+}
+
 /**
  * STEP 1 of AMBITION-MODE.md: retrieve 3-5 real, currently active postings
  * via Search Grounding. This call cannot use responseSchema (confirmed:
  * the API rejects tools + responseMimeType:"application/json" together),
  * so the model returns a delimited plain-text format that we parse below.
+ * The search query combines the role with the inferred domain (Domain-aware
+ * retrieval step 2) rather than searching the bare title alone.
  */
 async function retrievePostings(
   role: string,
   seniority: SeniorityLevel,
   location: string,
+  domain: string,
 ): Promise<{ postings: RetrievedPostingInternal[]; sources: AmbitionModeSource[] }> {
   const seniorityPart = seniorityPhrase(seniority) ? ` ${seniorityPhrase(seniority)}` : "";
   const locationPart = location.trim() ? ` in ${location.trim()}` : "";
+  const domainPart = domain.trim() ? ` in the "${domain.trim()}" industry/domain` : "";
 
-  const prompt = `Search for 3 to 5 real, currently active job postings for the role "${role}"${seniorityPart ? `, ${seniorityPart.trim()}` : ""}${locationPart}. Prefer postings that appear to have been posted within the last 30-60 days.
+  const prompt = `Search for 3 to 5 real, currently active job postings for the role "${role}"${domainPart}${seniorityPart ? `, ${seniorityPart.trim()}` : ""}${locationPart}. Combine the role title with the domain in your actual search queries (e.g. "${role}${domain.trim() ? ` ${domain.trim()}` : ""}") rather than searching the bare role title alone — this role title alone can match postings from a completely unrelated field. Prefer postings that appear to have been posted within the last 30-60 days.
 
 Only use real postings you actually find via search. Never invent a posting, a company, or requirements text — if you cannot find enough genuine postings, return fewer than 3 rather than making one up.
 
@@ -112,6 +163,110 @@ Repeat the ===POSTING=== block for each posting found. Do not summarize across p
   return { postings: postings.slice(0, MAX_POSTINGS), sources };
 }
 
+const RELEVANCE_SCHEMA: Schema = {
+  type: Type.OBJECT,
+  properties: {
+    verdicts: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: {
+          index: { type: Type.INTEGER, description: "The 0-based POSTING index this verdict is for." },
+          relevant: { type: Type.BOOLEAN },
+          reason: { type: Type.STRING },
+        },
+        required: ["index", "relevant", "reason"],
+      },
+    },
+  },
+  required: ["verdicts"],
+};
+
+interface ExcludedPosting {
+  title: string;
+  company: string;
+  reason: string;
+}
+
+/**
+ * AMBITION-MODE.md "Domain-aware retrieval" step 4: a title match alone
+ * isn't enough — a retrieved posting can be a real, non-hallucinated
+ * listing while still being the wrong field entirely for this candidate
+ * (title matches, but the actual duties don't). This is a separate
+ * post-retrieval check specifically because combining it into the
+ * composite-scoring call would let an irrelevant posting's content
+ * contaminate the checklist before being caught; filtering first keeps the
+ * checklist itself built only from postings actually judged relevant.
+ * Fails CLOSED on any parsing ambiguity: an unrelated-field posting shown
+ * as if it were evidence is explicitly the more dangerous failure mode
+ * here, worse than being slightly too conservative.
+ */
+async function filterRelevantPostings(
+  postings: RetrievedPostingInternal[],
+  resumeText: string,
+  targetRole: string,
+  domain: string,
+): Promise<{ relevant: RetrievedPostingInternal[]; excluded: ExcludedPosting[] }> {
+  if (postings.length === 0) return { relevant: [], excluded: [] };
+
+  const postingsBlock = postings
+    .map(
+      (p, i) =>
+        `POSTING ${i} — "${p.title}"${p.company ? ` at ${p.company}` : ""}:\n${p.requirementsText}`,
+    )
+    .join("\n\n");
+
+  const prompt = `A candidate is targeting the role "${targetRole}"${domain ? `, in the domain/industry context: "${domain}"` : ""}. Their resume:\n"""\n${resumeText}\n"""\n\nThese postings were retrieved by searching that role title. Broad role titles (Project Manager, Coordinator, Analyst, Manager, etc.) span unrelated industries — a posting can match the title string while its actual duties come from a completely different, unrelated field from what this candidate is pursuing (e.g. a public-health professional's "Project Manager" search pulling a university campus-construction-liaison posting that requires a specific US state driver's license). For EACH posting below, judge whether its actual listed duties are plausibly relevant to this candidate's stated target role and background/domain — not just whether the title matches. A posting is relevant if it's a genuine, reasonable version of the target role, even in a related-but-different field (allow legitimate career pivots) — exclude only postings that are clearly a different, unrelated field or function despite the matching title.
+
+${postingsBlock}
+
+Respond with a verdict for every posting above, referenced by its 0-based index number.`;
+
+  const responseText = await generateStructuredJson({
+    model: process.env.GEMINI_MODEL || MODEL,
+    contents: prompt,
+    config: {
+      systemInstruction:
+        "You are a strict relevance filter protecting a job-search tool from presenting postings that superficially match a title but come from an unrelated field as if they were real evidence. When genuinely uncertain, judge not relevant — showing an irrelevant posting as evidence is a worse failure than being slightly too conservative. Respond only with the requested JSON.",
+      responseMimeType: "application/json",
+      responseSchema: RELEVANCE_SCHEMA,
+      temperature: 0,
+    },
+  });
+
+  const verdictByIndex = new Map<number, { relevant: boolean; reason: string }>();
+  try {
+    const parsed = JSON.parse(responseText) as Record<string, unknown>;
+    const rawVerdicts = Array.isArray(parsed.verdicts) ? parsed.verdicts : [];
+    for (const raw of rawVerdicts) {
+      if (typeof raw !== "object" || raw === null) continue;
+      const obj = raw as Record<string, unknown>;
+      const index = Math.round(Number(obj.index));
+      if (!Number.isFinite(index)) continue;
+      verdictByIndex.set(index, { relevant: bool(obj.relevant), reason: str(obj.reason) });
+    }
+  } catch {
+    // Parse failure: verdictByIndex stays empty, which fails every posting closed below.
+  }
+
+  const relevant: RetrievedPostingInternal[] = [];
+  const excluded: ExcludedPosting[] = [];
+  postings.forEach((p, i) => {
+    const verdict = verdictByIndex.get(i);
+    if (verdict?.relevant) {
+      relevant.push(p);
+    } else {
+      excluded.push({
+        title: p.title,
+        company: p.company,
+        reason: verdict?.reason || "Could not confirm this posting is relevant to your target role/domain.",
+      });
+    }
+  });
+
+  return { relevant, excluded };
+}
+
 /**
  * STEP 2-4 of AMBITION-MODE.md, combined into one structured call: build a
  * composite requirements checklist across the retrieved postings (majority
@@ -151,7 +306,7 @@ STEP 4 — Score, using the identical cap-tier algorithm as standard GapLens sco
 
 STEP 5 — Classify every not_met requirement into wordingFixes or skillGaps, exactly as GapLens does for single-JD scoring:
 - CATEGORY A (wordingFixes): the resume contains real evidence of this, just buried, vague, or not connected explicitly to the requirement's terminology. Quote the original resume line as "currentLine", write a "suggestedLine" using ONLY facts already in the resume (no invented claims), and explain in "whyItHelps".
-- CATEGORY B (skillGaps): the resume shows no evidence of this at all. "whatsMissing" (one line), "howToBuildEvidence" (1-3 concrete, specific ways to build real evidence — never generic advice), "effortEstimate" (quick/medium/substantial), "priority" (high/medium/low). Include resourceLabel/resourceUrl only for a specific well-known free resource you're confident about (e.g. https://www.freecodecamp.org/learn, https://www.coursera.org/, https://ocw.mit.edu/); leave both empty if unsure — never guess a URL.
+- CATEGORY B (skillGaps): the resume shows no evidence of this at all. "whatsMissing" (one line), "howToBuildEvidence" (1-3 concrete, specific ways to build real evidence — never generic advice), "effortEstimate" (quick/medium/substantial), "priority" (high/medium/low). Also provide resourceLabel and resourceSearchTerm — but you never produce a URL yourself, anywhere, for this field: the app builds the actual link deterministically from resourceSearchTerm, specifically so a specific course URL is never invented or guessed. resourceSearchTerm is a short, concrete search phrase (1-4 words) naming the skill/tool/technique itself, e.g. "Python", "SQL joins", "public speaking", "AWS SageMaker" — not a sentence, not a URL, not a course name. resourceLabel is a short human-readable description of what searching for that term would surface, e.g. "Courses on Python" or "SQL fundamentals courses" — describe the search, don't name a specific course you aren't certain exists. Always provide both non-empty; a search term is always safe to produce even when you would not be confident enough to name one specific course.
 
 STEP 6 — honestSummary: one or two blunt sentences on what this composite picture across real postings for this role does and doesn't tell the candidate about their fit — and if a core/primary requirement is a skillGap, say plainly that no wording change closes that gap.
 
@@ -248,7 +403,10 @@ const RESPONSE_SCHEMA: Schema = {
           effortEstimate: { type: Type.STRING, enum: ["quick", "medium", "substantial"] },
           priority: { type: Type.STRING, enum: ["high", "medium", "low"] },
           resourceLabel: { type: Type.STRING },
-          resourceUrl: { type: Type.STRING },
+          resourceSearchTerm: {
+            type: Type.STRING,
+            description: "1-4 word search phrase naming the skill/tool itself, e.g. 'Python' or 'public speaking'. Never a URL — the app builds the link from this.",
+          },
         },
         required: [
           "skill",
@@ -257,7 +415,7 @@ const RESPONSE_SCHEMA: Schema = {
           "effortEstimate",
           "priority",
           "resourceLabel",
-          "resourceUrl",
+          "resourceSearchTerm",
         ],
       },
     },
@@ -275,15 +433,10 @@ const RESPONSE_SCHEMA: Schema = {
   ],
 };
 
-function normalizeResourceUrl(v: unknown): string {
-  const s = str(v).trim();
-  if (!s || /[\s,]/.test(s)) return "";
-  try {
-    const url = new URL(s);
-    return url.protocol === "http:" || url.protocol === "https:" ? url.toString() : "";
-  } catch {
-    return "";
-  }
+function buildResourceUrl(searchTerm: unknown): string {
+  const term = str(searchTerm).trim();
+  if (!term) return "";
+  return `https://www.coursera.org/search?query=${encodeURIComponent(term)}`;
 }
 
 function normalizeRequirement(raw: unknown, sourceTotal: number): CompositeRequirementCheck {
@@ -358,7 +511,7 @@ function normalizeSkillGap(raw: unknown): SkillGap {
         : "medium",
     priority: obj.priority === "high" || obj.priority === "medium" || obj.priority === "low" ? obj.priority : "medium",
     resourceLabel: str(obj.resourceLabel),
-    resourceUrl: normalizeResourceUrl(obj.resourceUrl),
+    resourceUrl: buildResourceUrl(obj.resourceSearchTerm),
   };
 }
 
@@ -433,8 +586,19 @@ export async function runAmbitionMode(
   targetRole: string,
   seniorityLevel: SeniorityLevel,
   location: string,
+  domainOverride?: string,
 ): Promise<AmbitionModeResponse> {
-  const { postings, sources } = await retrievePostings(targetRole, seniorityLevel, location);
+  const override = domainOverride?.trim() ?? "";
+  const domain = override || (await inferDomain(resumeText, targetRole));
+
+  const { postings: rawPostings, sources } = await retrievePostings(
+    targetRole,
+    seniorityLevel,
+    location,
+    domain,
+  );
+
+  const { relevant: postings } = await filterRelevantPostings(rawPostings, resumeText, targetRole, domain);
 
   if (postings.length < MIN_USABLE_POSTINGS) {
     return {
@@ -451,6 +615,7 @@ export async function runAmbitionMode(
     targetRole,
     seniorityLevel,
     location,
+    inferredDomain: domain,
     postings: postings.map(({ title, company, postingDate }) => ({ title, company, postingDate })),
     sources,
     ...scored,

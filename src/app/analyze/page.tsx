@@ -95,9 +95,8 @@ export default function AnalyzePage() {
     }
   }
 
-  async function handleAmbitionSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!canSubmitAmbition || !file) return;
+  async function submitAmbition(domainOverride: string) {
+    if (!file) return;
 
     setAmbitionStatus("loading");
     setAmbitionError(null);
@@ -107,6 +106,9 @@ export default function AnalyzePage() {
     formData.append("targetRole", targetRole);
     formData.append("seniorityLevel", seniorityLevel);
     formData.append("location", location);
+    if (domainOverride.trim()) {
+      formData.append("domainOverride", domainOverride.trim());
+    }
 
     try {
       const res = await fetch("/api/ambition-mode", { method: "POST", body: formData });
@@ -120,6 +122,16 @@ export default function AnalyzePage() {
       setAmbitionError(err instanceof Error ? err.message : "Something went wrong.");
       setAmbitionStatus("error");
     }
+  }
+
+  async function handleAmbitionSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    if (!canSubmitAmbition || !file) return;
+    await submitAmbition("");
+  }
+
+  async function handleAdjustDomain(newDomain: string) {
+    await submitAmbition(newDomain);
   }
 
   return (
@@ -369,7 +381,7 @@ export default function AnalyzePage() {
                     {ambitionResult.message}
                   </div>
                 ) : (
-                  <AmbitionResultsView result={ambitionResult} />
+                  <AmbitionResultsView result={ambitionResult} onAdjustDomain={handleAdjustDomain} />
                 )}
               </div>
             )}

@@ -219,6 +219,8 @@ export interface AmbitionModeResult {
   targetRole: string;
   seniorityLevel: SeniorityLevel;
   location: string;
+  /** The industry/domain context inferred from the resume (or supplied via domainOverride) and used to disambiguate the search query for a generic role title, e.g. "public health / development sector programme management". Empty if the role title needed no disambiguation. Shown to the user as "searching as: <role>, <inferredDomain>" so they can correct it if wrong. */
+  inferredDomain: string;
   postings: RetrievedPosting[];
   sources: AmbitionModeSource[];
   requirementsChecklist: CompositeRequirementCheck[];

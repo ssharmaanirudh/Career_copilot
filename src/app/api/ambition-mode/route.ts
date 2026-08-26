@@ -35,6 +35,7 @@ export async function POST(request: Request) {
   const targetRole = formData.get("targetRole");
   const seniorityLevel = formData.get("seniorityLevel");
   const location = formData.get("location");
+  const domainOverride = formData.get("domainOverride");
 
   if (!(resumeFile instanceof File)) {
     return NextResponse.json({ error: "Missing resume file." }, { status: 400 });
@@ -50,6 +51,9 @@ export async function POST(request: Request) {
   }
   if (typeof location === "string" && location.length > MAX_LOCATION_LENGTH) {
     return NextResponse.json({ error: "Location is too long." }, { status: 400 });
+  }
+  if (typeof domainOverride === "string" && domainOverride.length > MAX_ROLE_LENGTH) {
+    return NextResponse.json({ error: "Domain is too long." }, { status: 400 });
   }
   const seniority = typeof seniorityLevel === "string" ? seniorityLevel : "";
   if (!VALID_SENIORITY.has(seniority)) {
@@ -72,6 +76,7 @@ export async function POST(request: Request) {
       targetRole.trim(),
       seniority as SeniorityLevel,
       typeof location === "string" ? location.trim() : "",
+      typeof domainOverride === "string" ? domainOverride.trim() : "",
     );
     return NextResponse.json(result);
   } catch (err) {

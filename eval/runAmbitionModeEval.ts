@@ -20,6 +20,15 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { runAmbitionMode, FALLBACK_MESSAGE } from "../src/lib/ambitionMode";
 
+// ambitionMode.ts's own buildResourceUrl() is the only thing allowed to
+// produce this field — the model itself only ever supplies a search term,
+// never a URL — so any resourceUrl that doesn't match this exact pattern
+// means a raw/model-produced or otherwise fabricated-looking URL slipped
+// through. Same check as runSuggestionQualityEval.ts's assessResourceLink,
+// applied here since ambitionMode.ts has its own structurally independent
+// skillGap-generation path (not covered by that suite).
+const SAFE_RESOURCE_URL_PATTERN = /^https:\/\/www\.coursera\.org\/search\?query=[^\s]+$/;
+
 function loadFixture(name: string): string {
   return readFileSync(join(__dirname, "fixtures", name), "utf-8").trim();
 }
@@ -77,6 +86,14 @@ async function runFindableRoleCase(): Promise<CaseResult> {
       "Score summary uses sharp single-JD phrasing ('would not clear a screen') instead of softer composite language",
     );
   }
+  for (const gap of result.skillGaps) {
+    const url = gap.resourceUrl.trim();
+    if (url.length > 0 && !SAFE_RESOURCE_URL_PATTERN.test(url)) {
+      notes.push(
+        `skillGap "${gap.skill}" has a resourceUrl that doesn't match the verified search-pattern URL — looks like a fabricated/specific link: ${url}`,
+      );
+    }
+  }
 
   console.log(`  [${id}] postings=${result.postings.length}, sources=${result.sources.length}, ` +
     `checklist=${result.requirementsChecklist.length}, score=${result.score.matchScore}, ` +
@@ -124,10 +141,67 @@ async function runObscureRoleCase(): Promise<CaseResult> {
   return { id, passed: notes.length === 0, notes };
 }
 
-async function main() {
-  console.log("Running Ambition Mode eval (2 cases, live Search Grounding + scoring calls)...\n");
+// The exact real bug reported: a "Project Manager" search against a
+// public-health/programme-management resume pulled real, legitimate
+// postings from a completely unrelated field (a university campus
+// construction-liaison role requiring a state driver's license) because
+// retrieval searched the bare title with no connection to the resume's
+// actual domain. These marker terms are stand-ins for "obviously a
+// different, unrelated field" — a title-only search commonly surfaces
+// construction/facilities-management postings for "Project Manager", none
+// of which share any real overlap with programme M&E/public-health work.
+const UNRELATED_FIELD_MARKERS =
+  /driver'?s?\s+license|construction|campus\s+(facilities|liaison)|general\s+contractor|hvac|osha\b/i;
 
-  const cases = [runFindableRoleCase, runObscureRoleCase];
+async function runDomainAwareRetrievalCase(): Promise<CaseResult> {
+  const id = "domain-aware-retrieval-project-manager";
+  const notes: string[] = [];
+  const resumeText = loadFixture("anirudh-mel-resume.txt");
+
+  const result = await runAmbitionMode(resumeText, "Project Manager", "", "");
+
+  if (result.insufficientData) {
+    // An acceptable outcome per AMBITION-MODE.md step 6 (fewer than 3
+    // genuinely relevant postings after filtering -> fallback rather than
+    // padding with irrelevant ones) — not itself a failure, but log it so
+    // a human can confirm it's a real "not enough relevant postings"
+    // outcome rather than a retrieval/filter bug silently returning zero.
+    console.log(
+      `  [${id}] insufficientData=true, postingsFound=${result.postingsFound} (acceptable per AMBITION-MODE.md step 6 if filtering genuinely found <3 relevant postings)`,
+    );
+    return { id, passed: true, notes: [] };
+  }
+
+  console.log(
+    `  [${id}] inferredDomain="${result.inferredDomain}", postings=${result.postings.length}, ` +
+      `score=${result.score.matchScore}`,
+  );
+  for (const p of result.postings) {
+    console.log(`  [${id}]   posting: "${p.title}"${p.company ? ` at ${p.company}` : ""}`);
+  }
+
+  if (!result.inferredDomain) {
+    notes.push(
+      `Expected a non-empty inferredDomain for a generic title like "Project Manager" against a public-health/programme-management resume, got empty string`,
+    );
+  }
+
+  for (const p of result.postings) {
+    const haystack = `${p.title} ${p.company}`;
+    if (UNRELATED_FIELD_MARKERS.test(haystack)) {
+      notes.push(
+        `Posting "${p.title}"${p.company ? ` at ${p.company}` : ""} looks like it's from an unrelated field (construction/facilities) — should have been excluded by the relevance filter`,
+      );
+    }
+  }
+
+  return { id, passed: notes.length === 0, notes };
+}
+
+async function main() {
+  console.log("Running Ambition Mode eval (3 cases, live Search Grounding + scoring calls)...\n");
+
+  const cases = [runFindableRoleCase, runObscureRoleCase, runDomainAwareRetrievalCase];
   const results: CaseResult[] = [];
   for (const runCase of cases) {
     try {

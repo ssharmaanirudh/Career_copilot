@@ -20,8 +20,17 @@ function sourceLabel(count: number, total: number, type: "essential" | "desirabl
  * be scrolled past or missed, the way it could if split across tabs like
  * the single-JD ResultsView.
  */
-export function AmbitionResultsView({ result }: { result: AmbitionModeResult }) {
+export function AmbitionResultsView({
+  result,
+  onAdjustDomain,
+}: {
+  result: AmbitionModeResult;
+  /** Re-runs the whole search/score flow with a corrected domain when the user says the inferred one is wrong. Omit to hide the adjust control. */
+  onAdjustDomain?: (domain: string) => void;
+}) {
   const [stampTrigger, setStampTrigger] = useState(false);
+  const [editingDomain, setEditingDomain] = useState(false);
+  const [domainDraft, setDomainDraft] = useState(result.inferredDomain);
 
   useEffect(() => {
     const timer = setTimeout(() => setStampTrigger(true), 300);
@@ -32,6 +41,65 @@ export function AmbitionResultsView({ result }: { result: AmbitionModeResult }) 
 
   return (
     <div className="flex flex-col gap-6">
+      {/* Domain-aware retrieval (AMBITION-MODE.md): keeps the inferred search
+          domain visible and correctable, rather than a hidden step — a
+          generic role title alone can pull real postings from a completely
+          unrelated field, so this is the honesty mechanism for retrieval
+          itself, not just for the score. */}
+      {onAdjustDomain && (
+        <div className="rounded-2xl border border-gl-ink/10 bg-gl-paper-card p-4 text-sm shadow-sm shadow-black/5">
+          {editingDomain ? (
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <span className="shrink-0 text-gl-ink-muted">Searching as: {result.targetRole},</span>
+              <input
+                type="text"
+                value={domainDraft}
+                onChange={(e) => setDomainDraft(e.target.value)}
+                placeholder="e.g. public health / development sector"
+                className="w-full rounded-xl border border-gl-ink/15 p-2 text-sm shadow-inner shadow-black/5 focus:border-gl-teal focus:shadow-none focus:outline-none focus:ring-4 focus:ring-gl-teal/15"
+              />
+              <div className="flex shrink-0 gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingDomain(false);
+                    onAdjustDomain(domainDraft);
+                  }}
+                  className="rounded-xl bg-gl-teal px-3 py-2 text-xs font-semibold text-white"
+                >
+                  Re-search
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDomainDraft(result.inferredDomain);
+                    setEditingDomain(false);
+                  }}
+                  className="rounded-xl border border-gl-ink/15 px-3 py-2 text-xs font-medium text-gl-ink-muted"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          ) : (
+            <p className="text-gl-ink-muted">
+              Searching as:{" "}
+              <span className="font-medium text-gl-ink">
+                {result.targetRole}
+                {result.inferredDomain ? `, ${result.inferredDomain}` : ""}
+              </span>{" "}
+              <button
+                type="button"
+                onClick={() => setEditingDomain(true)}
+                className="text-gl-teal hover:underline"
+              >
+                not quite right? adjust
+              </button>
+            </p>
+          )}
+        </div>
+      )}
+
       {/* Persistent composite-picture banner — must stay visible throughout this view, not just on first load. */}
       <div className="flex items-start gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900 shadow-sm shadow-amber-100">
         <svg
