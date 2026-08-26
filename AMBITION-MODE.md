@@ -40,19 +40,71 @@ never quietly substitute invented requirements.
 
 ## Data source restriction (non-negotiable)
 
-Only use data sources that are legitimately public and intended for 
-this kind of aggregate use: real job postings retrieved via a 
-compliant search/API method, and/or public aggregate skills databases 
-(e.g. O*NET). Do not scrape or aggregate individual people's profiles 
-(LinkedIn or any other platform) under any circumstance — including in 
-service of a "what skills do people in this role actually have" 
-question. Analyzing publicly published role descriptions (job 
-postings) is fine; using private individuals' profile data without 
-their consent is a different and unacceptable category, regardless of 
-how the underlying question is framed. This restriction applies even 
-if a technical method to access such data becomes available — the 
-restriction is about consent and legitimate use, not just technical 
+Only use data sources that are legitimately public and intended for
+this kind of aggregate use: real job postings retrieved via a
+compliant search/API method, and/or public aggregate skills databases
+(e.g. O*NET). Do not scrape or aggregate individual people's profiles
+(LinkedIn or any other platform) under any circumstance — including in
+service of a "what skills do people in this role actually have"
+question. Analyzing publicly published role descriptions (job
+postings) is fine; using private individuals' profile data without
+their consent is a different and unacceptable category, regardless of
+how the underlying question is framed. This restriction applies even
+if a technical method to access such data becomes available — the
+restriction is about consent and legitimate use, not just technical
 or ToS feasibility.
+
+## Domain-aware retrieval (critical fix — broad titles are ambiguous)
+
+Generic role titles (Project Manager, Coordinator, Analyst, Manager)
+span wildly different, unrelated industries — a "Project Manager"
+posting could be construction, higher-ed facilities, IT, healthcare,
+or marketing, with zero overlap in actual required skills. Searching
+on the bare title alone will retrieve real, non-hallucinated postings
+that are nonetheless the WRONG postings for this specific person — a
+different, more dangerous failure mode than fabrication, because it
+looks legitimate (real postings, real citations) while being
+practically useless or actively misleading.
+
+**Retrieval must be informed by the resume's actual domain, not the
+role title alone:**
+
+1. Before searching, infer the person's likely domain/industry
+   context from their resume (e.g. "public health / development
+   sector programme management," "software engineering / fintech,"
+   "K-12 education administration"). This is a real inference step,
+   not a guess dressed as fact — state the inferred domain explicitly
+   in the output so the user can see and correct it if wrong.
+2. Construct search queries combining the stated role with the
+   inferred domain (e.g. "Project Manager public health" or "Project
+   Manager nonprofit development sector"), not the bare role title
+   alone.
+3. If the user's resume domain is genuinely adjacent-but-different
+   from their stated ambition (e.g. a healthcare professional wanting
+   to move into corporate CSR), the search should still connect to the
+   TARGET domain implied by their stated role, not stay anchored to
+   their current field only — the point is avoiding a random,
+   unrelated industry, not blocking legitimate pivots. Use judgment:
+   search broadly enough to allow a real pivot, narrowly enough to
+   exclude obviously unrelated fields.
+4. After retrieval, add an explicit relevance filter: for each
+   retrieved posting, check whether its actual listed duties are
+   plausibly relevant to the person's stated ambition and background —
+   not just whether the title string matches. Exclude postings that
+   pass the title match but are clearly a different, unrelated field
+   (e.g. a public-health analyst's Project Manager search should not
+   pull a university campus-construction-liaison posting requiring a
+   specific US state driver's license).
+5. Show the user which domain/industry context was used for the
+   search, with an option to adjust it (e.g. "searching as: Project
+   Manager, public health / development sector — not quite right?
+   adjust below") — this keeps the inference visible and correctable,
+   consistent with GapLens's general principle of showing reasoning
+   rather than hiding it.
+6. If after filtering there are fewer than 3 genuinely relevant
+   postings remaining, fall back to the existing "insufficient data"
+   behavior rather than padding the composite checklist with
+   irrelevant postings just to hit a count.
 
 ## Step-by-step logic
 
