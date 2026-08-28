@@ -248,7 +248,7 @@ export default function AnalyzePage() {
 
             {status === "done" && result && (
               <div className="mt-10 flex flex-col gap-6">
-                <ResultsView result={result} />
+                <ResultsView result={result} jobDescription={jobDescription} />
                 <ActionPlanBox scoringResult={result} />
                 <RefineBox
                   questions={result.clarifyingQuestions}

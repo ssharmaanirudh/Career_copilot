@@ -160,12 +160,33 @@ function buildResumeContent(resume: TailoredResume): PdfContent[] {
   return content;
 }
 
-export async function buildResumePdfBuffer(resume: TailoredResume): Promise<Buffer> {
+/**
+ * Formatting lever for the optional page-length target (see
+ * src/lib/lengthTrim.ts for the content-selection lever, which is the
+ * separate, primary mechanism — this alone can't hit a page target, it
+ * just buys a modest amount of extra room). Purely typographic: neither
+ * option ever causes this renderer to drop, truncate, or auto-fit content
+ * — every field it's given is always rendered in full, and pdfmake's
+ * natural page overflow is left as-is (a longer document just spans more
+ * pages, never gets clipped).
+ */
+export interface ResumeRenderOptions {
+  /** Points, pdfmake's native unit. Defaults to 10. */
+  bodyFontSize?: number;
+  /** Points, applied equally to all four margins. Defaults to 40. */
+  marginPt?: number;
+}
+
+export async function buildResumePdfBuffer(
+  resume: TailoredResume,
+  options: ResumeRenderOptions = {},
+): Promise<Buffer> {
   ensurePdfConfigured();
+  const marginPt = options.marginPt ?? 40;
   const doc = pdfMake.createPdf({
     pageSize: "A4",
-    pageMargins: [40, 40, 40, 40],
-    defaultStyle: { font: "Roboto", fontSize: 10, lineHeight: 1.15 },
+    pageMargins: [marginPt, marginPt, marginPt, marginPt],
+    defaultStyle: { font: "Roboto", fontSize: options.bodyFontSize ?? 10, lineHeight: 1.15 },
     content: buildResumeContent(resume),
   });
   return doc.getBuffer();

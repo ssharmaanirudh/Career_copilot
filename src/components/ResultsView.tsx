@@ -60,7 +60,13 @@ const TABS = [
 
 type TabId = (typeof TABS)[number]["id"];
 
-export function ResultsView({ result }: { result: AnalysisResult }) {
+export function ResultsView({
+  result,
+  jobDescription,
+}: {
+  result: AnalysisResult;
+  jobDescription: string;
+}) {
   const [activeTab, setActiveTab] = useState<TabId>("resume");
 
   return (
@@ -123,7 +129,9 @@ export function ResultsView({ result }: { result: AnalysisResult }) {
         </div>
 
         <div className="p-6">
-          {activeTab === "resume" && <TailoredResumeView resume={result.tailoredResume} />}
+          {activeTab === "resume" && (
+            <TailoredResumeView resume={result.tailoredResume} jobDescription={jobDescription} />
+          )}
           {activeTab === "cover-letter" && <DocumentPanel text={result.coverLetter} />}
           {activeTab === "changes" && (
             <div>

@@ -14,7 +14,8 @@
     "eval:ambition": "tsx eval/runAmbitionModeEval.ts",
     "eval:traceability": "tsx eval/runTraceabilityEval.ts",
     "eval:suggestions": "tsx eval/runSuggestionQualityEval.ts",
-    "eval:writing": "tsx eval/runWritingQualityEval.ts"
+    "eval:writing": "tsx eval/runWritingQualityEval.ts",
+    "eval:length-trim": "tsx eval/runLengthTrimEval.ts"
   },
   "dependencies": {
     "@google/genai": "^2.10.0",

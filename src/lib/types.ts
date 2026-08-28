@@ -182,6 +182,22 @@ export interface AnalyzeErrorResponse {
   error: string;
 }
 
+/** "none" = natural length (default, no trimming call made at all). */
+export type TargetResumeLength = "1-page" | "2-page" | "none";
+
+/**
+ * One bullet removed by the length-trim pass (src/lib/lengthTrim.ts) to fit
+ * a target length. Always surfaced to the user — trimming is never silent.
+ */
+export interface LengthCut {
+  /** Where it came from, e.g. "Core Strengths" or "Sightsavers (Program Officer)". */
+  section: string;
+  /** The exact removed bullet text, quoted verbatim — never paraphrased. */
+  description: string;
+  /** Why this ranked lowest-relevance-among-available-content for the target JD. */
+  reason: string;
+}
+
 /** Ambition Mode (AMBITION-MODE.md) — composite scoring against several real, currently-posted job listings for a role, rather than one specific JD. */
 
 export type SeniorityLevel = "" | "entry" | "mid" | "senior";
