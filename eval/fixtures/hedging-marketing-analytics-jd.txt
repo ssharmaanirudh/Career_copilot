@@ -1,0 +1,14 @@
+Marketing Analytics Manager
+
+We're looking for a Marketing Analytics Manager to own our measurement stack and reporting for the growth team.
+
+Requirements:
+- 4+ years of experience in marketing analytics or a related field
+- Proven track record building dashboards and reporting pipelines for marketing teams
+- Familiarity with GA4, Firebase Analytics, or CleverTap is a plus
+- Strong SQL skills for ad-hoc querying and data validation
+
+Responsibilities:
+- Build and maintain marketing performance dashboards
+- Partner with growth and product teams on measurement strategy
+- Own attribution modeling and campaign reporting

@@ -1,0 +1,14 @@
+Backend Software Engineer
+
+We're growing our platform team and looking for a backend engineer to help scale our core services.
+
+Requirements:
+- 3+ years of professional experience in backend development
+- Strong proficiency in Go or Java
+- Experience with Kubernetes preferred but not required
+- Solid understanding of distributed systems fundamentals
+
+Responsibilities:
+- Design and build scalable backend services
+- Participate in on-call rotation and incident response
+- Collaborate with product and infra teams on system design

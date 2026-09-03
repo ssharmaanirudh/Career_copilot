@@ -143,6 +143,20 @@ function evaluateFixture(fixture: LoadedFixture, result: AnalysisResult): CheckF
         actual: "empty",
       });
     }
+    if (expectation.expectNonEmptyJdQuote && found.jdQuote.trim().length === 0) {
+      failures.push({
+        label: `requirement "${expectation.label}" -> jdQuote`,
+        expected: "non-empty (JD citation present)",
+        actual: "empty",
+      });
+    }
+    if (expectation.expectedJdQuoteMatch && !expectation.expectedJdQuoteMatch.test(found.jdQuote)) {
+      failures.push({
+        label: `requirement "${expectation.label}" -> jdQuote`,
+        expected: `matches ${expectation.expectedJdQuoteMatch}`,
+        actual: `"${found.jdQuote}"`,
+      });
+    }
   }
 
   if (fixture.expectNoSuspiciousDateLanguage) {

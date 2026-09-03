@@ -13,6 +13,10 @@ export interface RequirementExpectation {
   expectedStatus?: "met" | "not_met";
   /** Assert the model found *some* evidence, regardless of the met/not_met call. */
   expectNonEmptyEvidence?: boolean;
+  /** Assert requirementsChecklist[].jdQuote is present and non-empty — the citation safety net (2026-09 hedging-language fix). */
+  expectNonEmptyJdQuote?: boolean;
+  /** Assert jdQuote's text itself matches this pattern — e.g. confirms the quote actually captures the hedging language behind a "desirable" call, not just nearby JD text. */
+  expectedJdQuoteMatch?: RegExp;
 }
 
 export interface Fixture {
@@ -399,6 +403,182 @@ const FIXTURES: Fixture[] = [
         { match: /kubernetes/i, label: "Kubernetes infrastructure ownership" },
       ],
     },
+  },
+
+  // Hedging-language classification fix (2026-09): a dedicated set, not
+  // just the one reported case, covering real-world hedging phrasing
+  // ("is a plus", "preferred but not required", "is a bonus", "Nice to
+  // have:", "preferred", "is a plus but not mandatory", "Bonus:",
+  // "Preferred:") across different JD styles/industries. Each fixture's
+  // hedged item sits INSIDE a bulleted "Requirements"/"Qualifications"
+  // list alongside genuinely essential items — this is the actual bug
+  // mechanism: jdStructure.ts's deterministic parser marks the WHOLE
+  // bulleted list as a "[STRUCTURED REQUIREMENTS SECTION]" regardless of
+  // an individual line's own hedged wording, and the extraction step
+  // previously treated marker-pair position as authoritative over that
+  // wording. Also asserts the surrounding genuinely-essential items stay
+  // essential, to confirm the fix doesn't over-correct into flattening
+  // everything to desirable.
+  {
+    id: "hedging-marketing-analytics",
+    description:
+      "THE REPORTED BUG CASE. GA4/Firebase/CleverTap qualified by 'is a plus' inside a bulleted Requirements list alongside genuinely essential items (years of experience, SQL).",
+    jdFile: "hedging-marketing-analytics-jd.txt",
+    resumeFile: "anirudh-analytics-resume.txt",
+    requirementExpectations: [
+      {
+        match: /ga4|firebase|clevertap/i,
+        label: "GA4/Firebase/CleverTap familiarity (hedged)",
+        expectedType: "desirable",
+        expectNonEmptyJdQuote: true,
+        expectedJdQuoteMatch: /plus/i,
+      },
+      {
+        match: /sql/i,
+        label: "SQL skills (unhedged, same list)",
+        expectedType: "essential",
+      },
+    ],
+  },
+  {
+    id: "hedging-backend-swe",
+    description: "Kubernetes qualified by 'preferred but not required' inside a Requirements list.",
+    jdFile: "hedging-backend-swe-jd.txt",
+    resumeFile: "anirudh-analytics-resume.txt",
+    requirementExpectations: [
+      {
+        match: /kubernetes/i,
+        label: "Kubernetes (hedged)",
+        expectedType: "desirable",
+        expectNonEmptyJdQuote: true,
+        expectedJdQuoteMatch: /preferred/i,
+      },
+      {
+        match: /go or java/i,
+        label: "Go or Java proficiency (unhedged, same list)",
+        expectedType: "essential",
+      },
+    ],
+  },
+  {
+    id: "hedging-data-scientist",
+    description: "Databricks/Snowflake qualified by 'is a bonus' inside a Qualifications list.",
+    jdFile: "hedging-data-scientist-jd.txt",
+    resumeFile: "anirudh-analytics-resume.txt",
+    requirementExpectations: [
+      {
+        match: /databricks|snowflake/i,
+        label: "Databricks/Snowflake exposure (hedged)",
+        expectedType: "desirable",
+        expectNonEmptyJdQuote: true,
+        expectedJdQuoteMatch: /bonus/i,
+      },
+      {
+        match: /python/i,
+        label: "Python skills (unhedged, same list)",
+        expectedType: "essential",
+      },
+    ],
+  },
+  {
+    id: "hedging-product-manager",
+    description: "Fintech/regulated-industry experience qualified by 'Nice to have:' inside a Required Qualifications list.",
+    jdFile: "hedging-product-manager-jd.txt",
+    resumeFile: "anirudh-analytics-resume.txt",
+    requirementExpectations: [
+      {
+        match: /fintech/i,
+        label: "Fintech/regulated industry experience (hedged)",
+        expectedType: "desirable",
+        expectNonEmptyJdQuote: true,
+        expectedJdQuoteMatch: /nice to have/i,
+      },
+      {
+        match: /product management experience/i,
+        label: "5+ years product management experience (unhedged, same list)",
+        expectedType: "essential",
+      },
+    ],
+  },
+  {
+    id: "hedging-me-officer",
+    description: "DHIS2 familiarity qualified by 'preferred' inside a Requirements list — public health/international development JD style.",
+    jdFile: "hedging-me-officer-jd.txt",
+    resumeFile: "anirudh-mel-resume.txt",
+    requirementExpectations: [
+      {
+        match: /dhis2/i,
+        label: "DHIS2 familiarity (hedged)",
+        expectedType: "desirable",
+        expectNonEmptyJdQuote: true,
+        expectedJdQuoteMatch: /preferred/i,
+      },
+      {
+        match: /m&e framework/i,
+        label: "M&E framework design experience (unhedged, same list)",
+        expectedType: "essential",
+      },
+    ],
+  },
+  {
+    id: "hedging-account-executive",
+    description: "Salesforce experience qualified by 'is a plus but not mandatory' inside a 'What you'll need' list — sales JD style.",
+    jdFile: "hedging-account-executive-jd.txt",
+    resumeFile: "anirudh-analytics-resume.txt",
+    requirementExpectations: [
+      {
+        match: /salesforce/i,
+        label: "Salesforce experience (hedged)",
+        expectedType: "desirable",
+        expectNonEmptyJdQuote: true,
+        expectedJdQuoteMatch: /plus/i,
+      },
+      {
+        match: /enterprise saas sales/i,
+        label: "Enterprise SaaS closing experience (unhedged, same list)",
+        expectedType: "essential",
+      },
+    ],
+  },
+  {
+    id: "hedging-product-designer",
+    description: "Figma plugins/design systems tooling qualified by 'Bonus:' inside a Requirements list — design JD style.",
+    jdFile: "hedging-product-designer-jd.txt",
+    resumeFile: "anirudh-analytics-resume.txt",
+    requirementExpectations: [
+      {
+        match: /figma/i,
+        label: "Figma plugins/design systems tooling (hedged)",
+        expectedType: "desirable",
+        expectNonEmptyJdQuote: true,
+        expectedJdQuoteMatch: /bonus/i,
+      },
+      {
+        match: /product design experience/i,
+        label: "5+ years product design experience (unhedged, same list)",
+        expectedType: "essential",
+      },
+    ],
+  },
+  {
+    id: "hedging-financial-analyst",
+    description: "CFA Level 1 qualified by 'Preferred:' inside a Requirements list — finance JD style.",
+    jdFile: "hedging-financial-analyst-jd.txt",
+    resumeFile: "anirudh-analytics-resume.txt",
+    requirementExpectations: [
+      {
+        match: /cfa/i,
+        label: "CFA Level 1 progress (hedged)",
+        expectedType: "desirable",
+        expectNonEmptyJdQuote: true,
+        expectedJdQuoteMatch: /preferred/i,
+      },
+      {
+        match: /financial planning and analysis/i,
+        label: "2+ years FP&A experience (unhedged, same list)",
+        expectedType: "essential",
+      },
+    ],
   },
 ];
 

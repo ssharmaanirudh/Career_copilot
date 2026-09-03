@@ -1,0 +1,14 @@
+Data Scientist
+
+We're hiring a Data Scientist to lead machine learning initiatives across our product suite.
+
+Qualifications:
+- Master's degree in a quantitative field or equivalent experience
+- Proven experience building and deploying machine learning models in production
+- Exposure to Databricks or Snowflake is a bonus
+- Strong Python skills
+
+Responsibilities:
+- Build and deploy production ML models
+- Partner with engineering on model serving infrastructure
+- Communicate findings to non-technical stakeholders

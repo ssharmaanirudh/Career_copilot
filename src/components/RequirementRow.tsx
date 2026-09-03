@@ -23,6 +23,8 @@ interface RequirementRowProps {
   isEvidence: boolean;
   /** Play the pale-crimson flash-on-reveal once this row mounts. Ignored for met rows. */
   flash?: boolean;
+  /** Exact JD phrase behind the essential/desirable call — a citation safety net so a misclassification is visible right next to its own justification, not hidden. Omit to render nothing extra. */
+  jdQuote?: string;
 }
 
 /** DESIGN.md "Requirement row" — icon + mono label line + evidence line, shared by the results checklist and the landing-page sample. */
@@ -33,6 +35,7 @@ export function RequirementRow({
   detail,
   isEvidence,
   flash = false,
+  jdQuote,
 }: RequirementRowProps) {
   const met = status === "met";
   return (
@@ -55,6 +58,9 @@ export function RequirementRow({
           <p className="mt-0.5 text-sm text-gl-ink-muted">
             {isEvidence ? `“${detail}”` : detail}
           </p>
+        )}
+        {jdQuote && (
+          <p className="mt-0.5 font-mono text-xs text-gl-ink-faint">JD: &ldquo;{jdQuote}&rdquo;</p>
         )}
       </div>
     </li>

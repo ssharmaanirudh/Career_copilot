@@ -22,6 +22,15 @@ export interface RequirementCheck {
   isCoreRequirement: boolean;
   /** Only meaningful when status is "met": "thin" means a single/brief mention with no real depth, worth confirming further. */
   evidenceStrength: EvidenceStrength;
+  /**
+   * Exact quoted JD phrase that justifies this requirement's essential/
+   * desirable classification — a permanent safety net (2026-09
+   * hedging-language classification fix) so a misclassification is
+   * immediately visible next to its own citation, not just theoretically
+   * correctable. Not itself the fix — the extraction rule in gemini.ts's
+   * SYSTEM_PROMPT is.
+   */
+  jdQuote: string;
 }
 
 /** Category A: real evidence exists in the resume but is buried/vague — a wording fix, not a skills gap. */

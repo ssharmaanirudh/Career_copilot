@@ -58,6 +58,7 @@ function RequirementsChecklist({ items }: { items: RequirementCheck[] }) {
               detail={item.evidence || item.reasoning}
               isEvidence={Boolean(item.evidence)}
               flash={item.status === "not_met"}
+              jdQuote={item.jdQuote}
             />
           ))}
         </ul>
