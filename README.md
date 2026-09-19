@@ -72,10 +72,30 @@ Flash, which has a free tier).
   a loading state, and renders the results in tabs with copy/download
   actions.
 
+## Deploys and database migrations
+
+Accounts and usage tracking (LICENSING.md) added the first real database
+this app has ever had. Since there's no paid shell/console access on the
+current hosting tier, migrations aren't a manual step — they run
+automatically as part of `npm start` (see the `"start"` script in
+`package.json`): `scripts/migrate.ts` applies any pending Drizzle
+migrations and then independently re-queries the live schema to confirm
+every expected table actually exists, before `next start` runs. If
+either step fails, the process exits non-zero and the deploy fails
+loudly in the platform's own logs — the app is never allowed to come up
+against an unmigrated or partially-migrated database.
+
+**Do not remove `tsx scripts/migrate.ts &&` from the start script**
+without replacing it with an equivalent migration step — this is the
+only place migrations run.
+
 ## Notes
 
-- Nothing is persisted — each request is stateless; results only live in
-  the browser until you copy or download them.
+- Resume text, job description text, and analysis results are never
+  persisted — each analysis request is stateless; results only live in
+  the browser until you copy or download them. Accounts and usage
+  counts (email, plan, how many analyses this month) are the only
+  things stored in the database — never resume/JD content itself.
 - The model is asked not to invent employers, titles, dates, or
   accomplishments — only to rephrase, reorder, and emphasize what's
   actually in the uploaded resume.
