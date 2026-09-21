@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { UserMenu } from "./UserMenu";
 
 /** Shared sticky site header — used identically on the landing page, the tool page, and the "How it works" page. Logo always links home (the marketing landing page). */
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-10 border-b border-gl-ink/10 bg-gl-paper-card">
-      <div className="mx-auto flex max-w-5xl items-center gap-3 px-6 py-4">
+      <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-6 py-4">
         <Link href="/" className="flex items-center gap-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -30,6 +31,7 @@ export function SiteHeader() {
             </p>
           </div>
         </Link>
+        <UserMenu />
       </div>
     </header>
   );
