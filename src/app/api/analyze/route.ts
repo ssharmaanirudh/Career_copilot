@@ -3,6 +3,8 @@ import { extractResumeText, ResumeParseError } from "@/lib/parseResume";
 import { analyzeResumeAgainstJob, AnalysisError, InvalidInputError } from "@/lib/gemini";
 import { checkRateLimit, getClientIp, RateLimitedError } from "@/lib/rateLimiter";
 import { MIN_JOB_DESCRIPTION_LENGTH } from "@/lib/validation";
+import { getServerSession } from "@/lib/session";
+import { FREE_MONTHLY_ANALYSES, MONTHLY_LIMIT_MESSAGE, getMonthlyUsageCount, recordUsageEvent } from "@/lib/quota";
 
 export const runtime = "nodejs";
 
@@ -18,6 +20,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: err.message }, { status: 429 });
     }
     throw err;
+  }
+
+  // Session + quota check first — before parsing the upload or touching
+  // Gemini, so an unauthenticated or over-quota request never costs a
+  // Gemini call. Server-side and DB-backed: middleware.ts's cookie check
+  // is optimistic, this is the real boundary.
+  const session = await getServerSession(request.headers);
+  if (!session) {
+    return NextResponse.json({ error: "Sign in to run a gap analysis." }, { status: 401 });
+  }
+
+  const usedThisMonth = await getMonthlyUsageCount(session.user.id);
+  if (usedThisMonth >= FREE_MONTHLY_ANALYSES) {
+    return NextResponse.json({ error: MONTHLY_LIMIT_MESSAGE }, { status: 402 });
   }
 
   let formData: FormData;
@@ -79,6 +95,7 @@ export async function POST(request: Request) {
       jobDescription.trim(),
       candidateNotes,
     );
+    await recordUsageEvent(session.user.id);
     return NextResponse.json(result);
   } catch (err) {
     if (err instanceof InvalidInputError) {

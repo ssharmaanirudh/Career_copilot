@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { extractResumeText, ResumeParseError } from "@/lib/parseResume";
 import { runAmbitionMode, AnalysisError, InvalidInputError } from "@/lib/ambitionMode";
 import { checkRateLimit, getClientIp, RateLimitedError } from "@/lib/rateLimiter";
+import { getServerSession } from "@/lib/session";
 import type { SeniorityLevel } from "@/lib/types";
 
 export const runtime = "nodejs";
@@ -19,6 +20,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: err.message }, { status: 429 });
     }
     throw err;
+  }
+
+  // Login required, same "no anonymous trial" boundary as /api/analyze —
+  // not quota-metered yet, that's scoped to /api/analyze only for now.
+  const session = await getServerSession(request.headers);
+  if (!session) {
+    return NextResponse.json({ error: "Sign in to run a gap analysis." }, { status: 401 });
   }
 
   let formData: FormData;
