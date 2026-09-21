@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { DocumentMarkupDemo } from "./DocumentMarkupDemo";
 import { HeroAnalyzingCard } from "./HeroAnalyzingCard";
-import { SocialProof } from "./SocialProof";
 import { PaperAirplaneMark, SparkleMark } from "./DecorativeMarks";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
@@ -105,10 +104,6 @@ export function Hero() {
             Upload resume
             <ArrowIcon />
           </Link>
-        </div>
-
-        <div className="mt-6">
-          <SocialProof />
         </div>
       </div>
 
