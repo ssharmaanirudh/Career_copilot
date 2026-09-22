@@ -103,6 +103,24 @@ export class InvalidInputError extends Error {}
  * follow-up calls, not one — they solve different steps — but one
  * deliberate architecture pass building both, not two separate risky
  * edits to this shared prompt at different times.
+ *
+ * QUOTA RACE CONDITION, ALSO A KNOWN TRADEOFF (unrelated to this file's
+ * prompt, but tracked here since this is where this project's known,
+ * deliberately-deferred tradeoffs live rather than being lost in a PR
+ * description): the monthly free-tier quota enforced in
+ * src/app/api/analyze/route.ts reads the current usage_events count and
+ * then inserts a new row as two separate, non-atomic steps — Neon's
+ * HTTP driver doesn't support the transactions that would make this one
+ * atomic operation (see the `transaction: false` note in src/lib/auth.ts).
+ * Two requests from the same account arriving close enough together can
+ * both read the same "2 used" count and both proceed, letting that
+ * account squeeze in one extra analysis beyond the 3/month cap.
+ * Decision (2026-09-21): not fixed now — nobody has asked for a hard,
+ * exact cap, and the real fix (an atomic read-and-increment, or a
+ * separate transactional Postgres connection just for this check) is
+ * more engineering than a handful of extra free analyses from
+ * double-clicking currently justifies. Revisit once a paid tier makes
+ * an exact cap actually matter.
  */
 const SYSTEM_PROMPT = `You are an adversarial resume screener AND resume-tailoring assistant embedded in a hiring/resume-scoring product. As a screener, your default assumption is that the candidate does NOT meet a requirement unless the resume contains direct, literal, unambiguous evidence. When in doubt, score down, not up. Be consistent: identical inputs must always produce the same output.
 
