@@ -61,7 +61,7 @@ function SignInForm() {
         <p className="mt-2 text-sm text-gl-ink-muted">Sign in to continue your resume and job analysis.</p>
 
         <div className="mt-6 flex flex-col gap-4 rounded-2xl border border-gl-ink/10 bg-gl-paper-card p-6 shadow-sm shadow-black/5">
-          <GoogleSignInButton callbackURL={redirectTo} />
+          <GoogleSignInButton />
 
           <div className="flex items-center gap-3 text-xs font-medium uppercase tracking-wide text-gl-ink-faint">
             <span className="h-px flex-1 bg-gl-ink/10" />

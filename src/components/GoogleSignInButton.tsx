@@ -1,8 +1,3 @@
-"use client";
-
-import { useState } from "react";
-import { authClient } from "@/lib/authClient";
-
 function GoogleIcon() {
   return (
     <svg viewBox="0 0 48 48" className="h-4.5 w-4.5" aria-hidden="true">
@@ -26,34 +21,28 @@ function GoogleIcon() {
   );
 }
 
-/** Real Google OAuth sign-in — calls Better Auth's social sign-in, which redirects the browser to Google when GOOGLE_CLIENT_ID/SECRET are configured server-side. */
-export function GoogleSignInButton({ callbackURL }: { callbackURL: string }) {
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function handleClick() {
-    setBusy(true);
-    setError(null);
-    const { error: signInError } = await authClient.signIn.social({ provider: "google", callbackURL });
-    if (signInError) {
-      setError(signInError.message ?? "Couldn't start Google sign-in. Try email and password instead.");
-      setBusy(false);
-    }
-    // On success the browser is redirected to Google by Better Auth's client — nothing else to do here.
-  }
-
+/**
+ * Placeholder only — genuinely disabled, no click handler, no dependency
+ * on GOOGLE_CLIENT_ID/SECRET being configured. A disabled control with a
+ * clear "coming soon" label is better UX than a live button that only
+ * reveals it doesn't work when clicked. Real Google OAuth wiring
+ * (authClient.signIn.social) is a separate, later task.
+ */
+export function GoogleSignInButton() {
   return (
-    <div>
-      <button
-        type="button"
-        onClick={handleClick}
-        disabled={busy}
-        className="flex w-full items-center justify-center gap-2.5 rounded-xl border border-gl-ink/15 bg-gl-paper-card p-3 text-sm font-medium text-gl-ink shadow-sm shadow-black/5 transition-colors hover:bg-gl-paper disabled:cursor-not-allowed disabled:opacity-50"
-      >
+    <button
+      type="button"
+      disabled
+      title="Google sign-in is coming soon — use email and password for now."
+      className="flex w-full cursor-not-allowed items-center justify-center gap-2.5 rounded-xl border border-gl-ink/10 bg-gl-paper p-3 text-sm font-medium text-gl-ink-faint opacity-70"
+    >
+      <span className="opacity-60">
         <GoogleIcon />
-        {busy ? "Redirecting…" : "Continue with Google"}
-      </button>
-      {error && <p className="mt-2 text-sm text-gl-crimson">{error}</p>}
-    </div>
+      </span>
+      Continue with Google
+      <span className="ml-1 rounded-full bg-gl-ink/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-gl-ink-faint">
+        Coming soon
+      </span>
+    </button>
   );
 }
