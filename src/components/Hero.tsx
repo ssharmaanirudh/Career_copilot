@@ -5,6 +5,7 @@ import Link from "next/link";
 import { DocumentMarkupDemo } from "./DocumentMarkupDemo";
 import { HeroAnalyzingCard } from "./HeroAnalyzingCard";
 import { PaperAirplaneMark, SparkleMark } from "./DecorativeMarks";
+import { StatusPill } from "./StatusPill";
 import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 
 // Lines up with DocumentMarkupDemo's own 400ms staged reveal (its stamp
@@ -12,54 +13,11 @@ import { usePrefersReducedMotion } from "@/lib/usePrefersReducedMotion";
 // rather than introducing a second, competing one.
 const PILLS_DELAY_MS = 1600;
 
-function CheckIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3 w-3 shrink-0" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-    </svg>
-  );
-}
-
-function XIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3 w-3 shrink-0" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-    </svg>
-  );
-}
-
-function BoltIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-3 w-3 shrink-0" aria-hidden="true">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M13 2 4 14h7l-1 8 9-12h-7z" />
-    </svg>
-  );
-}
-
 function ArrowIcon() {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="h-4 w-4 transition-transform group-hover:translate-x-0.5" aria-hidden="true">
       <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 8.25 21 12m0 0-3.75 3.75M21 12H3" />
     </svg>
-  );
-}
-
-type PillTone = "teal" | "crimson" | "neutral";
-
-const PILL_STYLES: Record<PillTone, string> = {
-  teal: "border-gl-teal/30 bg-gl-teal-bg text-gl-teal",
-  crimson: "border-gl-crimson/30 bg-gl-crimson-bg text-gl-crimson",
-  neutral: "border-gl-ink/15 bg-gl-paper-card text-gl-ink-muted",
-};
-
-function Pill({ tone, icon, label }: { tone: PillTone; icon: React.ReactNode; label: string }) {
-  return (
-    <span
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide ${PILL_STYLES[tone]}`}
-    >
-      {icon}
-      {label}
-    </span>
   );
 }
 
@@ -134,10 +92,10 @@ export function Hero() {
             aria-hidden="true"
           />
           <div className="flex flex-wrap gap-2">
-            <Pill tone="teal" icon={<CheckIcon />} label="Verified" />
-            <Pill tone="teal" icon={<CheckIcon />} label="Verified" />
-            <Pill tone="crimson" icon={<XIcon />} label="Gap" />
-            <Pill tone="neutral" icon={<BoltIcon />} label="Quick fix" />
+            <StatusPill tone="teal" icon="check" label="Verified" />
+            <StatusPill tone="teal" icon="check" label="Verified" />
+            <StatusPill tone="crimson" icon="x" label="Gap" />
+            <StatusPill tone="neutral" icon="bolt" label="Quick fix" />
           </div>
         </div>
       </div>
